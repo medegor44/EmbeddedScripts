@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Rosl
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EmbeddedScripts.CSharp.Shared", "Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.shproj", "{2E1CA5C1-3FBF-4BEC-9DB2-8E78B3BC8169}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.JS.Jint.Tests", "Tests\EmbeddedScripts.JS.Jint.Tests\EmbeddedScripts.JS.Jint.Tests.csproj", "{D720F1EB-85E7-47C8-B622-F09329854CC1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.Jint", "Src\EmbeddedScripts.JS.Jint\EmbeddedScripts.JS.Jint.csproj", "{7874A987-F15E-4CF9-BED5-00657BD052F5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{2e1ca5c1-3fbf-4bec-9db2-8e78b3bc8169}*SharedItemsImports = 13
@@ -61,6 +65,14 @@ Global
 		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D720F1EB-85E7-47C8-B622-F09329854CC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D720F1EB-85E7-47C8-B622-F09329854CC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D720F1EB-85E7-47C8-B622-F09329854CC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D720F1EB-85E7-47C8-B622-F09329854CC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7874A987-F15E-4CF9-BED5-00657BD052F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7874A987-F15E-4CF9-BED5-00657BD052F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7874A987-F15E-4CF9-BED5-00657BD052F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7874A987-F15E-4CF9-BED5-00657BD052F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +82,7 @@ Global
 		{3024EE77-31C5-4152-B2E2-7804F4F52BF1} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 		{DBA6B831-D9A6-4B6A-8371-9C08D873363B} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
+		{D720F1EB-85E7-47C8-B622-F09329854CC1} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C12123A-C2E9-46DF-AC21-40D0640056AE}
