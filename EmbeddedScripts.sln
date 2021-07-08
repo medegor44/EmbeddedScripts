@@ -3,9 +3,73 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31409.214
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.Shared.Tests", "Tests\EmbeddedScripts.Shared.Tests\EmbeddedScripts.Shared.Tests.csproj", "{8F5F5F05-27E6-403A-BB07-DC4B0B90AEDD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Shared.Tests", "Tests\EmbeddedScripts.CSharp.Shared.Tests\EmbeddedScripts.CSharp.Shared.Tests.csproj", "{3024EE77-31C5-4152-B2E2-7804F4F52BF1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Roslyn.Scripting.Tests", "Tests\EmbeddedScripts.CSharp.Roslyn.Scripting.Tests\EmbeddedScripts.CSharp.Roslyn.Scripting.Tests.csproj", "{DBA6B831-D9A6-4B6A-8371-9C08D873363B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.Shared", "Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj", "{FE3F6392-3653-411A-A2C5-08D381F9E047}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Roslyn.Scripting", "Src\EmbeddedScripts.CSharp.Roslyn.Scripting\EmbeddedScripts.CSharp.Roslyn.Scripting.csproj", "{FEBC4CAC-CAC4-4867-AC03-957C267A3A38}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Roslyn.Compilation", "Src\EmbeddedScripts.CSharp.Roslyn.Compilation\EmbeddedScripts.CSharp.Roslyn.Compilation.csproj", "{8A98BDA5-72CE-4A81-9001-9308099E8043}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Roslyn.Compilation.Tests", "Tests\EmbeddedScripts.CSharp.Roslyn.Compilation.Tests\EmbeddedScripts.CSharp.Roslyn.Compilation.Tests.csproj", "{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EmbeddedScripts.CSharp.Shared", "Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.shproj", "{2E1CA5C1-3FBF-4BEC-9DB2-8E78B3BC8169}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{2e1ca5c1-3fbf-4bec-9db2-8e78b3bc8169}*SharedItemsImports = 13
+		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{3024ee77-31c5-4152-b2e2-7804f4f52bf1}*SharedItemsImports = 5
+		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{8a98bda5-72ce-4a81-9001-9308099e8043}*SharedItemsImports = 5
+		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{febc4cac-cac4-4867-ac03-957c267a3a38}*SharedItemsImports = 5
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F5F5F05-27E6-403A-BB07-DC4B0B90AEDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F5F5F05-27E6-403A-BB07-DC4B0B90AEDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F5F5F05-27E6-403A-BB07-DC4B0B90AEDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F5F5F05-27E6-403A-BB07-DC4B0B90AEDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3024EE77-31C5-4152-B2E2-7804F4F52BF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3024EE77-31C5-4152-B2E2-7804F4F52BF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3024EE77-31C5-4152-B2E2-7804F4F52BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3024EE77-31C5-4152-B2E2-7804F4F52BF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBA6B831-D9A6-4B6A-8371-9C08D873363B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBA6B831-D9A6-4B6A-8371-9C08D873363B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBA6B831-D9A6-4B6A-8371-9C08D873363B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBA6B831-D9A6-4B6A-8371-9C08D873363B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE3F6392-3653-411A-A2C5-08D381F9E047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE3F6392-3653-411A-A2C5-08D381F9E047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE3F6392-3653-411A-A2C5-08D381F9E047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE3F6392-3653-411A-A2C5-08D381F9E047}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEBC4CAC-CAC4-4867-AC03-957C267A3A38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEBC4CAC-CAC4-4867-AC03-957C267A3A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEBC4CAC-CAC4-4867-AC03-957C267A3A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEBC4CAC-CAC4-4867-AC03-957C267A3A38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A98BDA5-72CE-4A81-9001-9308099E8043}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A98BDA5-72CE-4A81-9001-9308099E8043}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A98BDA5-72CE-4A81-9001-9308099E8043}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A98BDA5-72CE-4A81-9001-9308099E8043}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8F5F5F05-27E6-403A-BB07-DC4B0B90AEDD} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
+		{3024EE77-31C5-4152-B2E2-7804F4F52BF1} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
+		{DBA6B831-D9A6-4B6A-8371-9C08D873363B} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
+		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C12123A-C2E9-46DF-AC21-40D0640056AE}
