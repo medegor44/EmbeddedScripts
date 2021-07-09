@@ -34,7 +34,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
         }
 
         [Fact]
-        public async Task WithOptions_SetsOptions_Succeed()
+        public async Task WithConfig_SetsConfig_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";
@@ -47,7 +47,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
         }
 
         [Fact]
-        public async Task AddOptions_AddsNewOptions_Succeed()
+        public async Task AddConfig_AddsConfig_Succeed()
         {
             var s = "abc";
             var t = new HelperObject();
@@ -116,6 +116,37 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             
             var exception = await Assert.ThrowsAsync<ArgumentException>(new ScriptCodeRunner(code).RunAsync);
             Assert.Equal("Exception from user code", exception.Message);
+        }
+
+        [Fact]
+        public async void WithEngineOptions_SetsNewEngineOptions()
+        {
+            var code = "Path.Combine(\"a\", \"b\");";
+
+            var runner = new ScriptCodeRunner(code)
+                .WithEngineOptions(opts =>
+                    opts.AddImports("System.IO"));
+
+            await runner.RunAsync();
+        }
+
+        [Fact]
+        public async void AddEngineOptions_AddsNewEngineOptions()
+        {
+            var code = @"
+Path.Combine(""a"", ""b""); 
+var builder = new StringBuilder();";
+
+            var runner = new ScriptCodeRunner(code)
+                .WithEngineOptions(opts =>
+                    opts.AddImports("System.IO"));
+
+            await Assert.ThrowsAsync<CompilationErrorException>(runner.RunAsync);
+
+            runner.AddEngineOptions(opts =>
+                opts.AddImports("System.Text"));
+
+            await runner.RunAsync();
         }
 
         [Fact(Skip = "test is skipped until security question is resolved")]

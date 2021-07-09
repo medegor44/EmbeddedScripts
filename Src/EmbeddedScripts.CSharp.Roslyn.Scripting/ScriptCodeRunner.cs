@@ -26,9 +26,21 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
             return this;
         }
 
+        public ScriptCodeRunner WithEngineOptions(Func<ScriptOptions, ScriptOptions> optionsFunc)
+        {
+            RoslynOptions = optionsFunc(ScriptOptions.Default);
+            return this;
+        }
+
         public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
             RunnerConfig = configFunc(RunnerConfig);
+            return this;
+        }
+
+        public ScriptCodeRunner AddEngineOptions(Func<ScriptOptions, ScriptOptions> optionsFunc)
+        {
+            RoslynOptions = optionsFunc(RoslynOptions);
             return this;
         }
 
@@ -43,9 +55,10 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
                 .GenerateCode(userCode, RunnerConfig.Container);
 
         private ScriptOptions BuildEngineOptions() =>
-            ScriptOptions.Default.WithReferencesFromContainer(RunnerConfig.Container);
+            RoslynOptions.WithReferencesFromContainer(RunnerConfig.Container);
 
         private CodeRunnerConfig RunnerConfig { get; set; } = CodeRunnerConfig.Default;
+        private ScriptOptions RoslynOptions { get; set; } = ScriptOptions.Default;
         private string Code { get; }
     }
 }
