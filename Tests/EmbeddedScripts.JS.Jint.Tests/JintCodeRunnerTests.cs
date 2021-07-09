@@ -13,9 +13,9 @@ namespace EmbeddedScripts.JS.Jint.Tests
         {
             var code = "let a = 1; let b = 2; let c = a + b;";
 
-            var runner = new JintCodeRunner(code);
+            var runner = new JintCodeRunner();
 
-            await runner.RunAsync();
+            await runner.RunAsync(code);
         }
 
         [Fact]
@@ -24,55 +24,51 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var t = new HelperObject();
             var code = "t.x++;";
 
-            var runner = new JintCodeRunner(code, options =>
-                options
-                    .Register(t, "t"));
+            var runner = new JintCodeRunner()
+                .Register(t, "t");
 
-            await runner.RunAsync();
+            await runner.RunAsync(code);
 
             Assert.Equal(1, t.x);
         }
 
         [Fact]
-        public async Task WithOptions_SetsOptions_Succeed()
+        public async Task AddConfigOnce_SetsConfig_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";
 
-            var runner = new JintCodeRunner(code)
-                .WithOptions(options =>
-                    options.Register(t, "t"));
+            var runner = new JintCodeRunner()
+                .Register(t, "t");
 
-            await runner.RunAsync();
+            await runner.RunAsync(code);
         }
 
         [Fact]
-        public async Task AddOptions_AddsNewOptions_Succeed()
+        public async Task AddConfigTwice_AddsNewConfig_Succeed()
         {
             var s = "abc";
             var t = new HelperObject();
             var code = "t.x += s.length;";
 
-            var runner = new JintCodeRunner(code)
-                .WithOptions(options =>
-                    options.Register(s, "s"));
+            var runner = new JintCodeRunner()
+                .Register(s, "s");
 
-            await Assert.ThrowsAsync<JavaScriptException>(runner.RunAsync);
+            await Assert.ThrowsAsync<JavaScriptException>(() => runner.RunAsync(code));
 
-            runner.AddOptions(options => options.Register(t, "t"));
+            runner.Register(t, "t");
 
-            await runner.RunAsync();
+            await runner.RunAsync(code);
         }
 
         [Fact]
         public async Task RunWithTwoGlobalVariables_Succeed()
         {
-            var runner = new JintCodeRunner("let c = a + b;", options =>
-                options
-                    .Register(1, "a")
-                    .Register(2, "b"));
+            var runner = new JintCodeRunner()
+                .Register(1, "a")
+                .Register(2, "b");
 
-            await runner.RunAsync();
+            await runner.RunAsync("let c = a + b;");
         }
 
         [Fact]
@@ -81,11 +77,10 @@ namespace EmbeddedScripts.JS.Jint.Tests
             int x = 0;
             var code = "t();";
 
-            var runner = new JintCodeRunner(code, options =>
-                options.Register<Action>(() => 
-                    { x++; }, "t"));
+            var runner = new JintCodeRunner()
+                .Register<Action>(() => x++, "t");
 
-            await runner.RunAsync();
+            await runner.RunAsync(code);
 
             Assert.Equal(1, x);
         }
@@ -95,18 +90,61 @@ namespace EmbeddedScripts.JS.Jint.Tests
         {
             var code = "vat a = 1;";
 
-            var runner = new JintCodeRunner(code);
+            var runner = new JintCodeRunner();
 
-            await Assert.ThrowsAsync<Esprima.ParserException>(runner.RunAsync);
+            await Assert.ThrowsAsync<Esprima.ParserException>(() => runner.RunAsync(code));
         }
-        
+
+        [Fact]
+        public async void AddEngineOptionsOnce_SetsOptions_Succeed()
+        {
+            var code = "x = 1";
+
+            var runner = new JintCodeRunner()
+                .AddEngineOptions(opts =>
+                    opts.Strict());
+
+            await Assert.ThrowsAsync<JavaScriptException>(() => runner.RunAsync(code));
+        }
+
+        [Fact]
+        public async void AddEngineOptionsTwice_AddsNewEngineOptions_SucceedD()
+        {
+            var code = "x = 1";
+            var runner = new JintCodeRunner()
+                .AddEngineOptions(opts => 
+                    opts.Strict());
+
+            await Assert.ThrowsAsync<JavaScriptException>(() => runner.RunAsync(code));
+
+            runner.AddEngineOptions(opts =>
+                opts.Strict(false));
+
+            await runner.RunAsync(code);
+        }
+
         [Fact]
         public async void CodeThrowsAnException_SameExceptionIsThrowingFromRunner()
         {
-            var code = "throw new Error('Exception from user code');";
+            var exceptionMessage = "Exception from user code";
+            var code = $"throw new Error('{exceptionMessage}');";
 
-            var exception = await Assert.ThrowsAsync<JavaScriptException>(new JintCodeRunner(code).RunAsync);
-            Assert.Equal("Exception from user code", exception.Message);
+            var exception = await Assert.ThrowsAsync<JavaScriptException>(() => 
+                new JintCodeRunner().RunAsync(code));
+
+            Assert.Equal(exceptionMessage, exception.Message);
+        }
+
+        struct A
+        {
+            public int X { get; set; }
+        }
+        [Fact]
+        public async void AddStructAsGlobals_Succeed()
+        {
+            await new JintCodeRunner()
+                .Register(new A(), "a")
+                .RunAsync("a.X++;");
         }
     }
 }

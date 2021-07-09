@@ -7,37 +7,24 @@ namespace EmbeddedScripts.JS.Jint
 {
     public class JintCodeRunner : ICodeRunner
     {
-        public JintCodeRunner(string code)
-            : this(code, _ => JsCodeRunnerOptions.Default)
+        private Container container = new();
+        private Options jintOptions = new();
+
+        public JintCodeRunner AddEngineOptions(Func<Options, Options> optionsFunc)
         {
+            jintOptions = optionsFunc(jintOptions);
+            return this;
         }
-
-        public JintCodeRunner(string code, Func<JsCodeRunnerOptions, JsCodeRunnerOptions> opts)
+        public ICodeRunner Register<T>(T obj, string alias)
         {
-            Code = code;
-
-            RunnerOptions = opts(JsCodeRunnerOptions.Default);
-        }
-
-        public JintCodeRunner WithOptions(Func<JsCodeRunnerOptions, JsCodeRunnerOptions> opts)
-        {
-            RunnerOptions = opts(JsCodeRunnerOptions.Default);
+            container.Register(obj, alias);
             return this;
         }
 
-        public JintCodeRunner AddOptions(Func<JsCodeRunnerOptions, JsCodeRunnerOptions> opts)
-        {
-            RunnerOptions = opts(RunnerOptions);
-            return this;
-        }
-
-        public async Task RunAsync() =>
+        public async Task RunAsync(string code) =>
             await Task.Run(() => 
-                new Engine()
-                    .SetVariablesFromContainer(RunnerOptions.Container)
-                    .Execute(Code));
-
-        private string Code { get; }
-        private JsCodeRunnerOptions RunnerOptions { get; set; }
+                new Engine(jintOptions)
+                    .SetValuesFromContainer(container)
+                    .Execute(code));
     }
 }

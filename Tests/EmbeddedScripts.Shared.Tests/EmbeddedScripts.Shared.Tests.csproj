@@ -20,8 +20,6 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
-  </ItemGroup>
+  <Import Project="..\..\Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems" Label="Shared" />
 
 </Project>

@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Shar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Roslyn.Scripting.Tests", "Tests\EmbeddedScripts.CSharp.Roslyn.Scripting.Tests\EmbeddedScripts.CSharp.Roslyn.Scripting.Tests.csproj", "{DBA6B831-D9A6-4B6A-8371-9C08D873363B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.Shared", "Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj", "{FE3F6392-3653-411A-A2C5-08D381F9E047}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Roslyn.Scripting", "Src\EmbeddedScripts.CSharp.Roslyn.Scripting\EmbeddedScripts.CSharp.Roslyn.Scripting.csproj", "{FEBC4CAC-CAC4-4867-AC03-957C267A3A38}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Roslyn.Compilation", "Src\EmbeddedScripts.CSharp.Roslyn.Compilation\EmbeddedScripts.CSharp.Roslyn.Compilation.csproj", "{8A98BDA5-72CE-4A81-9001-9308099E8043}"
@@ -21,16 +19,26 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.Rosl
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EmbeddedScripts.CSharp.Shared", "Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.shproj", "{2E1CA5C1-3FBF-4BEC-9DB2-8E78B3BC8169}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.JS.Jint.Tests", "Tests\EmbeddedScripts.JS.Jint.Tests\EmbeddedScripts.JS.Jint.Tests.csproj", "{D720F1EB-85E7-47C8-B622-F09329854CC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.Jint.Tests", "Tests\EmbeddedScripts.JS.Jint.Tests\EmbeddedScripts.JS.Jint.Tests.csproj", "{D720F1EB-85E7-47C8-B622-F09329854CC1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.Jint", "Src\EmbeddedScripts.JS.Jint\EmbeddedScripts.JS.Jint.csproj", "{7874A987-F15E-4CF9-BED5-00657BD052F5}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EmbeddedScripts.Shared", "Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.shproj", "{64EF0BDF-0B08-4837-BD2D-B5AE294C7BFA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{DF1BF043-0808-4B9A-92E4-1C53A05056E9}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{2e1ca5c1-3fbf-4bec-9db2-8e78b3bc8169}*SharedItemsImports = 13
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{3024ee77-31c5-4152-b2e2-7804f4f52bf1}*SharedItemsImports = 5
+		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{3024ee77-31c5-4152-b2e2-7804f4f52bf1}*SharedItemsImports = 5
+		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{64ef0bdf-0b08-4837-bd2d-b5ae294c7bfa}*SharedItemsImports = 13
+		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{7874a987-f15e-4cf9-bed5-00657bd052f5}*SharedItemsImports = 5
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{8a98bda5-72ce-4a81-9001-9308099e8043}*SharedItemsImports = 5
+		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{8a98bda5-72ce-4a81-9001-9308099e8043}*SharedItemsImports = 5
+		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{8f5f5f05-27e6-403a-bb07-dc4b0b90aedd}*SharedItemsImports = 5
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{febc4cac-cac4-4867-ac03-957c267a3a38}*SharedItemsImports = 5
+		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{febc4cac-cac4-4867-ac03-957c267a3a38}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,10 +57,6 @@ Global
 		{DBA6B831-D9A6-4B6A-8371-9C08D873363B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBA6B831-D9A6-4B6A-8371-9C08D873363B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBA6B831-D9A6-4B6A-8371-9C08D873363B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FE3F6392-3653-411A-A2C5-08D381F9E047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FE3F6392-3653-411A-A2C5-08D381F9E047}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FE3F6392-3653-411A-A2C5-08D381F9E047}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FE3F6392-3653-411A-A2C5-08D381F9E047}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FEBC4CAC-CAC4-4867-AC03-957C267A3A38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FEBC4CAC-CAC4-4867-AC03-957C267A3A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEBC4CAC-CAC4-4867-AC03-957C267A3A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -81,7 +85,10 @@ Global
 		{8F5F5F05-27E6-403A-BB07-DC4B0B90AEDD} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 		{3024EE77-31C5-4152-B2E2-7804F4F52BF1} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 		{DBA6B831-D9A6-4B6A-8371-9C08D873363B} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
+		{FEBC4CAC-CAC4-4867-AC03-957C267A3A38} = {DF1BF043-0808-4B9A-92E4-1C53A05056E9}
+		{8A98BDA5-72CE-4A81-9001-9308099E8043} = {DF1BF043-0808-4B9A-92E4-1C53A05056E9}
 		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
+		{2E1CA5C1-3FBF-4BEC-9DB2-8E78B3BC8169} = {DF1BF043-0808-4B9A-92E4-1C53A05056E9}
 		{D720F1EB-85E7-47C8-B622-F09329854CC1} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

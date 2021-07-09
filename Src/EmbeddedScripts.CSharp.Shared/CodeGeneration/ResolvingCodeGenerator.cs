@@ -6,11 +6,11 @@ namespace EmbeddedScripts.CSharp.Shared.CodeGeneration
 {
     public class ResolvingCodeGenerator
     {
-        public string GenerateVariablesDeclaration(Container container) =>
+        internal string GenerateVariablesDeclaration(Container container) =>
             GenerateCode(container, (alias, type) =>
                 $"{type.FullName} {alias};");
 
-        public string GenerateVariablesInitialization(Container container, string containerName) =>
+        internal string GenerateVariablesInitialization(Container container, string containerName) =>
             GenerateCode(container, (alias, type) => 
                 $"{alias} = {containerName}.Resolve<{type.FullName}>(\"{alias}\");");
 
