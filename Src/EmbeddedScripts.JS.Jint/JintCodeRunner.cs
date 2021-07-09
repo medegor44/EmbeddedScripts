@@ -24,19 +24,32 @@ namespace EmbeddedScripts.JS.Jint
             return this;
         }
 
+        public JintCodeRunner WithEngineOptions(Func<Options, Options> optionsFunc)
+        {
+            JintEngineOptions = optionsFunc(new Options());
+            return this;
+        }
+
         public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
             RunnerConfig = configFunc(RunnerConfig);
             return this;
         }
 
+        public JintCodeRunner AddEngineOptions(Func<Options, Options> optionsFunc)
+        {
+            JintEngineOptions = optionsFunc(JintEngineOptions);
+            return this;
+        }
+
         public async Task RunAsync() =>
             await Task.Run(() => 
-                new Engine()
+                new Engine(JintEngineOptions)
                     .SetValuesFromContainer(RunnerConfig.Container)
                     .Execute(Code));
 
         private string Code { get; }
         private CodeRunnerConfig RunnerConfig { get; set; }
+        private Options JintEngineOptions { get; set; } = new();
     }
 }

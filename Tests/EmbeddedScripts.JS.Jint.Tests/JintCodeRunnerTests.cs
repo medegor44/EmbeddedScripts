@@ -24,8 +24,8 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var t = new HelperObject();
             var code = "t.x++;";
 
-            var runner = new JintCodeRunner(code, options =>
-                options
+            var runner = new JintCodeRunner(code, config =>
+                config
                     .Register(t, "t"));
 
             await runner.RunAsync();
@@ -34,32 +34,32 @@ namespace EmbeddedScripts.JS.Jint.Tests
         }
 
         [Fact]
-        public async Task WithOptions_SetsOptions_Succeed()
+        public async Task WithConfig_SetsConfig_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";
 
             var runner = new JintCodeRunner(code)
-                .WithConfig(options =>
-                    options.Register(t, "t"));
+                .WithConfig(config =>
+                    config.Register(t, "t"));
 
             await runner.RunAsync();
         }
 
         [Fact]
-        public async Task AddOptions_AddsNewOptions_Succeed()
+        public async Task AddConfig_AddsNewConfig_Succeed()
         {
             var s = "abc";
             var t = new HelperObject();
             var code = "t.x += s.length;";
 
             var runner = new JintCodeRunner(code)
-                .WithConfig(options =>
-                    options.Register(s, "s"));
+                .WithConfig(config =>
+                    config.Register(s, "s"));
 
             await Assert.ThrowsAsync<JavaScriptException>(runner.RunAsync);
 
-            runner.AddConfig(options => options.Register(t, "t"));
+            runner.AddConfig(config => config.Register(t, "t"));
 
             await runner.RunAsync();
         }
@@ -67,8 +67,8 @@ namespace EmbeddedScripts.JS.Jint.Tests
         [Fact]
         public async Task RunWithTwoGlobalVariables_Succeed()
         {
-            var runner = new JintCodeRunner("let c = a + b;", options =>
-                options
+            var runner = new JintCodeRunner("let c = a + b;", config =>
+                config
                     .Register(1, "a")
                     .Register(2, "b"));
 
@@ -81,9 +81,8 @@ namespace EmbeddedScripts.JS.Jint.Tests
             int x = 0;
             var code = "t();";
 
-            var runner = new JintCodeRunner(code, options =>
-                options.Register<Action>(() => 
-                    { x++; }, "t"));
+            var runner = new JintCodeRunner(code, config =>
+                config.Register<Action>(() => x++, "t"));
 
             await runner.RunAsync();
 
@@ -99,14 +98,43 @@ namespace EmbeddedScripts.JS.Jint.Tests
 
             await Assert.ThrowsAsync<Esprima.ParserException>(runner.RunAsync);
         }
-        
+
+        [Fact]
+        public async void WithEngineOptions_SetsNewEngineOptions()
+        {
+            var code = "x = 1";
+
+            var runner = new JintCodeRunner(code)
+                .WithEngineOptions(opts =>
+                    opts.Strict());
+
+            await Assert.ThrowsAsync<JavaScriptException>(runner.RunAsync);
+        }
+
+        [Fact]
+        public async void AddEngineOptions_AddsNewEngineOptions()
+        {
+            var code = "x = 1";
+            var runner = new JintCodeRunner(code)
+                .WithEngineOptions(opts => 
+                    opts.Strict());
+
+            await Assert.ThrowsAsync<JavaScriptException>(runner.RunAsync);
+
+            runner.AddEngineOptions(opts =>
+                opts.Strict(false));
+
+            await runner.RunAsync();
+        }
+
         [Fact]
         public async void CodeThrowsAnException_SameExceptionIsThrowingFromRunner()
         {
-            var code = "throw new Error('Exception from user code');";
+            var exceptionMessage = "Exception from user code";
+            var code = $"throw new Error('{exceptionMessage}');";
 
             var exception = await Assert.ThrowsAsync<JavaScriptException>(new JintCodeRunner(code).RunAsync);
-            Assert.Equal("Exception from user code", exception.Message);
+            Assert.Equal(exceptionMessage, exception.Message);
         }
     }
 }
