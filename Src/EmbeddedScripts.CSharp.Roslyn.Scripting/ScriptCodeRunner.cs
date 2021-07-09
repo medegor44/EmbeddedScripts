@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EmbeddedScripts.CSharp.Roslyn.Scripting.CodeGeneration;
-using EmbeddedScripts.CSharp.Shared;
 using EmbeddedScripts.Shared;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -11,23 +10,23 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
     public class ScriptCodeRunner : ICodeRunner
     {
         public ScriptCodeRunner(string code) 
-            : this(code, _ => CSharpCodeRunnerOptions.Default)
+            : this(code, _ => CodeRunnerOptions.Default)
         {
         }
 
-        public ScriptCodeRunner(string code, Func<CSharpCodeRunnerOptions, CSharpCodeRunnerOptions> opts)
+        public ScriptCodeRunner(string code, Func<CodeRunnerOptions, CodeRunnerOptions> opts)
         {
             Code = code;
             RunnerOptions = opts(RunnerOptions);
         }
 
-        public ScriptCodeRunner WithOptions(Func<CSharpCodeRunnerOptions, CSharpCodeRunnerOptions> opts)
+        public ICodeRunner WithOptions(Func<CodeRunnerOptions, CodeRunnerOptions> opts)
         {
-            RunnerOptions = opts(CSharpCodeRunnerOptions.Default);
+            RunnerOptions = opts(CodeRunnerOptions.Default);
             return this;
         }
 
-        public ScriptCodeRunner AddOptions(Func<CSharpCodeRunnerOptions, CSharpCodeRunnerOptions> opts)
+        public ICodeRunner AddOptions(Func<CodeRunnerOptions, CodeRunnerOptions> opts)
         {
             RunnerOptions = opts(RunnerOptions);
             return this;
@@ -46,7 +45,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
         private ScriptOptions BuildEngineOptions() =>
             ScriptOptions.Default.WithReferencesFromContainer(RunnerOptions.Container);
 
-        private CSharpCodeRunnerOptions RunnerOptions { get; set; } = CSharpCodeRunnerOptions.Default;
+        private CodeRunnerOptions RunnerOptions { get; set; } = CodeRunnerOptions.Default;
         private string Code { get; }
     }
 }

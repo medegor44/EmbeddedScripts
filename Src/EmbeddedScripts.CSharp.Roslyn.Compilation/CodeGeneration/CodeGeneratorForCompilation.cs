@@ -5,7 +5,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.CodeGeneration
 {
     public class CodeGeneratorForCompilation
     {
-        public string GenerateCode(string code, Container container)
+        internal string GenerateCode(string code, Container container)
         {
             var containerTypeFullName = typeof(Container).FullName;
             var fieldsInitialization = ResolvingCodeGenerator.GenerateVariablesInitialization(container, ContainerName);
