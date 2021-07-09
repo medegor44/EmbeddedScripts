@@ -3,15 +3,14 @@
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>2e1ca5c1-3fbf-4bec-9db2-8e78b3bc8169</SharedGUID>
+    <SharedGUID>64ef0bdf-0b08-4837-bd2d-b5ae294c7bfa</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>EmbeddedScripts.CSharp.Shared</Import_RootNamespace>
+    <Import_RootNamespace>EmbeddedScripts.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)CodeGeneration\ResolvingCodeGenerator.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)CodeGeneration\" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeRunnerConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICodeRunner.cs" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EmbeddedScripts.CSharp.Roslyn.Scripting.CodeGeneration;
-using EmbeddedScripts.CSharp.Shared;
 using EmbeddedScripts.Shared;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -11,25 +10,25 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
     public class ScriptCodeRunner : ICodeRunner
     {
         public ScriptCodeRunner(string code) 
-            : this(code, _ => CSharpCodeRunnerOptions.Default)
+            : this(code, _ => CodeRunnerConfig.Default)
         {
         }
 
-        public ScriptCodeRunner(string code, Func<CSharpCodeRunnerOptions, CSharpCodeRunnerOptions> opts)
+        public ScriptCodeRunner(string code, Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
             Code = code;
-            RunnerOptions = opts(RunnerOptions);
+            RunnerConfig = configFunc(RunnerConfig);
         }
 
-        public ScriptCodeRunner WithOptions(Func<CSharpCodeRunnerOptions, CSharpCodeRunnerOptions> opts)
+        public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
-            RunnerOptions = opts(CSharpCodeRunnerOptions.Default);
+            RunnerConfig = configFunc(RunnerConfig);
             return this;
         }
 
-        public ScriptCodeRunner AddOptions(Func<CSharpCodeRunnerOptions, CSharpCodeRunnerOptions> opts)
+        public ScriptCodeRunner AddEngineOptions(Func<ScriptOptions, ScriptOptions> optionsFunc)
         {
-            RunnerOptions = opts(RunnerOptions);
+            RoslynOptions = optionsFunc(RoslynOptions);
             return this;
         }
 
@@ -37,16 +36,17 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
             await CSharpScript.RunAsync(
                 GenerateScriptCode(Code), 
                 BuildEngineOptions(), 
-                new Globals { Container = RunnerOptions.Container });
+                new Globals { Container = RunnerConfig.Container });
 
         private string GenerateScriptCode(string userCode) => 
             new CodeGeneratorForScripting()
-                .GenerateCode(userCode, RunnerOptions.Container);
+                .GenerateCode(userCode, RunnerConfig.Container);
 
         private ScriptOptions BuildEngineOptions() =>
-            ScriptOptions.Default.WithReferencesFromContainer(RunnerOptions.Container);
+            RoslynOptions.WithReferencesFromContainer(RunnerConfig.Container);
 
-        private CSharpCodeRunnerOptions RunnerOptions { get; set; } = CSharpCodeRunnerOptions.Default;
+        private CodeRunnerConfig RunnerConfig { get; set; } = CodeRunnerConfig.Default;
+        private ScriptOptions RoslynOptions { get; set; } = ScriptOptions.Default;
         private string Code { get; }
     }
 }

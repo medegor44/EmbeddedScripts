@@ -2,40 +2,33 @@
 using System.Threading.Tasks;
 using EmbeddedScripts.CSharp.Roslyn.Compilation.CodeGeneration;
 using EmbeddedScripts.Shared;
-using EmbeddedScripts.CSharp.Shared;
 
 namespace EmbeddedScripts.CSharp.Roslyn.Compilation
 {
     public class CompiledCodeRunner : ICodeRunner
     {
         public CompiledCodeRunner(string code) 
-            : this(code, _ => CSharpCodeRunnerOptions.Default)
+            : this(code, _ => CodeRunnerConfig.Default)
         {
         }
 
-        public CompiledCodeRunner(string code, Func<CSharpCodeRunnerOptions, CSharpCodeRunnerOptions> opts)
+        public CompiledCodeRunner(string code, Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
             Code = code;
             CodeGenerator = new();
 
-            RunnerOptions = opts(CSharpCodeRunnerOptions.Default);
+            RunnerConfig = configFunc(CodeRunnerConfig.Default);
         }
 
-        public CompiledCodeRunner AddOptions(Func<CSharpCodeRunnerOptions, CSharpCodeRunnerOptions> opts)
+        public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
-            RunnerOptions = opts(RunnerOptions);
-            return this;
-        }
-
-        public CompiledCodeRunner WithOptions(Func<CSharpCodeRunnerOptions, CSharpCodeRunnerOptions> opts)
-        {
-            RunnerOptions = opts(CSharpCodeRunnerOptions.Default);
+            RunnerConfig = configFunc(RunnerConfig);
             return this;
         }
 
         public async Task RunAsync()
         {
-            var container = RunnerOptions.Container;
+            var container = RunnerConfig.Container;
 
             var code = CodeGenerator.GenerateCode(Code, container);
 
@@ -47,7 +40,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
         }
 
         private string Code { get; }
-        private CSharpCodeRunnerOptions RunnerOptions { get; set; }
+        private CodeRunnerConfig RunnerConfig { get; set; }
         private CodeGeneratorForCompilation CodeGenerator { get; }
     }
 }

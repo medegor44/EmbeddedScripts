@@ -8,36 +8,36 @@ namespace EmbeddedScripts.JS.Jint
     public class JintCodeRunner : ICodeRunner
     {
         public JintCodeRunner(string code)
-            : this(code, _ => JsCodeRunnerOptions.Default)
+            : this(code, _ => CodeRunnerConfig.Default)
         {
         }
 
-        public JintCodeRunner(string code, Func<JsCodeRunnerOptions, JsCodeRunnerOptions> opts)
+        public JintCodeRunner(string code, Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
             Code = code;
-
-            RunnerOptions = opts(JsCodeRunnerOptions.Default);
+            RunnerConfig = configFunc(CodeRunnerConfig.Default);
         }
 
-        public JintCodeRunner WithOptions(Func<JsCodeRunnerOptions, JsCodeRunnerOptions> opts)
+        public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
-            RunnerOptions = opts(JsCodeRunnerOptions.Default);
+            RunnerConfig = configFunc(RunnerConfig);
             return this;
         }
 
-        public JintCodeRunner AddOptions(Func<JsCodeRunnerOptions, JsCodeRunnerOptions> opts)
+        public JintCodeRunner AddEngineOptions(Func<Options, Options> optionsFunc)
         {
-            RunnerOptions = opts(RunnerOptions);
+            JintOptions = optionsFunc(JintOptions);
             return this;
         }
 
         public async Task RunAsync() =>
             await Task.Run(() => 
-                new Engine()
-                    .SetVariablesFromContainer(RunnerOptions.Container)
+                new Engine(JintOptions)
+                    .SetValuesFromContainer(RunnerConfig.Container)
                     .Execute(Code));
 
         private string Code { get; }
-        private JsCodeRunnerOptions RunnerOptions { get; set; }
+        private CodeRunnerConfig RunnerConfig { get; set; }
+        private Options JintOptions { get; set; } = new();
     }
 }
