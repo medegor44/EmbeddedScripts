@@ -15,7 +15,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
             var code = "t.x++;";
 
             var runner = new CompiledCodeRunner(code)
-                .WithOptions(options =>
+                .WithConfig(options =>
                     options.Register(t, "t"));
 
             await runner.RunAsync();
@@ -29,12 +29,12 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
             var code = "t.x += s.Length;";
 
             var runner = new CompiledCodeRunner(code)
-                .WithOptions(options =>
+                .WithConfig(options =>
                     options.Register(s, "s"));
 
             await Assert.ThrowsAsync<CompilationErrorException>(runner.RunAsync);
 
-            runner.AddOptions(options => options.Register(t, "t"));
+            runner.AddConfig(options => options.Register(t, "t"));
 
             await runner.RunAsync();
         }

@@ -8,33 +8,33 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
     public class CompiledCodeRunner : ICodeRunner
     {
         public CompiledCodeRunner(string code) 
-            : this(code, _ => CodeRunnerOptions.Default)
+            : this(code, _ => CodeRunnerConfig.Default)
         {
         }
 
-        public CompiledCodeRunner(string code, Func<CodeRunnerOptions, CodeRunnerOptions> opts)
+        public CompiledCodeRunner(string code, Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
             Code = code;
             CodeGenerator = new();
 
-            RunnerOptions = opts(CodeRunnerOptions.Default);
+            RunnerConfig = configFunc(CodeRunnerConfig.Default);
         }
 
-        public ICodeRunner AddOptions(Func<CodeRunnerOptions, CodeRunnerOptions> opts)
+        public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
-            RunnerOptions = opts(RunnerOptions);
+            RunnerConfig = configFunc(RunnerConfig);
             return this;
         }
 
-        public ICodeRunner WithOptions(Func<CodeRunnerOptions, CodeRunnerOptions> opts)
+        public ICodeRunner WithConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
-            RunnerOptions = opts(CodeRunnerOptions.Default);
+            RunnerConfig = configFunc(CodeRunnerConfig.Default);
             return this;
         }
 
         public async Task RunAsync()
         {
-            var container = RunnerOptions.Container;
+            var container = RunnerConfig.Container;
 
             var code = CodeGenerator.GenerateCode(Code, container);
 
@@ -46,7 +46,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
         }
 
         private string Code { get; }
-        private CodeRunnerOptions RunnerOptions { get; set; }
+        private CodeRunnerConfig RunnerConfig { get; set; }
         private CodeGeneratorForCompilation CodeGenerator { get; }
     }
 }

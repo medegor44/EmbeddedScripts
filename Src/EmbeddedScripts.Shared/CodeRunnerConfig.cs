@@ -1,14 +1,14 @@
 ﻿namespace EmbeddedScripts.Shared
 {
-    public class CodeRunnerOptions
+    public class CodeRunnerConfig
     {
-        public CodeRunnerOptions Register<T>(T obj, string alias)
+        public CodeRunnerConfig Register<T>(T obj, string alias)
         {
             Container.Register(obj, alias);
             return this;
         }
 
-        public static CodeRunnerOptions Default => new();
+        public static CodeRunnerConfig Default => new();
 
         internal Container Container { get; } = new();
     }

@@ -10,25 +10,25 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
     public class ScriptCodeRunner : ICodeRunner
     {
         public ScriptCodeRunner(string code) 
-            : this(code, _ => CodeRunnerOptions.Default)
+            : this(code, _ => CodeRunnerConfig.Default)
         {
         }
 
-        public ScriptCodeRunner(string code, Func<CodeRunnerOptions, CodeRunnerOptions> opts)
+        public ScriptCodeRunner(string code, Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
             Code = code;
-            RunnerOptions = opts(RunnerOptions);
+            RunnerConfig = configFunc(RunnerConfig);
         }
 
-        public ICodeRunner WithOptions(Func<CodeRunnerOptions, CodeRunnerOptions> opts)
+        public ICodeRunner WithConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
-            RunnerOptions = opts(CodeRunnerOptions.Default);
+            RunnerConfig = configFunc(CodeRunnerConfig.Default);
             return this;
         }
 
-        public ICodeRunner AddOptions(Func<CodeRunnerOptions, CodeRunnerOptions> opts)
+        public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
-            RunnerOptions = opts(RunnerOptions);
+            RunnerConfig = configFunc(RunnerConfig);
             return this;
         }
 
@@ -36,16 +36,16 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
             await CSharpScript.RunAsync(
                 GenerateScriptCode(Code), 
                 BuildEngineOptions(), 
-                new Globals { Container = RunnerOptions.Container });
+                new Globals { Container = RunnerConfig.Container });
 
         private string GenerateScriptCode(string userCode) => 
             new CodeGeneratorForScripting()
-                .GenerateCode(userCode, RunnerOptions.Container);
+                .GenerateCode(userCode, RunnerConfig.Container);
 
         private ScriptOptions BuildEngineOptions() =>
-            ScriptOptions.Default.WithReferencesFromContainer(RunnerOptions.Container);
+            ScriptOptions.Default.WithReferencesFromContainer(RunnerConfig.Container);
 
-        private CodeRunnerOptions RunnerOptions { get; set; } = CodeRunnerOptions.Default;
+        private CodeRunnerConfig RunnerConfig { get; set; } = CodeRunnerConfig.Default;
         private string Code { get; }
     }
 }

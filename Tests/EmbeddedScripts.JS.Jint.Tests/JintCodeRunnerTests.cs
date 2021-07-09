@@ -40,7 +40,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var code = "t.x++;";
 
             var runner = new JintCodeRunner(code)
-                .WithOptions(options =>
+                .WithConfig(options =>
                     options.Register(t, "t"));
 
             await runner.RunAsync();
@@ -54,12 +54,12 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var code = "t.x += s.length;";
 
             var runner = new JintCodeRunner(code)
-                .WithOptions(options =>
+                .WithConfig(options =>
                     options.Register(s, "s"));
 
             await Assert.ThrowsAsync<JavaScriptException>(runner.RunAsync);
 
-            runner.AddOptions(options => options.Register(t, "t"));
+            runner.AddConfig(options => options.Register(t, "t"));
 
             await runner.RunAsync();
         }

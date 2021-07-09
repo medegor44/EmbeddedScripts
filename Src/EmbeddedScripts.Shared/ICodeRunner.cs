@@ -6,7 +6,7 @@ namespace EmbeddedScripts.Shared
     public interface ICodeRunner
     {
         Task RunAsync();
-        public ICodeRunner WithOptions(Func<CodeRunnerOptions, CodeRunnerOptions> opts);
-        public ICodeRunner AddOptions(Func<CodeRunnerOptions, CodeRunnerOptions> opts);
+        public ICodeRunner WithConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc);
+        public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc);
     }
 }

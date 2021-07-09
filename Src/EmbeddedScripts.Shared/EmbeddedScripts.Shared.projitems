@@ -9,7 +9,7 @@
     <Import_RootNamespace>EmbeddedScripts.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)CodeRunnerOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeRunnerConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ICodeRunner.cs" />
   </ItemGroup>
