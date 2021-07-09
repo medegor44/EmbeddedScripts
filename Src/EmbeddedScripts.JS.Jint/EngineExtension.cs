@@ -4,12 +4,15 @@ using System.Linq;
 
 namespace EmbeddedScripts.JS.Jint
 {
-    public static class EngineExtension
+    internal static class EngineExtension
     {
-        public static Engine SetVariablesFromContainer(this Engine engine, Container container) =>
+        internal static Engine SetValuesFromContainer(this Engine engine, Container container) =>
             container
                 .VariableAliases
                 .Aggregate(engine, (currentEngine, alias) =>
-                    currentEngine.SetValue(alias, container.Resolve(alias)));
+                    currentEngine.SetValueFromContainer(container, alias));
+
+        internal static Engine SetValueFromContainer(this Engine engine, Container container, string alias) =>
+            engine.SetValue(alias, container.Resolve(alias));
     }
 }
