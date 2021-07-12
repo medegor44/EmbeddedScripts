@@ -25,8 +25,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var code = "t.x++;";
 
             var runner = new JintCodeRunner(code, config =>
-                config
-                    .Register(t, "t"));
+                config.Register(t, "t"));
 
             await runner.RunAsync();
 
@@ -34,7 +33,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
         }
 
         [Fact]
-        public async Task WithConfig_SetsConfig_Succeed()
+        public async Task AddConfigOnce_SetsConfig_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";
@@ -47,7 +46,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
         }
 
         [Fact]
-        public async Task AddConfig_AddsNewConfig_Succeed()
+        public async Task AddConfigTwice_AddsNewConfig_Succeed()
         {
             var s = "abc";
             var t = new HelperObject();
@@ -100,7 +99,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
         }
 
         [Fact]
-        public async void WithEngineOptions_SetsNewEngineOptions()
+        public async void AddEngineOptionsOnce_SetsOptions_Succeed()
         {
             var code = "x = 1";
 
@@ -112,7 +111,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
         }
 
         [Fact]
-        public async void AddEngineOptions_AddsNewEngineOptions()
+        public async void AddEngineOptionsTwice_AddsNewEngineOptions_SucceedD()
         {
             var code = "x = 1";
             var runner = new JintCodeRunner(code)

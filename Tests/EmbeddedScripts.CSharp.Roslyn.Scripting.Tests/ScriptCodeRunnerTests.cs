@@ -24,9 +24,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             var t = new HelperObject();
             var code = "t.x++;";
 
-            var runner = new ScriptCodeRunner(code, options => 
-                options
-                    .Register(t, "t"));
+            var runner = new ScriptCodeRunner(code, config => 
+                config.Register(t, "t"));
 
             await runner.RunAsync();
 
@@ -34,7 +33,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
         }
 
         [Fact]
-        public async Task WithConfig_SetsConfig_Succeed()
+        public async Task AddConfigOnce_SetsConfig_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";
@@ -47,7 +46,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
         }
 
         [Fact]
-        public async Task AddConfig_AddsConfig_Succeed()
+        public async Task AddConfigTwice_AddsNewConfig_Succeed()
         {
             var s = "abc";
             var t = new HelperObject();
@@ -59,7 +58,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
 
             await Assert.ThrowsAsync<CompilationErrorException>(runner.RunAsync);
 
-            runner.AddConfig(options => options.Register(t, "t"));
+            runner.AddConfig(config => 
+                config.Register(t, "t"));
 
             await runner.RunAsync();
         }
@@ -67,8 +67,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
         [Fact]
         public async Task RunWithTwoGlobalVariables_Succeed()
         {
-            var runner = new ScriptCodeRunner("var c = a + b;", options => 
-                options
+            var runner = new ScriptCodeRunner("var c = a + b;", config => 
+                config
                     .Register(1, "a")
                     .Register(2, "b"));
 
@@ -81,8 +81,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             int x = 0;
             var code = "t();";
 
-            var runner = new ScriptCodeRunner(code, options => 
-                options.Register<Action>(() => { x++; }, "t"));
+            var runner = new ScriptCodeRunner(code, config => 
+                config.Register<Action>(() => { x++; }, "t"));
 
             await runner.RunAsync();
 
@@ -119,7 +119,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
         }
 
         [Fact]
-        public async void WithEngineOptions_SetsNewEngineOptions()
+        public async void AddEngineOptionsOnce_SetsOptions_Succeed()
         {
             var code = "Path.Combine(\"a\", \"b\");";
 
@@ -131,7 +131,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
         }
 
         [Fact]
-        public async void AddEngineOptions_AddsNewEngineOptions()
+        public async void AddEngineOptionsTwice_AddsNewEngineOptions_Succeed()
         {
             var code = @"
 Path.Combine(""a"", ""b""); 
