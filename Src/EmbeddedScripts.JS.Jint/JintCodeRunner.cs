@@ -32,9 +32,9 @@ namespace EmbeddedScripts.JS.Jint
         }
 
         public async Task RunAsync() =>
-            await Task.Run(() => 
+            await Task.Run(() =>
                 new Engine()
-                    .SetVariablesFromContainer(RunnerOptions.Container)
+                    .SetValuesFromContainer(RunnerOptions.Container)
                     .Execute(Code));
 
         private string Code { get; }
