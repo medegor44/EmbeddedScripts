@@ -26,12 +26,6 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
             return this;
         }
 
-        public ICodeRunner WithConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
-        {
-            RunnerConfig = configFunc(CodeRunnerConfig.Default);
-            return this;
-        }
-
         public async Task RunAsync()
         {
             var container = RunnerConfig.Container;

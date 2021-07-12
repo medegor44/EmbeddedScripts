@@ -40,7 +40,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var code = "t.x++;";
 
             var runner = new JintCodeRunner(code)
-                .WithConfig(config =>
+                .AddConfig(config =>
                     config.Register(t, "t"));
 
             await runner.RunAsync();
@@ -54,7 +54,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var code = "t.x += s.length;";
 
             var runner = new JintCodeRunner(code)
-                .WithConfig(config =>
+                .AddConfig(config =>
                     config.Register(s, "s"));
 
             await Assert.ThrowsAsync<JavaScriptException>(runner.RunAsync);
@@ -105,7 +105,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var code = "x = 1";
 
             var runner = new JintCodeRunner(code)
-                .WithEngineOptions(opts =>
+                .AddEngineOptions(opts =>
                     opts.Strict());
 
             await Assert.ThrowsAsync<JavaScriptException>(runner.RunAsync);
@@ -116,7 +116,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
         {
             var code = "x = 1";
             var runner = new JintCodeRunner(code)
-                .WithEngineOptions(opts => 
+                .AddEngineOptions(opts => 
                     opts.Strict());
 
             await Assert.ThrowsAsync<JavaScriptException>(runner.RunAsync);

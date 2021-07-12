@@ -40,8 +40,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             var code = "t.x++;";
 
             var runner = new ScriptCodeRunner(code)
-                .WithConfig(options => 
-                    options.Register(t, "t"));
+                .AddConfig(config => 
+                    config.Register(t, "t"));
 
             await runner.RunAsync();
         }
@@ -54,8 +54,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             var code = "t.x += s.Length;";
 
             var runner = new ScriptCodeRunner(code)
-                .WithConfig(options => 
-                    options.Register(s, "s"));
+                .AddConfig(config => 
+                    config.Register(s, "s"));
 
             await Assert.ThrowsAsync<CompilationErrorException>(runner.RunAsync);
 
@@ -124,7 +124,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             var code = "Path.Combine(\"a\", \"b\");";
 
             var runner = new ScriptCodeRunner(code)
-                .WithEngineOptions(opts =>
+                .AddEngineOptions(opts =>
                     opts.AddImports("System.IO"));
 
             await runner.RunAsync();
@@ -138,7 +138,7 @@ Path.Combine(""a"", ""b"");
 var builder = new StringBuilder();";
 
             var runner = new ScriptCodeRunner(code)
-                .WithEngineOptions(opts =>
+                .AddEngineOptions(opts =>
                     opts.AddImports("System.IO"));
 
             await Assert.ThrowsAsync<CompilationErrorException>(runner.RunAsync);

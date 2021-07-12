@@ -20,18 +20,6 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
             RunnerConfig = configFunc(RunnerConfig);
         }
 
-        public ICodeRunner WithConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
-        {
-            RunnerConfig = configFunc(CodeRunnerConfig.Default);
-            return this;
-        }
-
-        public ScriptCodeRunner WithEngineOptions(Func<ScriptOptions, ScriptOptions> optionsFunc)
-        {
-            RoslynOptions = optionsFunc(ScriptOptions.Default);
-            return this;
-        }
-
         public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
             RunnerConfig = configFunc(RunnerConfig);

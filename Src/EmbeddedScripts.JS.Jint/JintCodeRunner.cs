@@ -18,18 +18,6 @@ namespace EmbeddedScripts.JS.Jint
             RunnerConfig = configFunc(CodeRunnerConfig.Default);
         }
 
-        public ICodeRunner WithConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
-        {
-            RunnerConfig = configFunc(CodeRunnerConfig.Default);
-            return this;
-        }
-
-        public JintCodeRunner WithEngineOptions(Func<Options, Options> optionsFunc)
-        {
-            JintEngineOptions = optionsFunc(new Options());
-            return this;
-        }
-
         public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
             RunnerConfig = configFunc(RunnerConfig);
