@@ -7,14 +7,13 @@ namespace EmbeddedScripts.JS.Jint
 {
     public class JintCodeRunner : ICodeRunner
     {
-        public JintCodeRunner(string code)
-            : this(code, _ => CodeRunnerConfig.Default)
+        public JintCodeRunner()
+            : this(_ => CodeRunnerConfig.Default)
         {
         }
 
-        public JintCodeRunner(string code, Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
+        public JintCodeRunner(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
-            Code = code;
             RunnerConfig = configFunc(CodeRunnerConfig.Default);
         }
 
@@ -30,13 +29,12 @@ namespace EmbeddedScripts.JS.Jint
             return this;
         }
 
-        public async Task RunAsync() =>
+        public async Task RunAsync(string code) =>
             await Task.Run(() => 
                 new Engine(JintEngineOptions)
                     .SetValuesFromContainer(RunnerConfig.Container)
-                    .Execute(Code));
+                    .Execute(code));
 
-        private string Code { get; }
         private CodeRunnerConfig RunnerConfig { get; set; }
         private Options JintEngineOptions { get; set; } = new();
     }

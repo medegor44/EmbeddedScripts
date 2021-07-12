@@ -5,7 +5,7 @@ namespace EmbeddedScripts.Shared
 {
     public interface ICodeRunner
     {
-        Task RunAsync();
-        public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc);
+        Task RunAsync(string code);
+        ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc);
     }
 }

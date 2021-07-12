@@ -9,14 +9,13 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
 {
     public class ScriptCodeRunner : ICodeRunner
     {
-        public ScriptCodeRunner(string code) 
-            : this(code, _ => CodeRunnerConfig.Default)
+        public ScriptCodeRunner() 
+            : this(_ => CodeRunnerConfig.Default)
         {
         }
 
-        public ScriptCodeRunner(string code, Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
+        public ScriptCodeRunner(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
         {
-            Code = code;
             RunnerConfig = configFunc(RunnerConfig);
         }
 
@@ -32,9 +31,9 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
             return this;
         }
 
-        public async Task RunAsync() =>
+        public async Task RunAsync(string code) =>
             await CSharpScript.RunAsync(
-                GenerateScriptCode(Code), 
+                GenerateScriptCode(code), 
                 BuildEngineOptions(), 
                 new Globals { Container = RunnerConfig.Container });
 
@@ -47,6 +46,5 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
 
         private CodeRunnerConfig RunnerConfig { get; set; } = CodeRunnerConfig.Default;
         private ScriptOptions RoslynOptions { get; set; } = ScriptOptions.Default;
-        private string Code { get; }
     }
 }
