@@ -20,7 +20,7 @@ namespace EmbeddedScripts.JS.Jint
             container.Register(obj, alias);
             return this;
         }
-
+        
         public async Task RunAsync(string code) =>
             await Task.Run(() => 
                 new Engine(jintOptions)
