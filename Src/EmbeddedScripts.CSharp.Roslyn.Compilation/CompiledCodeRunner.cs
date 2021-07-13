@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using EmbeddedScripts.CSharp.Roslyn.Compilation.CodeGeneration;
 using EmbeddedScripts.Shared;
 
@@ -7,38 +6,24 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
 {
     public class CompiledCodeRunner : ICodeRunner
     {
-        public CompiledCodeRunner() 
-            : this(_ => CodeRunnerConfig.Default)
-        {
-        }
-
-        public CompiledCodeRunner(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
-        {
-            CodeGenerator = new();
-
-            RunnerConfig = configFunc(CodeRunnerConfig.Default);
-        }
-
-        public ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc)
-        {
-            RunnerConfig = configFunc(RunnerConfig);
-            return this;
-        }
+        private Container container = new();
+        private CodeGeneratorForCompilation codeGenerator = new();
 
         public async Task RunAsync(string code)
         {
-            var container = RunnerConfig.Container;
-
-            var generatedCode = CodeGenerator.GenerateCode(code, container);
+            var generatedCode = codeGenerator.GenerateCode(code, container);
 
             var compilation = new CodeCompiler(generatedCode, container).Compilation;
-            var instance = new InstanceCreator(compilation).CreateInstanceOf(CodeGenerator.ClassName, container);
+            var instance = new InstanceCreator(compilation).CreateInstanceOf(codeGenerator.ClassName, container);
 
             await Task.Run(() =>
-                instance.InvokeMethod(CodeGenerator.MethodName));
+                instance.InvokeMethod(codeGenerator.MethodName));
         }
 
-        private CodeRunnerConfig RunnerConfig { get; set; }
-        private CodeGeneratorForCompilation CodeGenerator { get; }
+        public ICodeRunner Register<T>(T obj, string alias)
+        {
+            container.Register(obj, alias);
+            return this;
+        }
     }
 }

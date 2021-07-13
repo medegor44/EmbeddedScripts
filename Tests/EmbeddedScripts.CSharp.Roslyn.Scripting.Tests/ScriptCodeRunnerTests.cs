@@ -24,8 +24,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             var t = new HelperObject();
             var code = "t.x++;";
 
-            var runner = new ScriptCodeRunner(config => 
-                config.Register(t, "t"));
+            var runner = new ScriptCodeRunner()
+                .Register(t, "t");
 
             await runner.RunAsync(code);
 
@@ -39,8 +39,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             var code = "t.x++;";
 
             var runner = new ScriptCodeRunner()
-                .AddConfig(config => 
-                    config.Register(t, "t"));
+                .Register(t, "t");
 
             await runner.RunAsync(code);
         }
@@ -53,13 +52,11 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             var code = "t.x += s.Length;";
 
             var runner = new ScriptCodeRunner()
-                .AddConfig(config => 
-                    config.Register(s, "s"));
+                .Register(s, "s");
 
             await Assert.ThrowsAsync<CompilationErrorException>(() => runner.RunAsync(code));
 
-            runner.AddConfig(config => 
-                config.Register(t, "t"));
+            runner.Register(t, "t");
 
             await runner.RunAsync(code);
         }
@@ -67,10 +64,9 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
         [Fact]
         public async Task RunWithTwoGlobalVariables_Succeed()
         {
-            var runner = new ScriptCodeRunner(config => 
-                config
-                    .Register(1, "a")
-                    .Register(2, "b"));
+            var runner = new ScriptCodeRunner()
+                .Register(1, "a")
+                .Register(2, "b");
 
             await runner.RunAsync("var c = a + b;");
         }
@@ -81,8 +77,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             int x = 0;
             var code = "t();";
 
-            var runner = new ScriptCodeRunner(config => 
-                config.Register<Action>(() => { x++; }, "t"));
+            var runner = new ScriptCodeRunner()
+                .Register<Action>(() => { x++; }, "t");
 
             await runner.RunAsync(code);
 

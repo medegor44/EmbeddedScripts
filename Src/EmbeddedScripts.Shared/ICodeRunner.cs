@@ -6,6 +6,6 @@ namespace EmbeddedScripts.Shared
     public interface ICodeRunner
     {
         Task RunAsync(string code);
-        ICodeRunner AddConfig(Func<CodeRunnerConfig, CodeRunnerConfig> configFunc);
+        ICodeRunner Register<T>(T obj, string alias);
     }
 }

@@ -15,8 +15,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
             var code = "t.x++;";
 
             var runner = new CompiledCodeRunner()
-                .AddConfig(config =>
-                    config.Register(t, "t"));
+                .Register(t, "t");
 
             await runner.RunAsync(code);
         }
@@ -29,12 +28,11 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
             var code = "t.x += s.Length;";
 
             var runner = new CompiledCodeRunner()
-                .AddConfig(config =>
-                    config.Register(s, "s"));
+                .Register(s, "s");
 
             await Assert.ThrowsAsync<CompilationErrorException>(() => runner.RunAsync(code));
 
-            runner.AddConfig(config => config.Register(t, "t"));
+            runner.Register(t, "t");
 
             await runner.RunAsync(code);
         }
@@ -42,10 +40,9 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
         [Fact]
         public async Task RunWithTwoGlobalVariables_Succeed()
         {
-            var runner = new CompiledCodeRunner(config =>
-                config
-                    .Register(1, "a")
-                    .Register(2, "b"));
+            var runner = new CompiledCodeRunner()
+                .Register(1, "a")
+                .Register(2, "b");
 
             await runner.RunAsync("var c = a + b;");
         }
@@ -70,9 +67,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
         public async void RunCodeWithRuntimeError_ThrowsAnException()
         {
             var code = "int a = 1; int b = 2 / (a - a);";
-            var runner = new CompiledCodeRunner();
-
-            await Assert.ThrowsAsync<DivideByZeroException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<DivideByZeroException>(() =>
+                new CompiledCodeRunner().RunAsync(code));
         }
 
         [Fact]
@@ -81,8 +77,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
             var t = new HelperObject();
             var code = "t.x++;";
 
-            var runner = new CompiledCodeRunner(config => 
-                config.Register(t, "t"));
+            var runner = new CompiledCodeRunner()
+                .Register(t, "t");
 
             await runner.RunAsync(code);
 
@@ -95,8 +91,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
             int x = 0;
             var code = "t();";
 
-            var runner = new CompiledCodeRunner(config => 
-                config.Register<Action>(() => { x++; }, "t"));
+            var runner = new CompiledCodeRunner()
+                .Register<Action>(() => { x++; }, "t");
 
             await runner.RunAsync(code);
 

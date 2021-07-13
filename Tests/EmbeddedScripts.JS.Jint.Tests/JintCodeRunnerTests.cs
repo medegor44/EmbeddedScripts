@@ -24,8 +24,8 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var t = new HelperObject();
             var code = "t.x++;";
 
-            var runner = new JintCodeRunner(config =>
-                config.Register(t, "t"));
+            var runner = new JintCodeRunner()
+                .Register(t, "t");
 
             await runner.RunAsync(code);
 
@@ -39,8 +39,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var code = "t.x++;";
 
             var runner = new JintCodeRunner()
-                .AddConfig(config =>
-                    config.Register(t, "t"));
+                .Register(t, "t");
 
             await runner.RunAsync(code);
         }
@@ -53,12 +52,11 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var code = "t.x += s.length;";
 
             var runner = new JintCodeRunner()
-                .AddConfig(config =>
-                    config.Register(s, "s"));
+                .Register(s, "s");
 
             await Assert.ThrowsAsync<JavaScriptException>(() => runner.RunAsync(code));
 
-            runner.AddConfig(config => config.Register(t, "t"));
+            runner.Register(t, "t");
 
             await runner.RunAsync(code);
         }
@@ -66,10 +64,9 @@ namespace EmbeddedScripts.JS.Jint.Tests
         [Fact]
         public async Task RunWithTwoGlobalVariables_Succeed()
         {
-            var runner = new JintCodeRunner(config =>
-                config
-                    .Register(1, "a")
-                    .Register(2, "b"));
+            var runner = new JintCodeRunner()
+                .Register(1, "a")
+                .Register(2, "b");
 
             await runner.RunAsync("let c = a + b;");
         }
@@ -80,8 +77,8 @@ namespace EmbeddedScripts.JS.Jint.Tests
             int x = 0;
             var code = "t();";
 
-            var runner = new JintCodeRunner(config =>
-                config.Register<Action>(() => x++, "t"));
+            var runner = new JintCodeRunner()
+                .Register<Action>(() => x++, "t");
 
             await runner.RunAsync(code);
 
