@@ -27,6 +27,12 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EmbeddedScripts.Shared", "S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{DF1BF043-0808-4B9A-92E4-1C53A05056E9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JS", "JS", "{D91EE75B-B3FD-4079-9767-1BB6F0659AFD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.ClearScriptV8", "Src\EmbeddedScripts.JS.ClearScriptV8\EmbeddedScripts.JS.ClearScriptV8.csproj", "{A439F01A-9A7C-4336-AC29-C0EEAFE1E3DA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.ClearScriptV8.Tests", "Tests\EmbeddedScripts.JS.ClearScriptV8.Tests\EmbeddedScripts.JS.ClearScriptV8.Tests.csproj", "{67340CB4-69F1-4EE4-A49A-8321EB471A90}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{2e1ca5c1-3fbf-4bec-9db2-8e78b3bc8169}*SharedItemsImports = 13
@@ -37,6 +43,7 @@ Global
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{8a98bda5-72ce-4a81-9001-9308099e8043}*SharedItemsImports = 5
 		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{8a98bda5-72ce-4a81-9001-9308099e8043}*SharedItemsImports = 5
 		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{8f5f5f05-27e6-403a-bb07-dc4b0b90aedd}*SharedItemsImports = 5
+		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{a439f01a-9a7c-4336-ac29-c0eeafe1e3da}*SharedItemsImports = 5
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{febc4cac-cac4-4867-ac03-957c267a3a38}*SharedItemsImports = 5
 		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{febc4cac-cac4-4867-ac03-957c267a3a38}*SharedItemsImports = 5
 	EndGlobalSection
@@ -77,6 +84,14 @@ Global
 		{7874A987-F15E-4CF9-BED5-00657BD052F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7874A987-F15E-4CF9-BED5-00657BD052F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7874A987-F15E-4CF9-BED5-00657BD052F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A439F01A-9A7C-4336-AC29-C0EEAFE1E3DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A439F01A-9A7C-4336-AC29-C0EEAFE1E3DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A439F01A-9A7C-4336-AC29-C0EEAFE1E3DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A439F01A-9A7C-4336-AC29-C0EEAFE1E3DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67340CB4-69F1-4EE4-A49A-8321EB471A90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67340CB4-69F1-4EE4-A49A-8321EB471A90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67340CB4-69F1-4EE4-A49A-8321EB471A90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67340CB4-69F1-4EE4-A49A-8321EB471A90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +105,9 @@ Global
 		{6BD0AB1C-ED25-4B53-B4EA-CC994EE33FDD} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 		{2E1CA5C1-3FBF-4BEC-9DB2-8E78B3BC8169} = {DF1BF043-0808-4B9A-92E4-1C53A05056E9}
 		{D720F1EB-85E7-47C8-B622-F09329854CC1} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
+		{7874A987-F15E-4CF9-BED5-00657BD052F5} = {D91EE75B-B3FD-4079-9767-1BB6F0659AFD}
+		{A439F01A-9A7C-4336-AC29-C0EEAFE1E3DA} = {D91EE75B-B3FD-4079-9767-1BB6F0659AFD}
+		{67340CB4-69F1-4EE4-A49A-8321EB471A90} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C12123A-C2E9-46DF-AC21-40D0640056AE}

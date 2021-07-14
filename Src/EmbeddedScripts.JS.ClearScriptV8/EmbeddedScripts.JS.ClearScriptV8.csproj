@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <Import Project="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ClearScript" Version="7.1.4" />
+    <PackageReference Include="Microsoft.ClearScript.V8" Version="7.1.4" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-x64" Version="7.1.4" />
+  </ItemGroup>
+
+</Project>
