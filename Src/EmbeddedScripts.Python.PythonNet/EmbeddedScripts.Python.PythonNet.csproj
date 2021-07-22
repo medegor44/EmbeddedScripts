@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>EmbeddedScripts.Python.PythonNet</RootNamespace>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="pythonnet" Version="3.0.0-preview2021-08-03" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
+    </ItemGroup>
+</Project>
