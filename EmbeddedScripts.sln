@@ -37,6 +37,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.JS.ChakraCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.ChakraCore.Tests", "Tests\EmbeddedScripts.JS.ChakraCore.Tests\EmbeddedScripts.JS.ChakraCore.Tests.csproj", "{733B6533-861F-4B94-AEE5-5D4F7E419339}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lua", "Lua", "{15F562A4-676E-4C31-A0C7-02FB8471FE8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.Lua.Moonsharp", "Src\EmbeddedScripts.Lua.Moonsharp\EmbeddedScripts.Lua.Moonsharp.csproj", "{BB1850EA-C8D7-4B30-8AD1-BF699B9FA658}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.Lua.Moonsharp.Tests", "Tests\EmbeddedScripts.Lua.Moonsharp.Tests\EmbeddedScripts.Lua.Moonsharp.Tests.csproj", "{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{2e1ca5c1-3fbf-4bec-9db2-8e78b3bc8169}*SharedItemsImports = 13
@@ -105,6 +111,14 @@ Global
 		{733B6533-861F-4B94-AEE5-5D4F7E419339}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{733B6533-861F-4B94-AEE5-5D4F7E419339}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{733B6533-861F-4B94-AEE5-5D4F7E419339}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB1850EA-C8D7-4B30-8AD1-BF699B9FA658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB1850EA-C8D7-4B30-8AD1-BF699B9FA658}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB1850EA-C8D7-4B30-8AD1-BF699B9FA658}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB1850EA-C8D7-4B30-8AD1-BF699B9FA658}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +137,8 @@ Global
 		{67340CB4-69F1-4EE4-A49A-8321EB471A90} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 		{9ECC15D9-8866-4E42-9FAA-A9523FF59BA2} = {D91EE75B-B3FD-4079-9767-1BB6F0659AFD}
 		{733B6533-861F-4B94-AEE5-5D4F7E419339} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
+		{BB1850EA-C8D7-4B30-8AD1-BF699B9FA658} = {15F562A4-676E-4C31-A0C7-02FB8471FE8E}
+		{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C12123A-C2E9-46DF-AC21-40D0640056AE}
