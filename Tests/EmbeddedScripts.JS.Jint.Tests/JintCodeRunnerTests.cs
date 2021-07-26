@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
 using Jint.Runtime;
 using Xunit;
@@ -54,7 +55,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
             var runner = new JintCodeRunner()
                 .Register(s, "s");
 
-            await Assert.ThrowsAsync<JavaScriptException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync(code));
 
             runner.Register(t, "t");
 
@@ -92,7 +93,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
 
             var runner = new JintCodeRunner();
 
-            await Assert.ThrowsAsync<Esprima.ParserException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
         }
 
         [Fact]
@@ -104,7 +105,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
                 .AddEngineOptions(opts =>
                     opts.Strict());
 
-            await Assert.ThrowsAsync<JavaScriptException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync(code));
         }
 
         [Fact]
@@ -115,7 +116,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
                 .AddEngineOptions(opts => 
                     opts.Strict());
 
-            await Assert.ThrowsAsync<JavaScriptException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync(code));
 
             runner.AddEngineOptions(opts =>
                 opts.Strict(false));
@@ -124,14 +125,29 @@ namespace EmbeddedScripts.JS.Jint.Tests
         }
 
         [Fact]
-        public async void CodeThrowsAnException_SameExceptionIsThrowingFromRunner()
+        public async void CodeThrowsAnException_RunnerThrowsSameException()
         {
             var exceptionMessage = "Exception from user code";
             var code = $"throw new Error('{exceptionMessage}');";
 
-            var exception = await Assert.ThrowsAsync<JavaScriptException>(() => 
+            var exception = await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => 
                 new JintCodeRunner().RunAsync(code));
 
+            Assert.IsType<JavaScriptException>(exception.InnerException);
+            Assert.Equal(exceptionMessage, exception.InnerException?.Message);
+        }
+
+        [Fact]
+        public async Task ExposedFuncThrowingException_RunnerThrowsException()
+        {
+            var exceptionMessage = "message from exception";
+            var runner = new JintCodeRunner()
+                .Register<Action>(() => 
+                    throw new InvalidOperationException(exceptionMessage), "f");
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                runner.RunAsync("f()"));
+            
             Assert.Equal(exceptionMessage, exception.Message);
         }
 

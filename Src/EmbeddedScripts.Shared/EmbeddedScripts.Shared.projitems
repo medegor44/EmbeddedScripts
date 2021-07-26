@@ -10,6 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Container.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ScriptEngineErrorException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ScriptRuntimeErrorException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ScriptSyntaxErrorException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ICodeRunner.cs" />
   </ItemGroup>
 </Project>

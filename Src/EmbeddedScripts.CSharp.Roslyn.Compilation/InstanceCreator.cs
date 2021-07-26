@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using EmbeddedScripts.Shared;
+using EmbeddedScripts.Shared.Exceptions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Scripting;
 
@@ -27,7 +28,10 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
             var result = compilation.Emit(memoryStream);
 
             if (!result.Success)
-                throw new CompilationErrorException( "Compilation failed", result.Diagnostics);
+            {
+                var compilationException = new CompilationErrorException("Compilation failed", result.Diagnostics);
+                throw new ScriptSyntaxErrorException("CompilationFailed", compilationException);
+            }
 
             memoryStream.Seek(0, SeekOrigin.Begin);
             return Assembly.Load(memoryStream.ToArray());

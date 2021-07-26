@@ -1,5 +1,6 @@
 ﻿using System;
 using ChakraHost.Hosting;
+using EmbeddedScripts.Shared.Exceptions;
 
 namespace EmbeddedScripts.JS.ChakraCore
 {
@@ -13,7 +14,7 @@ namespace EmbeddedScripts.JS.ChakraCore
         }
 
         public JsScope Scope => 
-            new (new JavaScriptContext.Scope(_context));
+            new (new(_context));
 
         public void Run(string script)
         {
@@ -25,10 +26,26 @@ namespace EmbeddedScripts.JS.ChakraCore
                 }
                 catch (JavaScriptScriptException e)
                 {
-                    var errorMessage = new JsValue(this, e.Error)
-                        .GetProperty("message")
-                        .ToString();
-                    throw new Exception(errorMessage);
+                    var error = new JsValue(this, e.Error);
+                    var errorName = error.GetProperty("name").ToString();
+                    var errorMessage = error.GetProperty("message").ToString();
+
+                    if (errorName == "SyntaxError")
+                        throw new ScriptSyntaxErrorException(errorMessage, e);
+
+                    if (CallbackException == null) 
+                        throw new ScriptRuntimeErrorException(errorMessage, e);
+                    
+                    var ex = CallbackException;
+                    CallbackException = null;
+                    throw ex;
+                }
+                catch (Exception e) when (e is 
+                    JavaScriptUsageException or 
+                    JavaScriptEngineException or 
+                    JavaScriptFatalException)
+                {
+                    throw new ScriptEngineErrorException(e);
                 }
             }
         }
@@ -41,5 +58,7 @@ namespace EmbeddedScripts.JS.ChakraCore
                     return new JsValue(this, JavaScriptValue.GlobalObject);
             }
         }
+
+        internal Exception CallbackException { get; set; }
     }
 }

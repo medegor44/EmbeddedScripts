@@ -1,30 +1,56 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
+using EmbeddedScripts.Shared.Exceptions;
+using Esprima;
 using Jint;
+using Jint.Runtime;
 
 namespace EmbeddedScripts.JS.Jint
 {
     public class JintCodeRunner : ICodeRunner
     {
-        private Container container = new();
-        private Options jintOptions = new();
+        private Container _container = new();
+        private Options _jintOptions = new();
 
         public JintCodeRunner AddEngineOptions(Func<Options, Options> optionsFunc)
         {
-            jintOptions = optionsFunc(jintOptions);
+            _jintOptions = optionsFunc(_jintOptions);
             return this;
         }
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            container.Register(obj, alias);
+            _container.Register(obj, alias);
             return this;
         }
 
-        public async Task RunAsync(string code) =>
-            await Task.Run(() => 
-                new Engine(jintOptions)
-                    .SetValuesFromContainer(container)
-                    .Execute(code));
+        public Task RunAsync(string code)
+        {
+            try
+            {
+                new Engine(_jintOptions)
+                    .SetValuesFromContainer(_container)
+                    .Execute(code);
+            }
+            catch (JavaScriptException e)
+            {
+                throw new ScriptRuntimeErrorException(e);
+            }
+            catch (ParserException e)
+            {
+                throw new ScriptSyntaxErrorException(e);
+            }
+            catch (Exception e) when (e is 
+                MemoryLimitExceededException or 
+                ExecutionCanceledException or
+                RecursionDepthOverflowException or 
+                JintException or 
+                StatementsCountOverflowException)
+            {
+                throw new ScriptEngineErrorException(e);
+            }
+            
+            return Task.CompletedTask;
+        }
     }
 }

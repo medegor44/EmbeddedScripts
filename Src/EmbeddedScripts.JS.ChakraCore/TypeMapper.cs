@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using ChakraHost.Hosting;
 
 namespace EmbeddedScripts.JS.ChakraCore
@@ -58,27 +59,35 @@ namespace EmbeddedScripts.JS.ChakraCore
                 JavaScriptValueType.String => value.ToString(),
                 JavaScriptValueType.Boolean => value.ToBoolean(),
                 JavaScriptValueType.Number => ToNumber(value),
-                _ => throw new ArgumentException("Unsupported type")
+                _ => throw new ArgumentException("Type is not supported")
             };
 
         private JavaScriptValue MapDelegate(Delegate func) => 
             JavaScriptValue.CreateFunction((_, _, args, _, _) =>
                 {
-                    var val = JavaScriptValue.Undefined;
+                    var returnValue = JavaScriptValue.Undefined;
+
                     try
                     {
-                        var returnValue =
-                            func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray());
-                        val = Map(returnValue);
+                        if (func.Method.GetParameters().Length != args.Length - 1)
+                            throw new ArgumentException("Inappropriate args list");
+                        
+                        returnValue = Map(func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray()));
                     }
-                    catch (Exception e)
+                    catch (TargetInvocationException e) when (e.InnerException != null)
                     {
-                        JavaScriptContext
-                            .SetException(
-                                JavaScriptValue.CreateError(JavaScriptValue.FromString(e.Message)));
+                        _context.CallbackException = e.InnerException;
+                        
+                        JavaScriptContext.SetException(
+                            JavaScriptValue.CreateError(JavaScriptValue.FromString(e.InnerException.Message)));
+                    }
+                    catch (ArgumentException e)
+                    {
+                        JavaScriptContext.SetException(
+                            JavaScriptValue.CreateError(JavaScriptValue.FromString(e.Message)));
                     }
 
-                    return val;
+                    return returnValue;
                 },
                 IntPtr.Zero);
         
