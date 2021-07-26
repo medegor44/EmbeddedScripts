@@ -33,6 +33,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.ClearScr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.ClearScriptV8.Tests", "Tests\EmbeddedScripts.JS.ClearScriptV8.Tests\EmbeddedScripts.JS.ClearScriptV8.Tests.csproj", "{67340CB4-69F1-4EE4-A49A-8321EB471A90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.JS.ChakraCore", "Src\EmbeddedScripts.JS.ChakraCore\EmbeddedScripts.JS.ChakraCore.csproj", "{9ECC15D9-8866-4E42-9FAA-A9523FF59BA2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.ChakraCore.Tests", "Tests\EmbeddedScripts.JS.ChakraCore.Tests\EmbeddedScripts.JS.ChakraCore.Tests.csproj", "{733B6533-861F-4B94-AEE5-5D4F7E419339}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{2e1ca5c1-3fbf-4bec-9db2-8e78b3bc8169}*SharedItemsImports = 13
@@ -43,6 +47,7 @@ Global
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{8a98bda5-72ce-4a81-9001-9308099e8043}*SharedItemsImports = 5
 		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{8a98bda5-72ce-4a81-9001-9308099e8043}*SharedItemsImports = 5
 		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{8f5f5f05-27e6-403a-bb07-dc4b0b90aedd}*SharedItemsImports = 5
+		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{9ecc15d9-8866-4e42-9faa-a9523ff59ba2}*SharedItemsImports = 5
 		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{a439f01a-9a7c-4336-ac29-c0eeafe1e3da}*SharedItemsImports = 5
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{febc4cac-cac4-4867-ac03-957c267a3a38}*SharedItemsImports = 5
 		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{febc4cac-cac4-4867-ac03-957c267a3a38}*SharedItemsImports = 5
@@ -92,6 +97,14 @@ Global
 		{67340CB4-69F1-4EE4-A49A-8321EB471A90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67340CB4-69F1-4EE4-A49A-8321EB471A90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67340CB4-69F1-4EE4-A49A-8321EB471A90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9ECC15D9-8866-4E42-9FAA-A9523FF59BA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9ECC15D9-8866-4E42-9FAA-A9523FF59BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9ECC15D9-8866-4E42-9FAA-A9523FF59BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9ECC15D9-8866-4E42-9FAA-A9523FF59BA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{733B6533-861F-4B94-AEE5-5D4F7E419339}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{733B6533-861F-4B94-AEE5-5D4F7E419339}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{733B6533-861F-4B94-AEE5-5D4F7E419339}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{733B6533-861F-4B94-AEE5-5D4F7E419339}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,6 +121,8 @@ Global
 		{7874A987-F15E-4CF9-BED5-00657BD052F5} = {D91EE75B-B3FD-4079-9767-1BB6F0659AFD}
 		{A439F01A-9A7C-4336-AC29-C0EEAFE1E3DA} = {D91EE75B-B3FD-4079-9767-1BB6F0659AFD}
 		{67340CB4-69F1-4EE4-A49A-8321EB471A90} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
+		{9ECC15D9-8866-4E42-9FAA-A9523FF59BA2} = {D91EE75B-B3FD-4079-9767-1BB6F0659AFD}
+		{733B6533-861F-4B94-AEE5-5D4F7E419339} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C12123A-C2E9-46DF-AC21-40D0640056AE}
