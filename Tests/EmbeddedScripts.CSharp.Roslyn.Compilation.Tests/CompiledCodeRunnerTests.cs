@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
-using Microsoft.CodeAnalysis.Scripting;
 using Xunit;
 
 namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
@@ -30,7 +30,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
             var runner = new CompiledCodeRunner()
                 .Register(s, "s");
 
-            await Assert.ThrowsAsync<CompilationErrorException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
 
             runner.Register(t, "t");
 
@@ -59,7 +59,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation.Tests
         public async Task RunInvalidCode_ThrowsException()
         {
             var code = "imt a = 1;";
-            await Assert.ThrowsAsync<CompilationErrorException>(() => 
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => 
                 new CompiledCodeRunner().RunAsync(code));
         }
 
@@ -119,9 +119,25 @@ int x = Add(1, 2);
         [Fact]
         public async void CodeThrowsAnException_SameExceptionIsThrowingFromRunner()
         {
-            var code = "throw new System.ArgumentException(\"Exception from user code\");";
-            await Assert.ThrowsAsync<ArgumentException>(() => 
+            var exceptionMessage = "Exception from user code";
+            
+            var code = @$"throw new System.ArgumentException(""{exceptionMessage}"");";
+            
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() => 
                 new CompiledCodeRunner().RunAsync(code));
+
+            Assert.Equal(exceptionMessage, exception.Message);
+        }
+
+        [Fact]
+        public async Task ExposedFuncThrowsException_RunnerThrowsSameException()
+        {
+            var exceptionMessage = "hello from exception";
+            var runner = new CompiledCodeRunner()
+                .Register<Action>(() => throw new ArgumentException(exceptionMessage), "f");
+
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() => runner.RunAsync("f();"));
+            Assert.Equal(exceptionMessage, exception.Message);
         }
 
         [Fact(Skip = "test is skipped until security question is resolved")]

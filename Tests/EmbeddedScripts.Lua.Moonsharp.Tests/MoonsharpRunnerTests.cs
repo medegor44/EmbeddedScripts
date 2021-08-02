@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
 using Xunit;
 
@@ -54,7 +55,7 @@ namespace EmbeddedScripts.Lua.Moonsharp.Tests
             var runner = new MoonsharpRunner()
                 .Register(s, "s");
 
-            await Assert.ThrowsAsync<MoonSharp.Interpreter.ScriptRuntimeException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync(code));
 
             runner.Register(t, "t"); 
 
@@ -125,7 +126,7 @@ end
 
             var runner = new MoonsharpRunner();
 
-            await Assert.ThrowsAsync<MoonSharp.Interpreter.SyntaxErrorException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
         }
 
         [Fact]
@@ -134,10 +135,10 @@ end
             var exceptionMessage = "Exception from user code";
             var code = $"error('{exceptionMessage}');";
 
-            var exception = await Assert.ThrowsAsync<MoonSharp.Interpreter.ScriptRuntimeException>(() => 
+            var exception = await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => 
                 new MoonsharpRunner().RunAsync(code));
 
-            Assert.Equal(exceptionMessage, exception.Message);
+            Assert.Equal(exceptionMessage, exception.InnerException?.Message);
         }
 
         struct A

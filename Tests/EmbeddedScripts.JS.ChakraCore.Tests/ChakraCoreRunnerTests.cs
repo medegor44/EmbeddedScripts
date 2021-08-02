@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using EmbeddedScripts.Shared.Exceptions;
 using Xunit;
 
 namespace EmbeddedScripts.JS.ChakraCore.Tests
@@ -45,12 +46,34 @@ if (c !== 3)
         }
 
         [Fact]
-        public async Task ExposeActionThrowingException()
+        public async Task ExposedActionThrowsException_RunnerThrowsSameException()
+        {
+            var exceptionMessage = "hello from exception";
+            
+            var runner = new ChakraCoreRunner()
+                .Register<Action>(() => throw new ArgumentException(exceptionMessage), "f");
+
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() => runner.RunAsync("f()"));
+            
+            Assert.Equal(exceptionMessage, exception.Message);
+        }
+
+        [Fact]
+        public async Task CallExposedFuncWithWrongCountOfParameters_ThrowsException()
         {
             var runner = new ChakraCoreRunner()
-                .Register<Action>(() => throw new Exception(), "f");
+                .Register<Func<int, string, int>>((a, b) => a + b.Length, "f");
+                
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync("f(1)"));
+        }
 
-            await Assert.ThrowsAsync<Exception>(() => runner.RunAsync("f()"));
+        [Fact]
+        public async Task CallExposedFuncWithParameterTypesMismatch_ThrowsException()
+        {
+            var runner = new ChakraCoreRunner()
+                .Register<Func<int, string, int>>((a, b) => a + b.Length, "f");
+                
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync("f('1', 1)"));
         }
 
         [Fact]
@@ -87,7 +110,7 @@ if (c !== 3)
             var runner = new ChakraCoreRunner()
                 .Register(s, "s");
 
-            await Assert.ThrowsAsync<Exception>(() => 
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => 
                 runner.RunAsync(code));
 
             runner.Register(t, "t");
@@ -128,11 +151,11 @@ if (c !== 3)
         [Fact]
         public async Task RunInvalidCode_ThrowsException()
         {
-            var code = "vat a = 1;";
+            var code = "vat a = 1";
 
             var runner = new ChakraCoreRunner();
 
-            await Assert.ThrowsAsync<Exception>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
         }
 
         [Fact]
@@ -141,8 +164,9 @@ if (c !== 3)
             var exceptionMessage = "Exception from user code";
             var code = $"throw Error('{exceptionMessage}');";
 
-            var exception = await Assert.ThrowsAsync<Exception>(() =>
-                new ChakraCoreRunner().RunAsync(code));
+            var runner = new ChakraCoreRunner();
+            var exception = await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
+                runner.RunAsync(code));
 
             Assert.Equal(exceptionMessage, exception.Message);
         }

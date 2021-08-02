@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
 using Microsoft.CodeAnalysis.Scripting;
 using Xunit;
@@ -54,7 +55,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
             var runner = new ScriptCodeRunner()
                 .Register(s, "s");
 
-            await Assert.ThrowsAsync<CompilationErrorException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
 
             runner.Register(t, "t");
 
@@ -92,7 +93,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
 
             var runner = new ScriptCodeRunner();
 
-            await Assert.ThrowsAsync<CompilationErrorException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
         }
 
         [Fact]
@@ -106,14 +107,28 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
         }
 
         [Fact]
+        public async Task ExposedFuncThrowingException_RunnerThrowsSameException()
+        {
+            var exceptionMessage = "hello from exception";
+            var runner = new ScriptCodeRunner()
+                .Register<Action>(() => throw new ArgumentException(exceptionMessage), "f");
+
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() => 
+                runner.RunAsync("f()"));
+            
+            Assert.Equal(exceptionMessage, exception.Message);
+        }
+
+        [Fact]
         public async void CodeThrowsAnException_SameExceptionIsThrowingFromRunner()
         {
-            var code = "throw new System.ArgumentException(\"Exception from user code\");";
+            var exceptionMessage = "Exception from user code";
+            var code = @$"throw new System.ArgumentException(""{exceptionMessage}"");";
             
             var exception = await Assert.ThrowsAsync<ArgumentException>(() => 
                 new ScriptCodeRunner().RunAsync(code));
 
-            Assert.Equal("Exception from user code", exception.Message);
+            Assert.Equal(exceptionMessage, exception.Message);
         }
 
         [Fact]
@@ -139,7 +154,7 @@ var builder = new StringBuilder();";
                 .AddEngineOptions(opts =>
                     opts.AddImports("System.IO"));
 
-            await Assert.ThrowsAsync<CompilationErrorException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
 
             runner.AddEngineOptions(opts =>
                 opts.AddImports("System.Text"));

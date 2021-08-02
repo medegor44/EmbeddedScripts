@@ -12,7 +12,7 @@ namespace EmbeddedScripts.JS.Jint
                 .Aggregate(engine, (currentEngine, alias) =>
                     currentEngine.SetValueFromContainer(container, alias));
 
-        internal static Engine SetValueFromContainer(this Engine engine, Container container, string alias) =>
+        private static Engine SetValueFromContainer(this Engine engine, Container container, string alias) =>
             engine.SetValue(alias, container.Resolve(alias));
     }
 }

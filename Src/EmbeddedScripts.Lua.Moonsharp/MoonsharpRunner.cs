@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
+using EmbeddedScripts.Shared.Exceptions;
 using MoonSharp.Interpreter;
 
 namespace EmbeddedScripts.Lua.Moonsharp
@@ -11,7 +12,22 @@ namespace EmbeddedScripts.Lua.Moonsharp
         
         public Task RunAsync(string code)
         {
-            _script.DoString(code);
+            try
+            {
+                _script.DoString(code);
+            }
+            catch (SyntaxErrorException e)
+            {
+                throw new ScriptSyntaxErrorException(e);
+            }
+            catch (Exception e) when (e is InternalErrorException or DynamicExpressionException)
+            {
+                throw new ScriptEngineErrorException(e);
+            }
+            catch (ScriptRuntimeException e)
+            {
+                throw new ScriptRuntimeErrorException(e);
+            }
             
             return Task.CompletedTask;
         }

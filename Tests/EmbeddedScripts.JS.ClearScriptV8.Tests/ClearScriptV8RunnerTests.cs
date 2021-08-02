@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
-using Microsoft.ClearScript;
 using Xunit;
 
 namespace EmbeddedScripts.JS.ClearScriptV8.Tests
@@ -17,7 +17,7 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
 
             await runner.RunAsync(code);
         }
-
+        
         [Fact]
         public async void RunWithGlobalVariables_Succeed()
         {
@@ -54,7 +54,7 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
             var runner = new ClearScriptV8Runner()
                 .Register(s, "s");
 
-            await Assert.ThrowsAsync<ScriptEngineException>(() => 
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => 
                 runner.RunAsync(code));
 
             runner.Register(t, "t");
@@ -93,7 +93,7 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
 
             var runner = new ClearScriptV8Runner();
 
-            await Assert.ThrowsAsync<ScriptEngineException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
         }
 
         [Fact]
@@ -102,12 +102,12 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
             var exceptionMessage = "Exception from user code";
             var code = $"throw Error('{exceptionMessage}');";
 
-            var exception = await Assert.ThrowsAsync<ScriptEngineException>(() =>
+            var exception = await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
                 new ClearScriptV8Runner().RunAsync(code));
 
             var expected = $"Error: {exceptionMessage}";
 
-            Assert.Equal(expected, exception.Message);
+            Assert.Equal(expected, exception.InnerException?.Message);
         }
 
         public struct A
@@ -126,6 +126,18 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
                 .RunAsync("a.X++; a['X']++; f(a.X);");
 
             Assert.Equal(3, inner);
+        }
+
+        [Fact]
+        public async Task ExposedFuncThrowsException_RunnerThrowsSameException()
+        {
+            var exceptionMessage = "Hello from exception";
+            
+            var runner = new ClearScriptV8Runner()
+                .Register<Action>(() => throw new ArgumentException(exceptionMessage), "f");
+
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() =>  runner.RunAsync("f()"));
+            Assert.Equal(exceptionMessage, exception.Message);
         }
     }
 }

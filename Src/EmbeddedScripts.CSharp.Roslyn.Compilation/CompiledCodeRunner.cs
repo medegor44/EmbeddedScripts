@@ -6,23 +6,23 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
 {
     public class CompiledCodeRunner : ICodeRunner
     {
-        private Container container = new();
-        private CodeGeneratorForCompilation codeGenerator = new();
+        private Container _container = new();
+        private CodeGeneratorForCompilation _codeGenerator = new();
 
-        public async Task RunAsync(string code)
+        public Task RunAsync(string code)
         {
-            var generatedCode = codeGenerator.GenerateCode(code, container);
+            var generatedCode = _codeGenerator.GenerateCode(code, _container);
 
-            var compilation = new CodeCompiler(generatedCode, container).Compilation;
-            var instance = new InstanceCreator(compilation).CreateInstanceOf(codeGenerator.ClassName, container);
-
-            await Task.Run(() =>
-                instance.InvokeMethod(codeGenerator.MethodName));
+            var compilation = new CodeCompiler(generatedCode, _container).Compilation;
+            var instance = new InstanceCreator(compilation).CreateInstanceOf(_codeGenerator.ClassName, _container);
+            instance.InvokeMethod(_codeGenerator.MethodName);
+            
+            return Task.CompletedTask;
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            container.Register(obj, alias);
+            _container.Register(obj, alias);
             return this;
         }
     }

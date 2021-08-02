@@ -6,7 +6,7 @@ namespace EmbeddedScripts.JS.ClearScriptV8
 {
     public static class V8ScriptEngineExtensions
     {
-        internal static V8ScriptEngine AddHostObjectByAlias(this V8ScriptEngine engine, Container container,
+        private static V8ScriptEngine AddHostObjectByAlias(this V8ScriptEngine engine, Container container,
             string alias)
         {
             var type = container.GetTypeByAlias(alias);
