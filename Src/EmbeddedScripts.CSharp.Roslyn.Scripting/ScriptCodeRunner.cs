@@ -12,26 +12,30 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
     {
         private Container _container = new();
         private ScriptOptions _roslynOptions = ScriptOptions.Default;
+        private ScriptState _scriptState;
 
         public ScriptCodeRunner AddEngineOptions(Func<ScriptOptions, ScriptOptions> optionsFunc)
         {
             _roslynOptions = optionsFunc(_roslynOptions);
             return this;
         }
-        
+
         public async Task RunAsync(string code)
         {
             try
             {
-                await CSharpScript.RunAsync(
-                    GenerateScriptCode(code),
-                    BuildEngineOptions(),
+                _scriptState = await CSharpScript.RunAsync(GenerateScriptCode(code), BuildEngineOptions(),
                     new Globals {Container = _container});
             }
             catch (CompilationErrorException e)
             {
                 throw new ScriptSyntaxErrorException(e);
             }
+        }
+
+        public async Task ContinueWith(string code)
+        {
+            _scriptState = await _scriptState.ContinueWithAsync(GenerateScriptCode(code), BuildEngineOptions());
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
@@ -45,6 +49,6 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
                 .GenerateCode(userCode, _container);
 
         private ScriptOptions BuildEngineOptions() =>
-            _roslynOptions.WithReferencesFromContainer(_container);
+            _roslynOptions.AddReferencesFromContainer(_container);
     }
 }

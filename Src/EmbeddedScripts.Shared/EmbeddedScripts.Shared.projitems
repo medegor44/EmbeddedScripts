@@ -14,5 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ScriptRuntimeErrorException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ScriptSyntaxErrorException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ICodeRunner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IReplRunner.cs" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
@@ -18,7 +19,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
 
             await runner.RunAsync(code);
         }
-
+        
         [Fact]
         public async Task RunWithGlobalVariables_Succeed()
         {
@@ -160,6 +161,33 @@ var builder = new StringBuilder();";
                 opts.AddImports("System.Text"));
 
             await runner.RunAsync(code);
+        }
+
+        [Fact]
+        public async Task ExposeFunc_Succeed()
+        {
+            await new ScriptCodeRunner()
+                .Register<Func<int, int, int>>((a, b) => a + b, "Add")
+                .RunAsync("var c = Add(1, 2);");
+        }
+
+        [Fact]
+        public async Task ReplWorks()
+        {
+            var code = @"
+var x = 0;
+";
+            var runner = new ScriptCodeRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+
+            await runner.RunAsync(code);
+            await runner.ContinueWith("x = Inc(x);");
+            await runner.ContinueWith("x = Inc(x);");
+            
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+            
+            await runner.ContinueWith("Check(x);");
         }
 
         [Fact(Skip = "test is skipped until security question is resolved")]

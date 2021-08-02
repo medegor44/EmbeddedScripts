@@ -6,8 +6,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
 {
     public static class ScriptOptionsContainerExtension
     {
-        internal static ScriptOptions WithReferencesFromContainer(this ScriptOptions options, Container container) =>
-            options.WithReferences(
+        internal static ScriptOptions AddReferencesFromContainer(this ScriptOptions options, Container container) =>
+            options.AddReferences(
                 container.VariableAliases
                     .Select(container.GetTypeByAlias)
                     .Select(type => type.Assembly)
