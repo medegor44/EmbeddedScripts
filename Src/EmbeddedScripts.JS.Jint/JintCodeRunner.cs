@@ -12,6 +12,7 @@ namespace EmbeddedScripts.JS.Jint
     {
         private Container _container = new();
         private Options _jintOptions = new();
+        private Engine _engine;
 
         public JintCodeRunner AddEngineOptions(Func<Options, Options> optionsFunc)
         {
@@ -24,13 +25,14 @@ namespace EmbeddedScripts.JS.Jint
             return this;
         }
 
-        public Task RunAsync(string code)
+        public Task<ICodeRunner> RunAsync(string code)
         {
+            _engine ??= new Engine(_jintOptions);
+            
             try
             {
-                new Engine(_jintOptions)
-                    .SetValuesFromContainer(_container)
-                    .Execute(code);
+                _engine.SetValuesFromContainer(_container);
+                _engine.Execute(code);
             }
             catch (JavaScriptException e)
             {
@@ -49,8 +51,8 @@ namespace EmbeddedScripts.JS.Jint
             {
                 throw new ScriptEngineErrorException(e);
             }
-            
-            return Task.CompletedTask;
+
+            return Task.FromResult(this as ICodeRunner);
         }
     }
 }

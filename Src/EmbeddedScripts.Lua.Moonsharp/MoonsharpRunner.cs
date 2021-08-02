@@ -8,12 +8,16 @@ namespace EmbeddedScripts.Lua.Moonsharp
 {
     public class MoonsharpRunner : ICodeRunner
     {
-        private Script _script = new();
-        
-        public Task RunAsync(string code)
+        private Script _script;
+        private Container _container = new();
+
+        public Task<ICodeRunner> RunAsync(string code)
         {
+            _script ??= new Script();
+
             try
             {
+                _script.RegisterVariablesFromContainer(_container);
                 _script.DoString(code);
             }
             catch (SyntaxErrorException e)
@@ -28,16 +32,13 @@ namespace EmbeddedScripts.Lua.Moonsharp
             {
                 throw new ScriptRuntimeErrorException(e);
             }
-            
-            return Task.CompletedTask;
+
+            return Task.FromResult(this as ICodeRunner);
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            if (obj is not Delegate)
-                UserData.RegisterType<T>();
-            
-            _script.Globals[alias] = obj;
+            _container.Register(obj, alias);
             return this;
         }
     }

@@ -180,5 +180,56 @@ assert(d['b'] == 2)
 
             await runner.RunAsync(code);
         }
+        
+        [Fact]
+        public async Task RegisteringNewGlobalVarBetweenRuns_Success()
+        {
+            var code = "x = 0;";
+            var runner = new MoonsharpRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+            
+            await runner.RunAsync("Check(x);");
+        }
+        
+        [Fact]
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
+        {
+            var code = "x = 0";
+            var runner = new MoonsharpRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x)");
+            await runner.RunAsync("x = Inc(x)");
+            await runner.RunAsync("Check(x)");
+        }
+
+        [Fact]
+        public async Task RunAsyncWithContinuation_Success()
+        {
+            var code = @"
+x = 0;
+function incr()  
+  x = x + 1
+end
+function check() 
+  assert(x == 2)
+end";
+
+            var runner = new MoonsharpRunner();
+            await runner.RunAsync(code);
+            await runner.RunAsync("incr()");
+            await runner.RunAsync("incr()");
+            await runner.RunAsync("check()");
+        }
     }
 }

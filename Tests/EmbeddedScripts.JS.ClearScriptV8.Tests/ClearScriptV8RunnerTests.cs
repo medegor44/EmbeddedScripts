@@ -13,19 +13,19 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
         {
             var code = "let a = 1; let b = 2; let c = a + b;";
 
-            var runner = new ClearScriptV8Runner();
+            using var runner = new ClearScriptV8Runner();
 
             await runner.RunAsync(code);
         }
-        
+
         [Fact]
         public async void RunWithGlobalVariables_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";
 
-            var runner = new ClearScriptV8Runner()
-                .Register(t, "t");
+            using var runner = new ClearScriptV8Runner();
+            runner.Register(t, "t");
 
             await runner.RunAsync(code);
 
@@ -38,8 +38,8 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
             var t = new HelperObject();
             var code = "t.x++;";
 
-            var runner = new ClearScriptV8Runner()
-                .Register(t, "t");
+            using var runner = new ClearScriptV8Runner();
+            runner.Register(t, "t");
 
             await runner.RunAsync(code);
         }
@@ -51,10 +51,10 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
             var t = new HelperObject();
             var code = "t.x += s.length;";
 
-            var runner = new ClearScriptV8Runner()
-                .Register(s, "s");
+            using var runner = new ClearScriptV8Runner();
+            runner.Register(s, "s");
 
-            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => 
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
                 runner.RunAsync(code));
 
             runner.Register(t, "t");
@@ -65,8 +65,8 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
         [Fact]
         public async Task RunWithTwoGlobalVariables_Succeed()
         {
-            var runner = new ClearScriptV8Runner()
-                .Register(1, "a")
+            using var runner = new ClearScriptV8Runner();
+            runner.Register(1, "a")
                 .Register(2, "b");
 
             await runner.RunAsync("let c = a + b;");
@@ -78,7 +78,8 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
             int x = 0;
             var code = "t();";
 
-            var runner = new ClearScriptV8Runner()
+            using var runner = new ClearScriptV8Runner();
+            runner
                 .Register<Action>(() => x++, "t");
 
             await runner.RunAsync(code);
@@ -91,7 +92,7 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
         {
             var code = "vat a = 1;";
 
-            var runner = new ClearScriptV8Runner();
+            using var runner = new ClearScriptV8Runner();
 
             await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
         }
@@ -102,8 +103,11 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
             var exceptionMessage = "Exception from user code";
             var code = $"throw Error('{exceptionMessage}');";
 
-            var exception = await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
-                new ClearScriptV8Runner().RunAsync(code));
+            var exception = await Assert.ThrowsAsync<ScriptRuntimeErrorException>(async () =>
+            {
+                using var runner = new ClearScriptV8Runner();
+                await runner.RunAsync(code);
+            });
 
             var expected = $"Error: {exceptionMessage}";
 
@@ -114,13 +118,15 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
         {
             public int X;
         }
+
         [Fact]
         public async Task AddStructAsGlobals_Succeed()
         {
             var inner = 0;
-            var a = new A {X = 1};
-            
-            await new ClearScriptV8Runner()
+            var a = new A { X = 1 };
+
+            using var runner = new ClearScriptV8Runner();
+            await runner
                 .Register(a, "a")
                 .Register<Action<int>>(x => inner = x, "f")
                 .RunAsync("a.X++; a['X']++; f(a.X);");
@@ -132,12 +138,66 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
         public async Task ExposedFuncThrowsException_RunnerThrowsSameException()
         {
             var exceptionMessage = "Hello from exception";
-            
-            var runner = new ClearScriptV8Runner()
+
+            using var runner = new ClearScriptV8Runner();
+            runner
                 .Register<Action>(() => throw new ArgumentException(exceptionMessage), "f");
 
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() =>  runner.RunAsync("f()"));
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() => runner.RunAsync("f()"));
             Assert.Equal(exceptionMessage, exception.Message);
+        }
+
+        [Fact]
+        public async Task RegisteringNewGlobalVarBetweenRuns_Success()
+        {
+            var code = "let x = 0;";
+            var runner = new ClearScriptV8Runner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("Check(x);");
+        }
+
+        
+        [Fact]
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
+        {
+            var code = "let x = 0;";
+            using var runner = new ClearScriptV8Runner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+
+            await runner.RunAsync("Check(x);");
+        }
+
+        [Fact]
+        public async Task RunAsyncWithContinuation_Success()
+        {
+            var code = @"
+var x = 0;
+function incr() { 
+  x++;
+}
+function check() {
+  if (x !== 2)
+    throw new Error('x is not equal to 2');
+}";
+
+            using var runner = new ClearScriptV8Runner();
+            await runner.RunAsync(code);
+            await runner.RunAsync("incr()");
+            await runner.RunAsync("incr()");
+            await runner.RunAsync("check()");
         }
     }
 }

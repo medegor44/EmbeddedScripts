@@ -109,22 +109,6 @@ namespace EmbeddedScripts.JS.Jint.Tests
         }
 
         [Fact]
-        public async void AddEngineOptionsTwice_AddsNewEngineOptions_SucceedD()
-        {
-            var code = "x = 1";
-            var runner = new JintCodeRunner()
-                .AddEngineOptions(opts => 
-                    opts.Strict());
-
-            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync(code));
-
-            runner.AddEngineOptions(opts =>
-                opts.Strict(false));
-
-            await runner.RunAsync(code);
-        }
-
-        [Fact]
         public async void CodeThrowsAnException_RunnerThrowsSameException()
         {
             var exceptionMessage = "Exception from user code";
@@ -161,6 +145,58 @@ namespace EmbeddedScripts.JS.Jint.Tests
             await new JintCodeRunner()
                 .Register(new A(), "a")
                 .RunAsync("a.X++;");
+        }
+        
+        [Fact]
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
+        {
+            var code = "let x = 0;";
+            var runner = new JintCodeRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("Check(x);");
+        }
+        
+        [Fact]
+        public async Task RegisteringNewGlobalVarBetweenRuns_Success()
+        {
+            var code = "let x = 0;";
+            var runner = new JintCodeRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+            
+            await runner.RunAsync("Check(x);");
+        }
+
+        [Fact]
+        public async Task RunAsyncWithContinuation_Success()
+        {
+            var code = @"
+var x = 0;
+function incr() { 
+  x++;
+}
+function check() {
+  if (x !== 2)
+    throw new Error('x is not equal to 2');
+}";
+
+            var runner = new JintCodeRunner();
+            await runner.RunAsync(code);
+            await runner.RunAsync("incr()");
+            await runner.RunAsync("incr()");
+            await runner.RunAsync("check()");
         }
     }
 }

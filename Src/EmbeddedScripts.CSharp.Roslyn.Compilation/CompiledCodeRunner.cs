@@ -9,7 +9,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
         private Container _container = new();
         private CodeGeneratorForCompilation _codeGenerator = new();
 
-        public Task RunAsync(string code)
+        public Task<ICodeRunner> RunAsync(string code)
         {
             var generatedCode = _codeGenerator.GenerateCode(code, _container);
 
@@ -17,7 +17,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
             var instance = new InstanceCreator(compilation).CreateInstanceOf(_codeGenerator.ClassName, _container);
             instance.InvokeMethod(_codeGenerator.MethodName);
             
-            return Task.CompletedTask;
+            return Task.FromResult(this as ICodeRunner);
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
