@@ -2,8 +2,8 @@
 
 namespace EmbeddedScripts.Shared
 {
-    public interface IReplRunner : ICodeRunner
+    public interface IContinuable
     {
-        
+        Task ContinueWithAsync(string code);
     }
 }

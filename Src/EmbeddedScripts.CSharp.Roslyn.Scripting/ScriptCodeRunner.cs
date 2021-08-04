@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Scripting;
 
 namespace EmbeddedScripts.CSharp.Roslyn.Scripting
 {
-    public class ScriptCodeRunner : ICodeRunner
+    public class ScriptCodeRunner : ICodeRunner, IContinuable
     {
         private Container _container = new();
         private ScriptOptions _roslynOptions = ScriptOptions.Default;
@@ -33,7 +33,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
             }
         }
 
-        public async Task ContinueWith(string code)
+        public async Task ContinueWithAsync(string code)
         {
             _scriptState = await _scriptState.ContinueWithAsync(GenerateScriptCode(code), BuildEngineOptions());
         }

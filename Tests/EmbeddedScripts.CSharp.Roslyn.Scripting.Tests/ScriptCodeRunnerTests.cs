@@ -182,12 +182,12 @@ var x = 0;
             runner.Register<Func<int, int>>(x => x + 1, "Inc");
 
             await runner.RunAsync(code);
-            await runner.ContinueWith("x = Inc(x);");
-            await runner.ContinueWith("x = Inc(x);");
+            await runner.ContinueWithAsync("x = Inc(x);");
+            await runner.ContinueWithAsync("x = Inc(x);");
             
             runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
             
-            await runner.ContinueWith("Check(x);");
+            await runner.ContinueWithAsync("Check(x);");
         }
 
         [Fact(Skip = "test is skipped until security question is resolved")]
