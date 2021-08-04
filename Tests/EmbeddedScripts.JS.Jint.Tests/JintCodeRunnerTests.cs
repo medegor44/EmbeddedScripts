@@ -162,5 +162,64 @@ namespace EmbeddedScripts.JS.Jint.Tests
                 .Register(new A(), "a")
                 .RunAsync("a.X++;");
         }
+        
+        [Fact]
+        public async Task RunContinueAsync_EachContinueAsyncSharesGlobals_Success()
+        {
+            var code = @"
+let x = 0;
+";
+            var runner = new JintCodeRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+
+            await runner.RunAsync(code);
+            await runner.ContinueWithAsync("x = Inc(x);");
+            await runner.ContinueWithAsync("x = Inc(x);");
+            
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+            
+            await runner.ContinueWithAsync("Check(x);");
+        }
+
+        [Fact]
+        public async Task RunContinueAsync_Success2()
+        {
+            var code = @"
+var x = 0;
+function incr() { 
+  x++;
+}
+function check() {
+  if (x !== 2)
+    throw new Error('x is not equal to 2');
+}";
+
+            var runner = new JintCodeRunner();
+            await runner.RunAsync(code);
+            await runner.ContinueWithAsync("incr()");
+            await runner.ContinueWithAsync("incr()");
+            await runner.ContinueWithAsync("check(x)");
+        }
+        
+
+        [Fact]
+        public async Task RunAsync_StartsNewState_AllStatesSharesSameGlobals()
+        {
+            var code = "let x = 0";
+
+            var runner = new JintCodeRunner();
+            
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+
+            await runner.RunAsync(code);
+            await runner.ContinueWithAsync("x = Inc(x);");
+            await runner.ContinueWithAsync("x = Inc(x);");
+            
+            runner.Register<Action<int>>(x => Assert.Equal(1, x), "Check");
+
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>  
+                runner.RunAsync("x = Inc(x); Check(x)"));
+        }
     }
 }

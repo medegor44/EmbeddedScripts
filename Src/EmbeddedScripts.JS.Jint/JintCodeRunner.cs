@@ -8,10 +8,11 @@ using Jint.Runtime;
 
 namespace EmbeddedScripts.JS.Jint
 {
-    public class JintCodeRunner : ICodeRunner
+    public class JintCodeRunner : ICodeRunner, IContinuable
     {
         private Container _container = new();
         private Options _jintOptions = new();
+        private Engine _engine;
 
         public JintCodeRunner AddEngineOptions(Func<Options, Options> optionsFunc)
         {
@@ -28,7 +29,7 @@ namespace EmbeddedScripts.JS.Jint
         {
             try
             {
-                new Engine(_jintOptions)
+                _engine = new Engine(_jintOptions)
                     .SetValuesFromContainer(_container)
                     .Execute(code);
             }
@@ -50,6 +51,12 @@ namespace EmbeddedScripts.JS.Jint
                 throw new ScriptEngineErrorException(e);
             }
             
+            return Task.CompletedTask;
+        }
+
+        public Task ContinueWithAsync(string code)
+        {
+            _engine.SetValuesFromContainer(_container).Execute(code);
             return Task.CompletedTask;
         }
     }

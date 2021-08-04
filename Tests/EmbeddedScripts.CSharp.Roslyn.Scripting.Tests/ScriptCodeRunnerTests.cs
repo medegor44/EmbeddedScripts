@@ -172,7 +172,7 @@ var builder = new StringBuilder();";
         }
 
         [Fact]
-        public async Task ReplWorks()
+        public async Task RunContinueAsync_Success()
         {
             var code = @"
 var x = 0;
