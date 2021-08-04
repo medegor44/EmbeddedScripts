@@ -1,14 +1,17 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using EmbeddedScripts.Shared;
 
 namespace EmbeddedScripts.JS.ChakraCore
 {
-    public class ChakraCoreRunner : ICodeRunner
+    public class ChakraCoreRunner : ICodeRunner, IContinuable, IDisposable
     {
         private Container _container = new();
-
+        private JsContext _context;
+        private JsRuntime _runtime = new();
+        
         private JsContext AddGlobals(JsContext context)
         {
             var mapper = new TypeMapper(context);
@@ -21,10 +24,9 @@ namespace EmbeddedScripts.JS.ChakraCore
         
         public Task RunAsync(string code)
         {
-            using var runtime = new JsRuntime();
-            var context = AddGlobals(runtime.CreateContext());
+            _context = AddGlobals(_runtime.CreateContext());
             
-            context.Run(code);
+            _context.Run(code);
             
             return Task.CompletedTask;
         }
@@ -33,6 +35,19 @@ namespace EmbeddedScripts.JS.ChakraCore
         {
             _container.Register(obj, alias);
             return this;
+        }
+
+        public Task ContinueWithAsync(string code)
+        {
+            _context = AddGlobals(_context);
+            _context.Run(code);
+
+            return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            _runtime?.Dispose();
         }
     }
 }
