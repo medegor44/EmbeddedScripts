@@ -183,8 +183,25 @@ function check() {
             await runner.RunAsync(code);
             await runner.ContinueWithAsync("incr()");
             await runner.ContinueWithAsync("incr()");
-            await runner.ContinueWithAsync("check(x)");
+            await runner.ContinueWithAsync("check()");
         }
+        [Fact]
+        public async Task RunAsync_StartsNewState_AllStatesSharesSameGlobals()
+        {
+            var code = "let x = 0";
 
+            using var runner = new ClearScriptV8Runner();
+            
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+
+            await runner.RunAsync(code);
+            await runner.ContinueWithAsync("x = Inc(x);");
+            await runner.ContinueWithAsync("x = Inc(x);");
+            
+            runner.Register<Action<int>>(x => Assert.Equal(1, x), "Check");
+
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>  
+                runner.RunAsync("x = Inc(x); Check(x)"));
+        }
     }
 }

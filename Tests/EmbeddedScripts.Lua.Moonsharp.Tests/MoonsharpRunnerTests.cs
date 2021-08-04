@@ -216,7 +216,7 @@ end";
             await runner.RunAsync(code);
             await runner.ContinueWithAsync("incr()");
             await runner.ContinueWithAsync("incr()");
-            await runner.ContinueWithAsync("check(x)");
+            await runner.ContinueWithAsync("check()");
         }
         
         [Fact]
