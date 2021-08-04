@@ -239,5 +239,15 @@ end";
 x = Inc(x) 
 Check(x)"));
         }
+        
+        [Fact]
+        public async Task CodeFromContinueAsyncThrowsException_RunnerThrowsException()
+        {
+            var runner = new MoonsharpRunner();
+
+            await runner.RunAsync("x = 0");
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
+                runner.ContinueWithAsync(@"error('Hello')"));
+        }
     }
 }

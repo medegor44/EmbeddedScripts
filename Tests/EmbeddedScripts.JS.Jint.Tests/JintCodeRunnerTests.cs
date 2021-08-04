@@ -220,5 +220,15 @@ function check() {
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>  
                 runner.RunAsync("x = Inc(x); Check(x)"));
         }
+        
+        [Fact]
+        public async Task CodeFromContinueAsyncThrowsException_RunnerThrowsException()
+        {
+            var runner = new JintCodeRunner();
+
+            await runner.RunAsync("var x = 0;");
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
+                runner.ContinueWithAsync(@"throw new Error('Hello')"));
+        }
     }
 }

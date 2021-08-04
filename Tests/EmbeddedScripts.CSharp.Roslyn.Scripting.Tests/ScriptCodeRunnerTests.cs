@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
@@ -224,10 +223,21 @@ void check() {
 
             var runner = new ScriptCodeRunner();
             runner.AddEngineOptions(options => options.AddImports("System"));
+            
             await runner.RunAsync(code);
             await runner.ContinueWithAsync("incr();");
             await runner.ContinueWithAsync("incr();");
             await runner.ContinueWithAsync("check();");
+        }
+
+        [Fact]
+        public async Task CodeFromContinueAsyncThrowsException_RunnerThrowsException()
+        {
+            var runner = new ScriptCodeRunner();
+
+            await runner.RunAsync("var x = 0;");
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                runner.ContinueWithAsync(@"throw new System.ArgumentException(""Hello"");"));
         }
 
         [Fact(Skip = "test is skipped until security question is resolved")]

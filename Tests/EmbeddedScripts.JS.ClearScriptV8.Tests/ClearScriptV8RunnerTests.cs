@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
+using Microsoft.ClearScript.V8;
 using Xunit;
 
 namespace EmbeddedScripts.JS.ClearScriptV8.Tests
@@ -202,6 +203,16 @@ function check() {
 
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>  
                 runner.RunAsync("x = Inc(x); Check(x)"));
+        }
+        
+        [Fact]
+        public async Task CodeFromContinueAsyncThrowsException_RunnerThrowsException()
+        {
+            using var runner = new ClearScriptV8Runner();
+
+            await runner.RunAsync("var x = 0;");
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
+                runner.ContinueWithAsync(@"throw new Error('Hello')"));
         }
     }
 }
