@@ -183,7 +183,7 @@ let x = 0;
         }
 
         [Fact]
-        public async Task RunContinueAsync_Success2()
+        public async Task RunContinueAsync_Success()
         {
             var code = @"
 var x = 0;
@@ -202,7 +202,6 @@ function check() {
             await runner.ContinueWithAsync("check(x)");
         }
         
-
         [Fact]
         public async Task RunAsync_StartsNewState_AllStatesSharesSameGlobals()
         {

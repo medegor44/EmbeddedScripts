@@ -35,7 +35,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
 
         public async Task ContinueWithAsync(string code)
         {
-            _scriptState = await _scriptState.ContinueWithAsync(GenerateScriptCode(code), BuildEngineOptions());
+            _scriptState = await _scriptState.ContinueWithAsync(GenerateScriptCode(code));
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
