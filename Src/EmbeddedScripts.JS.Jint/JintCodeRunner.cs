@@ -25,13 +25,11 @@ namespace EmbeddedScripts.JS.Jint
             return this;
         }
 
-        public Task RunAsync(string code)
+        private void ExecuteWithExceptionHandling(Engine engine, string code)
         {
             try
             {
-                _engine = new Engine(_jintOptions)
-                    .SetValuesFromContainer(_container)
-                    .Execute(code);
+                engine.Execute(code);
             }
             catch (JavaScriptException e)
             {
@@ -50,13 +48,24 @@ namespace EmbeddedScripts.JS.Jint
             {
                 throw new ScriptEngineErrorException(e);
             }
+        }
+
+        public Task RunAsync(string code)
+        {
+            _engine = new Engine(_jintOptions)
+                .SetValuesFromContainer(_container);
+            
+            ExecuteWithExceptionHandling(_engine, code);
             
             return Task.CompletedTask;
         }
 
         public Task ContinueWithAsync(string code)
         {
-            _engine.SetValuesFromContainer(_container).Execute(code);
+            _engine.SetValuesFromContainer(_container);
+            
+            ExecuteWithExceptionHandling(_engine, code);
+            
             return Task.CompletedTask;
         }
     }

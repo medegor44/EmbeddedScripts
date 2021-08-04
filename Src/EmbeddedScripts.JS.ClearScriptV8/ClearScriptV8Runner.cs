@@ -12,14 +12,11 @@ namespace EmbeddedScripts.JS.ClearScriptV8
         private Container _container = new();
         private V8ScriptEngine _engine;
 
-        public Task RunAsync(string code)
+        private void ExecuteWithExceptionHandling(V8ScriptEngine engine, string code)
         {
-            _engine = new V8ScriptEngine();
-            _engine.AddHostObjectsFromContainer(_container);
-
             try
             {
-                _engine.Execute(code);
+                engine.Execute(code);
             }
             catch (ScriptEngineException e)
             {
@@ -29,6 +26,14 @@ namespace EmbeddedScripts.JS.ClearScriptV8
                 var tripleInnerException = e.InnerException?.InnerException?.InnerException;
                 throw tripleInnerException ?? new ScriptRuntimeErrorException(e);
             }
+        }
+        
+        public Task RunAsync(string code)
+        {
+            _engine = new V8ScriptEngine();
+            _engine.AddHostObjectsFromContainer(_container);
+
+            ExecuteWithExceptionHandling(_engine, code);
 
             return Task.CompletedTask;
         }
@@ -42,7 +47,8 @@ namespace EmbeddedScripts.JS.ClearScriptV8
         public Task ContinueWithAsync(string code)
         {
             _engine.AddHostObjectsFromContainer(_container);
-            _engine.Execute(code);
+            
+            ExecuteWithExceptionHandling(_engine, code);
 
             return Task.CompletedTask;
         }

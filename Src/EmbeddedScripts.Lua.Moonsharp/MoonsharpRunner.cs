@@ -10,15 +10,12 @@ namespace EmbeddedScripts.Lua.Moonsharp
     {
         private Script _script;
         private Container _container = new();
-        
-        public Task RunAsync(string code)
+
+        private void ExecuteWithExceptionsHandling(Script script, string code)
         {
             try
             {
-                _script = new Script()
-                    .RegisterVariablesFromContainer(_container);
-                
-                _script.DoString(code);
+                script.DoString(code);
             }
             catch (SyntaxErrorException e)
             {
@@ -32,7 +29,15 @@ namespace EmbeddedScripts.Lua.Moonsharp
             {
                 throw new ScriptRuntimeErrorException(e);
             }
-            
+        }
+
+        public Task RunAsync(string code)
+        {
+            _script = new Script()
+                .RegisterVariablesFromContainer(_container);
+
+            ExecuteWithExceptionsHandling(_script, code);
+
             return Task.CompletedTask;
         }
 
@@ -45,7 +50,9 @@ namespace EmbeddedScripts.Lua.Moonsharp
         public Task ContinueWithAsync(string code)
         {
             _script.RegisterVariablesFromContainer(_container);
-            _script.DoString(code);
+            
+            ExecuteWithExceptionsHandling(_script, code);
+            
             return Task.CompletedTask;
         }
     }

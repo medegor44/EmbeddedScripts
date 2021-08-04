@@ -25,7 +25,6 @@ namespace EmbeddedScripts.JS.ChakraCore
         public Task RunAsync(string code)
         {
             _context = AddGlobals(_runtime.CreateContext());
-            
             _context.Run(code);
             
             return Task.CompletedTask;

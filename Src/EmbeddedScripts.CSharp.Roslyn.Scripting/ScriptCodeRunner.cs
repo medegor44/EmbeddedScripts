@@ -25,7 +25,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
             try
             {
                 _scriptState = await CSharpScript.RunAsync(GenerateScriptCode(code), BuildEngineOptions(),
-                    new Globals {Container = _container});
+                    new Globals { Container = _container });
             }
             catch (CompilationErrorException e)
             {
@@ -35,7 +35,14 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
 
         public async Task ContinueWithAsync(string code)
         {
-            _scriptState = await _scriptState.ContinueWithAsync(GenerateScriptCode(code));
+            try
+            {
+                _scriptState = await _scriptState.ContinueWithAsync(GenerateScriptCode(code));
+            }
+            catch (CompilationErrorException e)
+            {
+                throw new ScriptSyntaxErrorException(e);
+            }
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
