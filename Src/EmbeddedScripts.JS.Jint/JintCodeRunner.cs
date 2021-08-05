@@ -8,7 +8,7 @@ using Jint.Runtime;
 
 namespace EmbeddedScripts.JS.Jint
 {
-    public class JintCodeRunner : ICodeRunner, IContinuable
+    public class JintCodeRunner : ICodeRunner
     {
         private Container _container = new();
         private Options _jintOptions = new();
@@ -25,11 +25,14 @@ namespace EmbeddedScripts.JS.Jint
             return this;
         }
 
-        private void ExecuteWithExceptionHandling(Engine engine, string code)
+        public Task<ICodeRunner> RunAsync(string code)
         {
+            _engine ??= new Engine(_jintOptions);
+            
             try
             {
-                engine.Execute(code);
+                _engine.SetValuesFromContainer(_container);
+                _engine.Execute(code);
             }
             catch (JavaScriptException e)
             {
@@ -48,25 +51,8 @@ namespace EmbeddedScripts.JS.Jint
             {
                 throw new ScriptEngineErrorException(e);
             }
-        }
 
-        public Task RunAsync(string code)
-        {
-            _engine = new Engine(_jintOptions)
-                .SetValuesFromContainer(_container);
-            
-            ExecuteWithExceptionHandling(_engine, code);
-            
-            return Task.CompletedTask;
-        }
-
-        public Task ContinueWithAsync(string code)
-        {
-            _engine.SetValuesFromContainer(_container);
-            
-            ExecuteWithExceptionHandling(_engine, code);
-            
-            return Task.CompletedTask;
+            return Task.FromResult(this as ICodeRunner);
         }
     }
 }

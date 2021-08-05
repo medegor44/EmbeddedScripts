@@ -6,7 +6,7 @@ using MoonSharp.Interpreter;
 
 namespace EmbeddedScripts.Lua.Moonsharp
 {
-    public class MoonsharpRunner : ICodeRunner, IContinuable
+    public class MoonsharpRunner : ICodeRunner
     {
         private Script _script;
         private Container _container = new();
@@ -31,29 +31,35 @@ namespace EmbeddedScripts.Lua.Moonsharp
             }
         }
 
-        public Task RunAsync(string code)
+        public Task<ICodeRunner> RunAsync(string code)
         {
-            _script = new Script()
-                .RegisterVariablesFromContainer(_container);
+            _script ??= new Script();
 
-            ExecuteWithExceptionsHandling(_script, code);
+            try
+            {
+                _script.RegisterVariablesFromContainer(_container);
+                _script.DoString(code);
+            }
+            catch (SyntaxErrorException e)
+            {
+                throw new ScriptSyntaxErrorException(e);
+            }
+            catch (Exception e) when (e is InternalErrorException or DynamicExpressionException)
+            {
+                throw new ScriptEngineErrorException(e);
+            }
+            catch (ScriptRuntimeException e)
+            {
+                throw new ScriptRuntimeErrorException(e);
+            }
 
-            return Task.CompletedTask;
+            return Task.FromResult(this as ICodeRunner);
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
             _container.Register(obj, alias);
             return this;
-        }
-
-        public Task ContinueWithAsync(string code)
-        {
-            _script.RegisterVariablesFromContainer(_container);
-            
-            ExecuteWithExceptionsHandling(_script, code);
-            
-            return Task.CompletedTask;
         }
     }
 }

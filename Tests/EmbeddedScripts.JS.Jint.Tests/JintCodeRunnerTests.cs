@@ -109,22 +109,6 @@ namespace EmbeddedScripts.JS.Jint.Tests
         }
 
         [Fact]
-        public async void AddEngineOptionsTwice_AddsNewEngineOptions_SucceedD()
-        {
-            var code = "x = 1";
-            var runner = new JintCodeRunner()
-                .AddEngineOptions(opts => 
-                    opts.Strict());
-
-            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync(code));
-
-            runner.AddEngineOptions(opts =>
-                opts.Strict(false));
-
-            await runner.RunAsync(code);
-        }
-
-        [Fact]
         public async void CodeThrowsAnException_RunnerThrowsSameException()
         {
             var exceptionMessage = "Exception from user code";
@@ -166,20 +150,33 @@ namespace EmbeddedScripts.JS.Jint.Tests
         [Fact]
         public async Task RunContinueAsync_EachContinueAsyncSharesGlobals_Success()
         {
-            var code = @"
-let x = 0;
-";
+            var code = "let x = 0;";
+            var runner = new JintCodeRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("Check(x);");
+        }
+        
+        [Fact]
+        public async Task RegisteringNewGlobalVarBetweenRuns_Success()
+        {
+            var code = "let x = 0;";
             var runner = new JintCodeRunner();
 
             runner.Register<Func<int, int>>(x => x + 1, "Inc");
 
             await runner.RunAsync(code);
-            await runner.ContinueWithAsync("x = Inc(x);");
-            await runner.ContinueWithAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
             
             runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
             
-            await runner.ContinueWithAsync("Check(x);");
+            await runner.RunAsync("Check(x);");
         }
 
         [Fact]
@@ -197,28 +194,9 @@ function check() {
 
             var runner = new JintCodeRunner();
             await runner.RunAsync(code);
-            await runner.ContinueWithAsync("incr()");
-            await runner.ContinueWithAsync("incr()");
-            await runner.ContinueWithAsync("check()");
-        }
-        
-        [Fact]
-        public async Task RunAsync_StartsNewState_AllStatesSharesSameGlobals()
-        {
-            var code = "let x = 0";
-
-            var runner = new JintCodeRunner();
-            
-            runner.Register<Func<int, int>>(x => x + 1, "Inc");
-
-            await runner.RunAsync(code);
-            await runner.ContinueWithAsync("x = Inc(x);");
-            await runner.ContinueWithAsync("x = Inc(x);");
-            
-            runner.Register<Action<int>>(x => Assert.Equal(1, x), "Check");
-
-            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>  
-                runner.RunAsync("x = Inc(x); Check(x)"));
+            await runner.RunAsync("incr()");
+            await runner.RunAsync("incr()");
+            await runner.RunAsync("check()");
         }
         
         [Fact]
@@ -228,7 +206,7 @@ function check() {
 
             await runner.RunAsync("var x = 0;");
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
-                runner.ContinueWithAsync(@"throw new Error('Hello')"));
+                runner.RunAsync(@"throw new Error('Hello')"));
         }
     }
 }

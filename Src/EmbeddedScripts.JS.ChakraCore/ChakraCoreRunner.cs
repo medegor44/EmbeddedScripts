@@ -6,7 +6,7 @@ using EmbeddedScripts.Shared;
 
 namespace EmbeddedScripts.JS.ChakraCore
 {
-    public class ChakraCoreRunner : ICodeRunner, IContinuable, IDisposable
+    public class ChakraCoreRunner : ICodeRunner, IDisposable
     {
         private Container _container = new();
         private JsContext _context;
@@ -22,26 +22,18 @@ namespace EmbeddedScripts.JS.ChakraCore
             return context;
         }
         
-        public Task RunAsync(string code)
+        public Task<ICodeRunner> RunAsync(string code)
         {
-            _context = AddGlobals(_runtime.CreateContext());
+            _context = AddGlobals(_context ?? _runtime.CreateContext());
             _context.Run(code);
             
-            return Task.CompletedTask;
+            return Task.FromResult(this as ICodeRunner);
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
             _container.Register(obj, alias);
             return this;
-        }
-
-        public Task ContinueWithAsync(string code)
-        {
-            _context = AddGlobals(_context);
-            _context.Run(code);
-
-            return Task.CompletedTask;
         }
 
         public void Dispose()

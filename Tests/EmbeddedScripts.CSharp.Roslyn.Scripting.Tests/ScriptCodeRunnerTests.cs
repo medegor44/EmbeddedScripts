@@ -173,39 +173,33 @@ var builder = new StringBuilder();";
         [Fact]
         public async Task RunContinueAsync_EachContinueAsyncSharesGlobals_Success()
         {
-            var code = @"
-var x = 0;
-";
+            var code = "var x = 0;";
             var runner = new ScriptCodeRunner();
 
             runner.Register<Func<int, int>>(x => x + 1, "Inc");
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
 
             await runner.RunAsync(code);
-            await runner.ContinueWithAsync("x = Inc(x);");
-            await runner.ContinueWithAsync("x = Inc(x);");
-            
-            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
-            
-            await runner.ContinueWithAsync("Check(x);");
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("Check(x);");
         }
-        
+
         [Fact]
-        public async Task RunAsync_StartsNewState_AllStatesSharesSameGlobals()
+        public async Task RegisteringNewGlobalVarBetweenRuns_Succeed()
         {
             var code = "var x = 0;";
-
             var runner = new ScriptCodeRunner();
-            
+
             runner.Register<Func<int, int>>(x => x + 1, "Inc");
 
             await runner.RunAsync(code);
-            await runner.ContinueWithAsync("x = Inc(x);");
-            await runner.ContinueWithAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
             
-            runner.Register<Action<int>>(x => Assert.Equal(1, x), "Check");
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
 
-            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() =>  
-                runner.RunAsync("x = Inc(x); Check(x);"));
+            await runner.RunAsync("Check(x);");
         }
         
         [Fact]
@@ -225,9 +219,31 @@ void check() {
             runner.AddEngineOptions(options => options.AddImports("System"));
             
             await runner.RunAsync(code);
-            await runner.ContinueWithAsync("incr();");
-            await runner.ContinueWithAsync("incr();");
-            await runner.ContinueWithAsync("check();");
+            await runner.RunAsync("incr();");
+            await runner.RunAsync("incr();");
+            await runner.RunAsync("check();");
+        }
+        
+        [Fact]
+        public async Task RunContinueAsync_Success1()
+        {
+            var code = @"
+var x = 0;
+void incr() { 
+  x++;
+}
+void check() {
+  if (x != 2)
+    throw new Exception(""x is not equal to 2"");
+}";
+
+            var runner = new ScriptCodeRunner();
+            runner.AddEngineOptions(options => options.AddImports("System"));
+            
+            await runner.RunAsync(code);
+            await runner.RunAsync("incr();");
+            await runner.RunAsync("incr();");
+            await runner.RunAsync("check();");
         }
 
         [Fact]
@@ -237,7 +253,7 @@ void check() {
 
             await runner.RunAsync("var x = 0;");
             await Assert.ThrowsAsync<ArgumentException>(() =>
-                runner.ContinueWithAsync(@"throw new System.ArgumentException(""Hello"");"));
+                runner.RunAsync(@"throw new System.ArgumentException(""Hello"");"));
         }
 
         [Fact(Skip = "test is skipped until security question is resolved")]
