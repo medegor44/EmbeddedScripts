@@ -11,26 +11,6 @@ namespace EmbeddedScripts.Lua.Moonsharp
         private Script _script;
         private Container _container = new();
 
-        private void ExecuteWithExceptionsHandling(Script script, string code)
-        {
-            try
-            {
-                script.DoString(code);
-            }
-            catch (SyntaxErrorException e)
-            {
-                throw new ScriptSyntaxErrorException(e);
-            }
-            catch (Exception e) when (e is InternalErrorException or DynamicExpressionException)
-            {
-                throw new ScriptEngineErrorException(e);
-            }
-            catch (ScriptRuntimeException e)
-            {
-                throw new ScriptRuntimeErrorException(e);
-            }
-        }
-
         public Task<ICodeRunner> RunAsync(string code)
         {
             _script ??= new Script();
