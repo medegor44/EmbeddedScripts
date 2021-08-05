@@ -171,7 +171,7 @@ var builder = new StringBuilder();";
         }
 
         [Fact]
-        public async Task RunContinueAsync_EachContinueAsyncSharesGlobals_Success()
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
         {
             var code = "var x = 0;";
             var runner = new ScriptCodeRunner();
@@ -203,7 +203,7 @@ var builder = new StringBuilder();";
         }
         
         [Fact]
-        public async Task RunContinueAsync_Success()
+        public async Task RunAsyncWithContinuation_Success()
         {
             var code = @"
 var x = 0;
@@ -222,38 +222,6 @@ void check() {
             await runner.RunAsync("incr();");
             await runner.RunAsync("incr();");
             await runner.RunAsync("check();");
-        }
-        
-        [Fact]
-        public async Task RunContinueAsync_Success1()
-        {
-            var code = @"
-var x = 0;
-void incr() { 
-  x++;
-}
-void check() {
-  if (x != 2)
-    throw new Exception(""x is not equal to 2"");
-}";
-
-            var runner = new ScriptCodeRunner();
-            runner.AddEngineOptions(options => options.AddImports("System"));
-            
-            await runner.RunAsync(code);
-            await runner.RunAsync("incr();");
-            await runner.RunAsync("incr();");
-            await runner.RunAsync("check();");
-        }
-
-        [Fact]
-        public async Task CodeFromContinueAsyncThrowsException_RunnerThrowsException()
-        {
-            var runner = new ScriptCodeRunner();
-
-            await runner.RunAsync("var x = 0;");
-            await Assert.ThrowsAsync<ArgumentException>(() =>
-                runner.RunAsync(@"throw new System.ArgumentException(""Hello"");"));
         }
 
         [Fact(Skip = "test is skipped until security question is resolved")]

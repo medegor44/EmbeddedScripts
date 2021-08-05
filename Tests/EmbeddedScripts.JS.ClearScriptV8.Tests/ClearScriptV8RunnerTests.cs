@@ -164,7 +164,7 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
 
         
         [Fact]
-        public async Task RunContinueAsync_EachContinueAsyncSharesGlobals_Success()
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
         {
             var code = "let x = 0;";
             using var runner = new ClearScriptV8Runner();
@@ -181,7 +181,7 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
         }
 
         [Fact]
-        public async Task RunContinueAsync_Success()
+        public async Task RunAsyncWithContinuation_Success()
         {
             var code = @"
 var x = 0;
@@ -198,16 +198,6 @@ function check() {
             await runner.RunAsync("incr()");
             await runner.RunAsync("incr()");
             await runner.RunAsync("check()");
-        }
-        
-        [Fact]
-        public async Task CodeFromContinueAsyncThrowsException_RunnerThrowsException()
-        {
-            using var runner = new ClearScriptV8Runner();
-
-            await runner.RunAsync("var x = 0;");
-            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
-                runner.RunAsync(@"throw new Error('Hello')"));
         }
     }
 }

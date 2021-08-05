@@ -199,7 +199,7 @@ assert(d['b'] == 2)
         }
         
         [Fact]
-        public async Task RunContinueAsync_EachContinueAsyncSharesGlobals_Success()
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
         {
             var code = "x = 0";
             var runner = new MoonsharpRunner();
@@ -214,7 +214,7 @@ assert(d['b'] == 2)
         }
 
         [Fact]
-        public async Task RunContinueAsync_Success()
+        public async Task RunAsyncWithContinuation_Success()
         {
             var code = @"
 x = 0;
@@ -230,16 +230,6 @@ end";
             await runner.RunAsync("incr()");
             await runner.RunAsync("incr()");
             await runner.RunAsync("check()");
-        }
-        
-        [Fact]
-        public async Task CodeFromContinueAsyncThrowsException_RunnerThrowsException()
-        {
-            var runner = new MoonsharpRunner();
-
-            await runner.RunAsync("x = 0");
-            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
-                runner.RunAsync(@"error('Hello')"));
         }
     }
 }
