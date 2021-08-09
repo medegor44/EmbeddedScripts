@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using ChakraHost.Hosting;
 
 namespace EmbeddedScripts.JS.ChakraCore
 {
     public class TypeMapper
     {
-        private JsContext _context;
+        private readonly JsContext _context;
 
         public TypeMapper(JsContext context)
         {
             _context = context;
         }
+        
         private JavaScriptValue MapClrPrimitivesToJs(object value)
         {
             if (value is null)
@@ -25,6 +27,8 @@ namespace EmbeddedScripts.JS.ChakraCore
                 case TypeCode.UInt16:
                 case TypeCode.Int16:
                 case TypeCode.Int32:
+                    return JavaScriptValue.FromInt32(Convert.ToInt32(value));
+                
                 case TypeCode.UInt32:
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
@@ -50,6 +54,7 @@ namespace EmbeddedScripts.JS.ChakraCore
 
             if (Math.Abs(num - Math.Round(num)) < double.Epsilon)
                 return (int) num;
+            
             return num;
         }
 
@@ -59,6 +64,8 @@ namespace EmbeddedScripts.JS.ChakraCore
                 JavaScriptValueType.String => value.ToString(),
                 JavaScriptValueType.Boolean => value.ToBoolean(),
                 JavaScriptValueType.Number => ToNumber(value),
+                JavaScriptValueType.Null => null,
+                JavaScriptValueType.Undefined => null,
                 _ => throw new ArgumentException("Type is not supported")
             };
 
@@ -91,12 +98,22 @@ namespace EmbeddedScripts.JS.ChakraCore
                 },
                 IntPtr.Zero);
         
+        private object Map(JsValue value)
+        {
+            using (_context.Scope)
+                return MapJsPrimitivesToClr(value);
+        }
+        
+        public T Map<T>(JsValue value) => 
+            (T)Map(value);
+        
         public JsValue Map(object value)
         {
             using (_context.Scope)
             {
                 if (value is Delegate func)
                     return new(_context, MapDelegate(func));
+
                 return new(_context, MapClrPrimitivesToJs(value));
             }
         }

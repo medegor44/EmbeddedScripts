@@ -6,8 +6,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
 {
     public class CompiledCodeRunner : ICodeRunner
     {
-        private Container _container = new();
-        private CodeGeneratorForCompilation _codeGenerator = new();
+        private readonly Container _container = new();
+        private readonly CodeGeneratorForCompilation _codeGenerator = new();
 
         public Task<ICodeRunner> RunAsync(string code)
         {
