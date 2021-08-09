@@ -214,14 +214,17 @@ function check() {
         {
             var runner = new ClearScriptV8Runner();
 
-            await runner.RunAsync(@"function GetHello(name) { return 'Hello ' + name; }");
+            await runner.RunAsync(@"
+function GetHello(name) { 
+    return 'Hello ' + name; 
+}");
             var result = await runner.EvaluateAsync(@"GetHello(""John"")");
             
             Assert.Equal("Hello John", result);
         }
 
         [Fact]
-        public async Task EvaluateAsyncJsObject()
+        public async Task EvaluateAsyncScriptObject()
         {
             var runner = new ClearScriptV8Runner();
             dynamic result = await runner.EvaluateAsync("function t() { return {a : 'a'} }; t()");

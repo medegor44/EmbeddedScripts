@@ -220,7 +220,7 @@ function check() {
         }
         
         [Fact]
-        public async Task EvaluateAsyncJsObject()
+        public async Task EvaluateAsyncScriptObject()
         {
             var runner = new JintCodeRunner();
             dynamic result = await runner.EvaluateAsync("function t() { return {a : 'a'} }; t()");

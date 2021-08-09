@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
@@ -242,6 +243,29 @@ void check() {
             var result = await runner.EvaluateAsync(@"GetHello(""John"")");
             
             Assert.Equal("Hello John", result);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsyncScriptObject()
+        {
+            var runner = new ScriptCodeRunner();
+
+            await runner.RunAsync(@"
+class A 
+{
+    public string X;
+}
+
+A t() 
+{ 
+    return new A{X = ""abc""};
+} 
+");
+            
+            var result = await runner.EvaluateAsync("t()");
+            
+            var actual = result.GetType().GetField("X")?.GetValue(result);
+            Assert.Equal("abc", actual);
         }
 
         [Fact(Skip = "test is skipped until security question is resolved")]
