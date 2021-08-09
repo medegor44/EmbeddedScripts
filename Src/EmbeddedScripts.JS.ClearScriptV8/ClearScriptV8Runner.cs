@@ -7,30 +7,21 @@ using Microsoft.ClearScript.V8;
 
 namespace EmbeddedScripts.JS.ClearScriptV8
 {
-    public class ClearScriptV8Runner : ICodeRunner, IDisposable
+    public class ClearScriptV8Runner : ICodeRunner, IEvaluator, IDisposable
     {
-        private Container _container = new();
+        private readonly Container _container = new();
         private V8ScriptEngine _engine;
 
-        public Task<object> EvaluateAsync(string expression) => 
-            EvaluateAsync<object>(expression);
-        
         public Task<T> EvaluateAsync<T>(string expression)
         {
             _engine ??= new V8ScriptEngine();
-            _engine.AddHostObjectsFromContainer(_container);
-
-            return Task.FromResult((T) _engine.Evaluate(expression));
-        }
-
-        public Task<ICodeRunner> RunAsync(string code)
-        {
-            _engine ??= new V8ScriptEngine();
-            _engine.AddHostObjectsFromContainer(_container);
 
             try
             {
-                _engine.Execute(code);
+                _engine.AddHostObjectsFromContainer(_container);
+                var val = (T)_engine.Evaluate(expression);
+                return Task.FromResult(val);
+
             }
             catch (ScriptEngineException e)
             {
@@ -40,6 +31,14 @@ namespace EmbeddedScripts.JS.ClearScriptV8
                 var tripleInnerException = e.InnerException?.InnerException?.InnerException;
                 throw tripleInnerException ?? new ScriptRuntimeErrorException(e);
             }
+        }
+        
+        public Task<object> EvaluateAsync(string expression) => 
+            EvaluateAsync<object>(expression);
+
+        public Task<ICodeRunner> RunAsync(string code)
+        {
+            EvaluateAsync(code);
 
             return Task.FromResult(this as ICodeRunner);
         }
@@ -47,6 +46,7 @@ namespace EmbeddedScripts.JS.ClearScriptV8
         public ICodeRunner Register<T>(T obj, string alias)
         {
             _container.Register(obj, alias);
+            
             return this;
         }
 

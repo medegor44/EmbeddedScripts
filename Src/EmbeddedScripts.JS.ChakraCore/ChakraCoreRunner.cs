@@ -5,13 +5,11 @@ using EmbeddedScripts.Shared;
 
 namespace EmbeddedScripts.JS.ChakraCore
 {
-    public class ChakraCoreRunner : ICodeRunner, IDisposable
+    public class ChakraCoreRunner : ICodeRunner, IEvaluator, IDisposable
     {
-        private Container _container = new();
+        private readonly Container _container = new();
         private JsContext _context;
-        private JsRuntime _runtime = new();
-        
-        
+        private readonly JsRuntime _runtime = new();
         
         private JsContext AddGlobals(JsContext context)
         {
@@ -23,17 +21,6 @@ namespace EmbeddedScripts.JS.ChakraCore
             return context;
         }
         
-        public Task<ICodeRunner> RunAsync(string code)
-        {
-            _context = AddGlobals(_context ?? _runtime.CreateContext());
-            _context.Run(code);
-            
-            return Task.FromResult(this as ICodeRunner);
-        }
-
-        public Task<object> EvaluateAsync(string expression) 
-            => EvaluateAsync<object>(expression);
-        
         public Task<T> EvaluateAsync<T>(string expression)
         {
             _context = AddGlobals(_context ?? _runtime.CreateContext());
@@ -42,9 +29,20 @@ namespace EmbeddedScripts.JS.ChakraCore
             return Task.FromResult((T) new TypeMapper(_context).Map(val));
         }
         
+        public Task<object> EvaluateAsync(string expression) 
+            => EvaluateAsync<object>(expression);
+        
+        public Task<ICodeRunner> RunAsync(string code)
+        {
+            EvaluateAsync(code);
+            
+            return Task.FromResult(this as ICodeRunner);
+        }
+        
         public ICodeRunner Register<T>(T obj, string alias)
         {
             _container.Register(obj, alias);
+            
             return this;
         }
 

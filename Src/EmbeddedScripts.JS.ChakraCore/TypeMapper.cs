@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ChakraHost.Hosting;
@@ -8,7 +7,7 @@ namespace EmbeddedScripts.JS.ChakraCore
 {
     public class TypeMapper
     {
-        private JsContext _context;
+        private readonly JsContext _context;
 
         public TypeMapper(JsContext context)
         {
@@ -51,6 +50,7 @@ namespace EmbeddedScripts.JS.ChakraCore
 
             if (Math.Abs(num - Math.Round(num)) < double.Epsilon)
                 return (int) num;
+            
             return num;
         }
 
@@ -60,6 +60,8 @@ namespace EmbeddedScripts.JS.ChakraCore
                 JavaScriptValueType.String => value.ToString(),
                 JavaScriptValueType.Boolean => value.ToBoolean(),
                 JavaScriptValueType.Number => ToNumber(value),
+                JavaScriptValueType.Null => null,
+                JavaScriptValueType.Undefined => null,
                 _ => throw new ArgumentException("Type is not supported")
             };
 
@@ -98,6 +100,7 @@ namespace EmbeddedScripts.JS.ChakraCore
             {
                 if (value is Delegate func)
                     return new(_context, MapDelegate(func));
+                
                 return new(_context, MapClrPrimitivesToJs(value));
             }
         }

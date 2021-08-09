@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using EmbeddedScripts.CSharp.Roslyn.Compilation.CodeGeneration;
 using EmbeddedScripts.Shared;
 
@@ -7,18 +6,8 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
 {
     public class CompiledCodeRunner : ICodeRunner
     {
-        private Container _container = new();
-        private CodeGeneratorForCompilation _codeGenerator = new();
-
-        public Task<object> EvaluateAsync(string expression)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<T> EvaluateAsync<T>(string expression)
-        {
-            throw new NotImplementedException();
-        }
+        private readonly Container _container = new();
+        private readonly CodeGeneratorForCompilation _codeGenerator = new();
 
         public Task<ICodeRunner> RunAsync(string code)
         {
