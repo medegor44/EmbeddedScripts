@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using EmbeddedScripts.CSharp.Roslyn.Compilation.CodeGeneration;
 using EmbeddedScripts.Shared;
 
@@ -9,6 +10,11 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
         private Container _container = new();
         private CodeGeneratorForCompilation _codeGenerator = new();
 
+        public Task<object> EvaluateAsync(string expression)
+        {
+            throw new NotImplementedException();
+        }
+        
         public Task<ICodeRunner> RunAsync(string code)
         {
             var generatedCode = _codeGenerator.GenerateCode(code, _container);

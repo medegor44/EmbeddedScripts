@@ -231,5 +231,29 @@ end";
             await runner.RunAsync("incr()");
             await runner.RunAsync("check()");
         }
+        
+        [Fact]
+        public async Task EvaluateAsync_Success()
+        {
+            var runner = new MoonsharpRunner();
+            var result = await runner.EvaluateAsync("return 1 + 2");
+            
+            Assert.Equal(3.0, result);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
+        {
+            var runner = new MoonsharpRunner();
+
+            await runner.RunAsync(@"
+function GetHello(name) 
+    return 'Hello ' .. name; 
+end");
+            
+            var result = await runner.EvaluateAsync(@"return GetHello('John')");
+            
+            Assert.Equal("Hello John", result);
+        }
     }
 }

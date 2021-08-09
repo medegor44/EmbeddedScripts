@@ -12,6 +12,14 @@ namespace EmbeddedScripts.JS.ClearScriptV8
         private Container _container = new();
         private V8ScriptEngine _engine;
 
+        public Task<object> EvaluateAsync(string expression)
+        {
+            _engine ??= new V8ScriptEngine();
+            _engine.AddHostObjectsFromContainer(_container);
+
+            return Task.FromResult(_engine.Evaluate(expression));
+        }
+
         public Task<ICodeRunner> RunAsync(string code)
         {
             _engine ??= new V8ScriptEngine();

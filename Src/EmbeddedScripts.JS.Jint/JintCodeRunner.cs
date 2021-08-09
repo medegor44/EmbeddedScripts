@@ -19,6 +19,17 @@ namespace EmbeddedScripts.JS.Jint
             _jintOptions = optionsFunc(_jintOptions);
             return this;
         }
+
+        public Task<object> EvaluateAsync(string expression)
+        {
+            _engine ??= new Engine(_jintOptions);
+            
+            _engine.SetValuesFromContainer(_container);
+            var val = _engine.Evaluate(expression).ToObject();
+            
+            return Task.FromResult(val);
+        }
+
         public ICodeRunner Register<T>(T obj, string alias)
         {
             _container.Register(obj, alias);

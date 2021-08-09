@@ -12,6 +12,11 @@ namespace EmbeddedScripts.JS.ChakraCore
         private JsContext _context;
         private JsRuntime _runtime = new();
         
+        public Task<object> EvaluateAsync(string expression)
+        {
+            throw new NotImplementedException();
+        }
+        
         private JsContext AddGlobals(JsContext context)
         {
             var mapper = new TypeMapper(context);

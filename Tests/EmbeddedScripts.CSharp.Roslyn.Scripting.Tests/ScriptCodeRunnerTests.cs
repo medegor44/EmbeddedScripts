@@ -224,6 +224,26 @@ void check() {
             await runner.RunAsync("check();");
         }
 
+        [Fact]
+        public async Task EvaluateAsync_Success()
+        {
+            var runner = new ScriptCodeRunner();
+            var result = await runner.EvaluateAsync("1 + 2");
+            
+            Assert.Equal(3, result);
+        }
+
+        [Fact]
+        public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
+        {
+            var runner = new ScriptCodeRunner();
+
+            await runner.RunAsync(@"string GetHello(string name) { return ""Hello "" + name; }");
+            var result = await runner.EvaluateAsync(@"GetHello(""John"")");
+            
+            Assert.Equal("Hello John", result);
+        }
+
         [Fact(Skip = "test is skipped until security question is resolved")]
         public async Task RunWithNotAllowedFunc_Fail()
         {

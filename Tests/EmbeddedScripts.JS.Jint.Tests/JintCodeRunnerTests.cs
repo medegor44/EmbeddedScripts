@@ -198,5 +198,25 @@ function check() {
             await runner.RunAsync("incr()");
             await runner.RunAsync("check()");
         }
+        
+        [Fact]
+        public async Task EvaluateAsync_Success()
+        {
+            var runner = new JintCodeRunner();
+            var result = await runner.EvaluateAsync("1 + 2");
+            
+            Assert.Equal(3.0, result);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
+        {
+            var runner = new JintCodeRunner();
+
+            await runner.RunAsync(@"function GetHello(name) { return 'Hello ' + name; }");
+            var result = await runner.EvaluateAsync(@"GetHello(""John"")");
+            
+            Assert.Equal("Hello John", result);
+        }
     }
 }
