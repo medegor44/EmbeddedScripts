@@ -203,9 +203,9 @@ function check() {
         public async Task EvaluateAsync_Success()
         {
             var runner = new JintCodeRunner();
-            var result = await runner.EvaluateAsync("1 + 2");
+            var result = await runner.EvaluateAsync<double>("1 + 2");
             
-            Assert.Equal(3.0, result);
+            Assert.Equal(3, result);
         }
         
         [Fact]
@@ -214,7 +214,7 @@ function check() {
             var runner = new JintCodeRunner();
 
             await runner.RunAsync(@"function GetHello(name) { return 'Hello ' + name; }");
-            var result = await runner.EvaluateAsync(@"GetHello(""John"")");
+            var result = await runner.EvaluateAsync<string>(@"GetHello(""John"")");
             
             Assert.Equal("Hello John", result);
         }

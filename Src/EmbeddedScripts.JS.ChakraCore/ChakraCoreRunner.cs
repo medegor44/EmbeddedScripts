@@ -11,13 +11,7 @@ namespace EmbeddedScripts.JS.ChakraCore
         private JsContext _context;
         private JsRuntime _runtime = new();
         
-        public Task<object> EvaluateAsync(string expression)
-        {
-            _context = AddGlobals(_context ?? _runtime.CreateContext());
-            var val = _context.Evaluate(expression);
-            
-            return Task.FromResult(new TypeMapper(_context).Map(val));
-        }
+        
         
         private JsContext AddGlobals(JsContext context)
         {
@@ -37,6 +31,17 @@ namespace EmbeddedScripts.JS.ChakraCore
             return Task.FromResult(this as ICodeRunner);
         }
 
+        public Task<object> EvaluateAsync(string expression) 
+            => EvaluateAsync<object>(expression);
+        
+        public Task<T> EvaluateAsync<T>(string expression)
+        {
+            _context = AddGlobals(_context ?? _runtime.CreateContext());
+            var val = _context.Evaluate(expression);
+
+            return Task.FromResult((T) new TypeMapper(_context).Map(val));
+        }
+        
         public ICodeRunner Register<T>(T obj, string alias)
         {
             _container.Register(obj, alias);

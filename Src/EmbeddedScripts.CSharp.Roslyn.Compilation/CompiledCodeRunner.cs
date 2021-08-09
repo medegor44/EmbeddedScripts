@@ -14,7 +14,12 @@ namespace EmbeddedScripts.CSharp.Roslyn.Compilation
         {
             throw new NotImplementedException();
         }
-        
+
+        public Task<T> EvaluateAsync<T>(string expression)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ICodeRunner> RunAsync(string code)
         {
             var generatedCode = _codeGenerator.GenerateCode(code, _container);

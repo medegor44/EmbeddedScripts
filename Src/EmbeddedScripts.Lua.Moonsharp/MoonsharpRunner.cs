@@ -11,14 +11,17 @@ namespace EmbeddedScripts.Lua.Moonsharp
         private Script _script;
         private Container _container = new();
 
-        public Task<object> EvaluateAsync(string expression)
+        public Task<object> EvaluateAsync(string expression) => 
+            EvaluateAsync<object>(expression);
+        
+        public Task<T> EvaluateAsync<T>(string expression)
         {
             _script ??= new Script();
             
             _script.RegisterVariablesFromContainer(_container);
             var val = _script.DoString(expression);
             
-            return Task.FromResult(val.ToObject());
+            return Task.FromResult((T)val.ToObject());
         }
         
         public Task<ICodeRunner> RunAsync(string code)

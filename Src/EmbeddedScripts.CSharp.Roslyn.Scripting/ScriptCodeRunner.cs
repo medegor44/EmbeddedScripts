@@ -20,6 +20,12 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
             return _scriptState.ReturnValue;
         }
         
+        public async Task<T> EvaluateAsync<T>(string expression)
+        {
+            await RunAsync(expression);
+            return (T) _scriptState.ReturnValue;
+        }
+        
         public ScriptCodeRunner AddEngineOptions(Func<ScriptOptions, ScriptOptions> optionsFunc)
         {
             _roslynOptions = optionsFunc(_roslynOptions);

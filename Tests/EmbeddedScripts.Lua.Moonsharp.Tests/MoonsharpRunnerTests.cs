@@ -237,7 +237,7 @@ end";
         public async Task EvaluateAsync_Success()
         {
             var runner = new MoonsharpRunner();
-            var result = await runner.EvaluateAsync("return 1 + 2");
+            var result = await runner.EvaluateAsync<double>("return 1 + 2");
 
             Assert.IsType<double>(result);
             Assert.Equal(3.0, result);
@@ -253,7 +253,7 @@ function GetHello(name)
     return 'Hello ' .. name; 
 end");
             
-            var result = await runner.EvaluateAsync(@"return GetHello('John')");
+            var result = await runner.EvaluateAsync<string>(@"return GetHello('John')");
             
             Assert.IsType<string>(result);
             Assert.Equal("Hello John", result);

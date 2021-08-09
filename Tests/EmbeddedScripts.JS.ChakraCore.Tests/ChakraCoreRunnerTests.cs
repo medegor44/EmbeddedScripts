@@ -235,7 +235,7 @@ function check() {
         public async Task EvaluateAsync_Success()
         {
             var runner = new ChakraCoreRunner();
-            var result = await runner.EvaluateAsync("1 + 2");
+            var result = await runner.EvaluateAsync<int>("1 + 2");
             
             Assert.Equal(3, result);
         }
@@ -246,7 +246,7 @@ function check() {
             var runner = new ChakraCoreRunner();
 
             await runner.RunAsync(@"function GetHello(name) { return 'Hello ' + name; }");
-            var result = await runner.EvaluateAsync(@"GetHello(""John"")");
+            var result = await runner.EvaluateAsync<string>(@"GetHello(""John"")");
             
             Assert.Equal("Hello John", result);
         }

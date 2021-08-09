@@ -20,14 +20,17 @@ namespace EmbeddedScripts.JS.Jint
             return this;
         }
 
-        public Task<object> EvaluateAsync(string expression)
+        public Task<object> EvaluateAsync(string expression) =>
+            EvaluateAsync<object>(expression);
+        
+        public Task<T> EvaluateAsync<T>(string expression)
         {
             _engine ??= new Engine(_jintOptions);
             
             _engine.SetValuesFromContainer(_container);
             var val = _engine.Evaluate(expression);
-            
-            return Task.FromResult(val.ToObject());
+
+            return Task.FromResult((T) val.ToObject());
         }
 
         public ICodeRunner Register<T>(T obj, string alias)

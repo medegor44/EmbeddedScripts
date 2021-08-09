@@ -229,7 +229,7 @@ void check() {
         public async Task EvaluateAsync_Success()
         {
             var runner = new ScriptCodeRunner();
-            var result = await runner.EvaluateAsync("1 + 2");
+            var result = await runner.EvaluateAsync<int>("1 + 2");
             
             Assert.Equal(3, result);
         }
@@ -240,7 +240,7 @@ void check() {
             var runner = new ScriptCodeRunner();
 
             await runner.RunAsync(@"string GetHello(string name) { return ""Hello "" + name; }");
-            var result = await runner.EvaluateAsync(@"GetHello(""John"")");
+            var result = await runner.EvaluateAsync<string>(@"GetHello(""John"")");
             
             Assert.Equal("Hello John", result);
         }
