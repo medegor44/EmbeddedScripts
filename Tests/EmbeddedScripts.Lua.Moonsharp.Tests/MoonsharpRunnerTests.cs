@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
+using MoonSharp.Interpreter;
 using Xunit;
 
 namespace EmbeddedScripts.Lua.Moonsharp.Tests
@@ -230,6 +231,51 @@ end";
             await runner.RunAsync("incr()");
             await runner.RunAsync("incr()");
             await runner.RunAsync("check()");
+        }
+        
+        [Fact]
+        public async Task EvaluateAsync_Success()
+        {
+            var runner = new MoonsharpRunner();
+            var result = await runner.EvaluateAsync<double>("return 1 + 2");
+
+            Assert.IsType<double>(result);
+            Assert.Equal(3.0, result);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
+        {
+            var runner = new MoonsharpRunner();
+
+            await runner.RunAsync(@"
+function GetHello(name) 
+    return 'Hello ' .. name; 
+end");
+            
+            var result = await runner.EvaluateAsync<string>(@"return GetHello('John')");
+            
+            Assert.IsType<string>(result);
+            Assert.Equal("Hello John", result);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsyncScriptObject()
+        {
+            var runner = new MoonsharpRunner();
+
+            await runner.RunAsync(@"
+function t() 
+    return {X = ""abc"", Y = 1};
+end
+");
+            
+            var result = await runner.EvaluateAsync<object>("return t()");
+
+            var tab = result as Table;
+            
+            Assert.Equal("abc", tab?.Get("X").String);
+            Assert.Equal(1, tab?.Get("Y").Number);
         }
     }
 }

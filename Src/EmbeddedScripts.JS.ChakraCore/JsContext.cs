@@ -13,16 +13,16 @@ namespace EmbeddedScripts.JS.ChakraCore
             _context = context;
         }
 
-        public JsScope Scope => 
-            new (new(_context));
+        public JsScope Scope =>
+            new(new(_context));
 
-        public void Run(string script)
+        public JsValue Evaluate(string expression)
         {
             using (Scope)
             {
                 try
                 {
-                    JavaScriptContext.RunScript(script);
+                    return new JsValue(this, JavaScriptContext.RunScript(expression));
                 }
                 catch (JavaScriptScriptException e)
                 {
@@ -33,23 +33,23 @@ namespace EmbeddedScripts.JS.ChakraCore
                     if (errorName == "SyntaxError")
                         throw new ScriptSyntaxErrorException(errorMessage, e);
 
-                    if (CallbackException == null) 
+                    if (CallbackException == null)
                         throw new ScriptRuntimeErrorException(errorMessage, e);
-                    
+
                     var ex = CallbackException;
                     CallbackException = null;
                     throw ex;
                 }
-                catch (Exception e) when (e is 
-                    JavaScriptUsageException or 
-                    JavaScriptEngineException or 
+                catch (Exception e) when (e is
+                    JavaScriptUsageException or
+                    JavaScriptEngineException or
                     JavaScriptFatalException)
                 {
                     throw new ScriptEngineErrorException(e);
                 }
             }
         }
-        
+
         public JsValue GlobalObject
         {
             get

@@ -4,6 +4,6 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
 {
     public class Globals
     {
-        public Container Container { get; set; }
+        public Container Container { get; } = new();
     }
 }

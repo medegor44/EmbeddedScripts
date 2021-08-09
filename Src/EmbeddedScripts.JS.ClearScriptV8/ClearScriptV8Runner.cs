@@ -7,19 +7,17 @@ using Microsoft.ClearScript.V8;
 
 namespace EmbeddedScripts.JS.ClearScriptV8
 {
-    public class ClearScriptV8Runner : ICodeRunner, IDisposable
+    public class ClearScriptV8Runner : ICodeRunner, IEvaluator, IDisposable
     {
-        private Container _container = new();
-        private V8ScriptEngine _engine;
+        private readonly V8ScriptEngine _engine = new();
 
-        public Task<ICodeRunner> RunAsync(string code)
+        public Task<T> EvaluateAsync<T>(string expression)
         {
-            _engine ??= new V8ScriptEngine();
-            _engine.AddHostObjectsFromContainer(_container);
-
             try
             {
-                _engine.Execute(code);
+                var val = (T)_engine.Evaluate(expression);
+                return Task.FromResult(val);
+
             }
             catch (ScriptEngineException e)
             {
@@ -29,19 +27,22 @@ namespace EmbeddedScripts.JS.ClearScriptV8
                 var tripleInnerException = e.InnerException?.InnerException?.InnerException;
                 throw tripleInnerException ?? new ScriptRuntimeErrorException(e);
             }
+        }
+
+        public Task<ICodeRunner> RunAsync(string code)
+        {
+            EvaluateAsync<object>(code);
 
             return Task.FromResult(this as ICodeRunner);
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            _container.Register(obj, alias);
+            _engine.AddHostObject(obj, alias);
             return this;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() =>
             _engine?.Dispose();
-        }
     }
 }

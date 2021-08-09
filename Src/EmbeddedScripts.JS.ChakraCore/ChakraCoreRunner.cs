@@ -1,44 +1,43 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
-
 using EmbeddedScripts.Shared;
 
 namespace EmbeddedScripts.JS.ChakraCore
 {
-    public class ChakraCoreRunner : ICodeRunner, IDisposable
+    public class ChakraCoreRunner : ICodeRunner, IEvaluator, IDisposable
     {
-        private Container _container = new();
-        private JsContext _context;
-        private JsRuntime _runtime = new();
-        
-        private JsContext AddGlobals(JsContext context)
-        {
-            var mapper = new TypeMapper(context);
-            _container.VariableAliases
-                .Aggregate(context.GlobalObject, (globalObj, alias) =>
-                    globalObj.AddProperty(alias, mapper.Map(_container.Resolve(alias))));
+        private readonly JsRuntime _runtime = new();
+        private readonly TypeMapper _mapper;
+        private readonly JsContext _context;
 
-            return context;
+        public ChakraCoreRunner()
+        {
+            _context = _runtime.CreateContext();
+            _mapper = new(_context);
+        }
+
+        public Task<T> EvaluateAsync<T>(string expression)
+        {
+            var val = _context.Evaluate(expression);
+
+            return Task.FromResult(new TypeMapper(_context).Map<T>(val));
         }
         
         public Task<ICodeRunner> RunAsync(string code)
         {
-            _context = AddGlobals(_context ?? _runtime.CreateContext());
-            _context.Run(code);
+            EvaluateAsync<object>(code);
             
             return Task.FromResult(this as ICodeRunner);
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            _container.Register(obj, alias);
+            _context.GlobalObject.AddProperty(alias, _mapper.Map(obj));
+
             return this;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() =>
             _runtime?.Dispose();
-        }
     }
 }
