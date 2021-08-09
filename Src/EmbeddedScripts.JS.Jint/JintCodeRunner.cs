@@ -25,9 +25,9 @@ namespace EmbeddedScripts.JS.Jint
             _engine ??= new Engine(_jintOptions);
             
             _engine.SetValuesFromContainer(_container);
-            var val = _engine.Evaluate(expression).ToObject();
+            var val = _engine.Evaluate(expression);
             
-            return Task.FromResult(val);
+            return Task.FromResult(val.ToObject());
         }
 
         public ICodeRunner Register<T>(T obj, string alias)

@@ -219,5 +219,14 @@ function check() {
             
             Assert.Equal("Hello John", result);
         }
+
+        [Fact]
+        public async Task EvaluateAsyncJsObject()
+        {
+            var runner = new ClearScriptV8Runner();
+            dynamic result = await runner.EvaluateAsync("function t() { return {a : 'a'} }; t()");
+            
+            Assert.Equal("a", result.a);
+        }
     }
 }

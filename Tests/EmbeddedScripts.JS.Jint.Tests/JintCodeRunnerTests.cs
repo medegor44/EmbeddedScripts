@@ -218,5 +218,14 @@ function check() {
             
             Assert.Equal("Hello John", result);
         }
+        
+        [Fact]
+        public async Task EvaluateAsyncJsObject()
+        {
+            var runner = new JintCodeRunner();
+            dynamic result = await runner.EvaluateAsync("function t() { return {a : 'a'} }; t()");
+            
+            Assert.Equal("a", result.a);
+        }
     }
 }
