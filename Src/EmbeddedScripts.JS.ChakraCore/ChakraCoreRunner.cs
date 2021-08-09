@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-
 using EmbeddedScripts.Shared;
 
 namespace EmbeddedScripts.JS.ChakraCore
@@ -14,7 +13,10 @@ namespace EmbeddedScripts.JS.ChakraCore
         
         public Task<object> EvaluateAsync(string expression)
         {
-            throw new NotImplementedException();
+            _context = AddGlobals(_context ?? _runtime.CreateContext());
+            var val = _context.Evaluate(expression);
+            
+            return Task.FromResult(new TypeMapper(_context).Map(val));
         }
         
         private JsContext AddGlobals(JsContext context)

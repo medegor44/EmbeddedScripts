@@ -100,5 +100,11 @@ namespace EmbeddedScripts.JS.ChakraCore
                 return new(_context, MapClrPrimitivesToJs(value));
             }
         }
+
+        public object Map(JsValue value)
+        {
+            using (_context.Scope)
+                return MapJsPrimitivesToClr(value);
+        }
     }
 }
