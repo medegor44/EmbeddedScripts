@@ -9,16 +9,12 @@ namespace EmbeddedScripts.JS.ClearScriptV8
 {
     public class ClearScriptV8Runner : ICodeRunner, IEvaluator, IDisposable
     {
-        private readonly Container _container = new();
-        private V8ScriptEngine _engine;
+        private readonly V8ScriptEngine _engine = new();
 
         public Task<T> EvaluateAsync<T>(string expression)
         {
-            _engine ??= new V8ScriptEngine();
-
             try
             {
-                _engine.AddHostObjectsFromContainer(_container);
                 var val = (T)_engine.Evaluate(expression);
                 return Task.FromResult(val);
 
@@ -42,14 +38,11 @@ namespace EmbeddedScripts.JS.ClearScriptV8
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            _container.Register(obj, alias);
-            
+            _engine.AddHostObject(obj, alias);
             return this;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() =>
             _engine?.Dispose();
-        }
     }
 }
