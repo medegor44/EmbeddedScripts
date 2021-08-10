@@ -8,17 +8,12 @@ namespace EmbeddedScripts.Lua.Moonsharp
 {
     public class MoonsharpRunner : ICodeRunner, IEvaluator
     {
-        private Script _script;
-        private readonly Container _container = new();
+        private readonly Script _script = new();
 
         public Task<T> EvaluateAsync<T>(string expression)
         {
-            _script ??= new Script();
-
             try
             {
-                _script.RegisterVariablesFromContainer(_container);
-                
                 var val = _script.DoString(expression);
                 
                 return Task.FromResult((T)val.ToObject());
@@ -46,7 +41,7 @@ namespace EmbeddedScripts.Lua.Moonsharp
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            _container.Register(obj, alias);
+            _script.RegisterVariable(obj, alias);
             
             return this;
         }
