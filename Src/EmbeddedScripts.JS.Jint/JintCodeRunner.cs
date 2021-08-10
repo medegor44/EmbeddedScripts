@@ -50,6 +50,9 @@ namespace EmbeddedScripts.JS.Jint
                 throw new ScriptEngineErrorException(e);
             }
         }
+        
+        public Task<object> EvaluateAsync(string expression) =>
+            EvaluateAsync<object>(expression);
 
         public Task<ICodeRunner> RunAsync(string code)
         {

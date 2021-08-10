@@ -50,9 +50,6 @@ namespace EmbeddedScripts.JS.ChakraCore
             }
         }
 
-        public void Run(string script) =>
-            Evaluate(script);
-
         public JsValue GlobalObject
         {
             get

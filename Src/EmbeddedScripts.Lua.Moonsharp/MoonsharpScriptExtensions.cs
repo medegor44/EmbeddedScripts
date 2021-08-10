@@ -1,26 +1,18 @@
 ﻿using System;
-using System.Linq;
-using EmbeddedScripts.Shared;
 using MoonSharp.Interpreter;
 
 namespace EmbeddedScripts.Lua.Moonsharp
 {
     public static class MoonsharpScriptExtensions
     {
-        private static Script RegisterVariableFromContainer(this Script script, string alias, Container container)
+        public static void RegisterVariable<T>(this Script script, T obj, string alias)
         {
-            var obj = container.Resolve(alias);
-            var type = container.GetTypeByAlias(alias);
+            var type = typeof(T);
             
             if (obj is not Delegate)
                 UserData.RegisterType(type);
             
             script.Globals[alias] = obj;
-            return script;
         }
-
-        public static Script RegisterVariablesFromContainer(this Script script, Container container) =>
-            container.VariableAliases.Aggregate(script, (currentScript, alias) =>
-                currentScript.RegisterVariableFromContainer(alias, container));
     }
 }
