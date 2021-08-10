@@ -10,14 +10,14 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
 {
     public class ScriptCodeRunner : ICodeRunner, IEvaluator
     {
-        private readonly Container _container = new();
+        private readonly Globals _globals = new();
         private ScriptOptions _roslynOptions = ScriptOptions.Default;
         private ScriptState _scriptState;
         
         public async Task<T> EvaluateAsync<T>(string expression)
         {
             _scriptState ??= await CSharpScript.RunAsync<T>("", BuildEngineOptions(),
-                new Globals { Container = _container });
+                _globals);
             
             try
             {
@@ -30,6 +30,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
             {
                 throw new ScriptSyntaxErrorException(e);
             }
+
         }
         
         public async Task<ICodeRunner> RunAsync(string code)
@@ -48,16 +49,16 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            _container.Register(obj, alias);
+            _globals.Container.Register(obj, alias);
             
             return this;
         }
 
         private string GenerateScriptCode(string userCode) => 
             new CodeGeneratorForScripting()
-                .GenerateCode(userCode, _container);
+                .GenerateCode(userCode, _globals.Container);
 
         private ScriptOptions BuildEngineOptions() =>
-            _roslynOptions.AddReferencesFromContainer(_container);
+            _roslynOptions.AddReferencesFromContainer(_globals.Container);
     }
 }
