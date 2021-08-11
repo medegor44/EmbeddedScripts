@@ -19,6 +19,10 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
 
         [Theory]
         [InlineData(3)]
+        [InlineData((byte)3)]
+        [InlineData((sbyte)3)]
+        [InlineData((short)3)]
+        [InlineData((ushort)3)]
         [InlineData("3.14")]
         [InlineData(3.14)]
         [InlineData(true)]

@@ -27,6 +27,8 @@ namespace EmbeddedScripts.JS.ChakraCore
                 case TypeCode.UInt16:
                 case TypeCode.Int16:
                 case TypeCode.Int32:
+                    return JavaScriptValue.FromInt32(Convert.ToInt32(value));
+                
                 case TypeCode.UInt32:
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
@@ -111,7 +113,7 @@ namespace EmbeddedScripts.JS.ChakraCore
             {
                 if (value is Delegate func)
                     return new(_context, MapDelegate(func));
-                
+
                 return new(_context, MapClrPrimitivesToJs(value));
             }
         }
