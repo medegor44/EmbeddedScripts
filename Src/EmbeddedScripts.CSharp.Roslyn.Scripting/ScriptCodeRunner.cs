@@ -28,7 +28,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
                     _scriptState = await CSharpScript.RunAsync(GenerateScriptCode(code), BuildEngineOptions(),
                         new Globals{ Container = _container });
                 else
-                    _scriptState = await _scriptState.ContinueWithAsync(GenerateScriptCode(code));
+                    _scriptState = await _scriptState.ContinueWithAsync(GenerateScriptCode(code), BuildEngineOptions());
             }
             catch (CompilationErrorException e)
             {
