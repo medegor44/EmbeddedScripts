@@ -227,15 +227,7 @@ void check() {
         [Fact]
         public async Task RunAsyncWithContinuation_AddEngineOptions_Success()
         {
-            var code = @"
-var x = 0;
-void incr() { 
-  x++;
-}
-void check() {
-  if (x != 2)
-    throw new Exception(""x is not equal to 2"");
-}";
+            var code = @"Action action = () => {};";
             var runner = new ScriptCodeRunner();
             
             await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() =>  runner.RunAsync(code));
@@ -243,9 +235,6 @@ void check() {
             runner.AddEngineOptions(options => options.AddImports("System"));
 
             await runner.RunAsync(code);
-            await runner.RunAsync("incr();");
-            await runner.RunAsync("incr();");
-            await runner.RunAsync("check();");
         }
 
         [Fact(Skip = "test is skipped until security question is resolved")]
