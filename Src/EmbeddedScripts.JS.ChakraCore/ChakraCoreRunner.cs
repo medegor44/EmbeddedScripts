@@ -29,12 +29,9 @@ namespace EmbeddedScripts.JS.ChakraCore
             return Task.FromResult((T) new TypeMapper(_context).Map(val));
         }
         
-        public Task<object> EvaluateAsync(string expression) 
-            => EvaluateAsync<object>(expression);
-        
         public Task<ICodeRunner> RunAsync(string code)
         {
-            EvaluateAsync(code);
+            EvaluateAsync<object>(code);
             
             return Task.FromResult(this as ICodeRunner);
         }

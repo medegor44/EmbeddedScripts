@@ -21,9 +21,6 @@ namespace EmbeddedScripts.JS.Jint
             return this;
         }
 
-        public Task<object> EvaluateAsync(string expression) =>
-            EvaluateAsync<object>(expression);
-
         public Task<T> EvaluateAsync<T>(string expression)
         {
             _engine ??= new Engine(_jintOptions);
@@ -58,7 +55,7 @@ namespace EmbeddedScripts.JS.Jint
         {
             _engine ??= new Engine(_jintOptions);
 
-            EvaluateAsync(code);
+            EvaluateAsync<object>(code);
 
             return Task.FromResult(this as ICodeRunner);
         }

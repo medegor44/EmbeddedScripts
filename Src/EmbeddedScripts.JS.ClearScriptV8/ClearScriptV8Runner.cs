@@ -32,13 +32,10 @@ namespace EmbeddedScripts.JS.ClearScriptV8
                 throw tripleInnerException ?? new ScriptRuntimeErrorException(e);
             }
         }
-        
-        public Task<object> EvaluateAsync(string expression) => 
-            EvaluateAsync<object>(expression);
 
         public Task<ICodeRunner> RunAsync(string code)
         {
-            EvaluateAsync(code);
+            EvaluateAsync<object>(code);
 
             return Task.FromResult(this as ICodeRunner);
         }

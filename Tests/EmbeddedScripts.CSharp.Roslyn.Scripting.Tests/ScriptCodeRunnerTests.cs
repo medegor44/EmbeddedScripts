@@ -262,7 +262,7 @@ A t()
 } 
 ");
             
-            var result = await runner.EvaluateAsync("t()");
+            var result = await runner.EvaluateAsync<object>("t()");
             
             var actual = result.GetType().GetField("X")?.GetValue(result);
             Assert.Equal("abc", actual);

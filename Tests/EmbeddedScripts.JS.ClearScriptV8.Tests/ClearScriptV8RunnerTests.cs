@@ -227,7 +227,7 @@ function GetHello(name) {
         public async Task EvaluateAsyncScriptObject()
         {
             var runner = new ClearScriptV8Runner();
-            dynamic result = await runner.EvaluateAsync("function t() { return {a : 'a'} }; t()");
+            dynamic result = await runner.EvaluateAsync<object>("function t() { return {a : 'a'} }; t()");
             
             Assert.Equal("a", result.a);
         }

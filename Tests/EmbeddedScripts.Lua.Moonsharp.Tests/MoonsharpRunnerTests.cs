@@ -270,7 +270,7 @@ function t()
 end
 ");
             
-            var result = await runner.EvaluateAsync("return t()");
+            var result = await runner.EvaluateAsync<object>("return t()");
 
             var tab = result as Table;
             
