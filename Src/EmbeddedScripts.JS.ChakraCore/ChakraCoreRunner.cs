@@ -26,7 +26,7 @@ namespace EmbeddedScripts.JS.ChakraCore
             _context = AddGlobals(_context ?? _runtime.CreateContext());
             var val = _context.Evaluate(expression);
 
-            return Task.FromResult((T) new TypeMapper(_context).Map(val));
+            return Task.FromResult(new TypeMapper(_context).Map<T>(val));
         }
         
         public Task<ICodeRunner> RunAsync(string code)
