@@ -16,32 +16,25 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
         
         public async Task<T> EvaluateAsync<T>(string expression)
         {
+            _scriptState ??= await CSharpScript.RunAsync<T>("", BuildEngineOptions(),
+                new Globals { Container = _container });
+            
             try
             {
-                if (_scriptState is null)
-                    _scriptState = await CSharpScript.RunAsync(GenerateScriptCode(expression), BuildEngineOptions(),
-                        new Globals{ Container = _container });
-                else
-                    _scriptState = await _scriptState.ContinueWithAsync(GenerateScriptCode(expression));
-                return (T) _scriptState.ReturnValue;
+                var state = await _scriptState.ContinueWithAsync<T>(GenerateScriptCode(expression), BuildEngineOptions());
+                _scriptState = state;
+                
+                return state.ReturnValue;
             }
             catch (CompilationErrorException e)
             {
                 throw new ScriptSyntaxErrorException(e);
             }
-            
-        }
-        
-        public async Task<object> EvaluateAsync(string expression)
-        {
-            await EvaluateAsync<object>(expression);
-            
-            return _scriptState.ReturnValue;
         }
         
         public async Task<ICodeRunner> RunAsync(string code)
         {
-            await EvaluateAsync(code);
+            await EvaluateAsync<object>(code);
             
             return this;
         }
