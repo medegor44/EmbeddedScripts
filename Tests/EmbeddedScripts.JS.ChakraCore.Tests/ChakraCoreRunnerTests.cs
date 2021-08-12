@@ -102,6 +102,20 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             using var runner = new ChakraCoreRunner();
             await _tests.RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException(runner);
         }
+        
+        [Fact]
+        public async Task EvaluateExpressionWithNetAndJsTypes()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.EvaluateExpressionWithNetAndJsTypes(runner);
+        }
+        
+        [Fact]
+        public async Task NetAndJsIntegersEquality()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.NetAndJsIntegersEquality(runner);
+        }
 
         [Theory]
         [InlineData(3)]

@@ -21,7 +21,7 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
         }
         
         [Fact]
-        public async Task RunWithGlobalVariables_Succeed()
+        public async Task MutateRegisteredVariable_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";

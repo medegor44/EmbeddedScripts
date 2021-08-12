@@ -1,9 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using EmbeddedScripts.JS.Common.Tests;
-using EmbeddedScripts.Shared;
 using EmbeddedScripts.Shared.Exceptions;
-using Jint.Runtime;
 using Xunit;
 using HelperObject = HelperObjects.HelperObject;
 
@@ -64,9 +61,17 @@ namespace EmbeddedScripts.JS.Jint.Tests
         [Fact]
         public async Task RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException() =>
             await _tests.RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException(new JintCodeRunner());
+
+        [Fact]
+        public async Task EvaluateExpressionWithNetAndJsTypes() =>
+            await _tests.EvaluateExpressionWithNetAndJsTypes(new JintCodeRunner());
+
+        [Fact]
+        public async Task NetAndJsIntegersEquality() =>
+            await _tests.NetAndJsIntegersEquality(new JintCodeRunner());
         
         [Fact]
-        public async void RunWithGlobalVariables_Succeed()
+        public async void MutateRegisteredVariable_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";
@@ -123,5 +128,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
             
             Assert.Equal("a", result.a);
         }
+        
+        
     }
 }

@@ -145,7 +145,25 @@ function check() {
             
             Assert.Equal(3, result);
         }
+
+        public async Task EvaluateExpressionWithNetAndJsTypes<T>(T runner) where T : ICodeRunner, IEvaluator
+        {
+            runner.Register(1, "x");
+            await runner.RunAsync("let y = 2;");
+            var actual = await runner.EvaluateAsync<int>("x + y");
+            
+            Assert.Equal(3, actual);
+        }
         
+        public async Task NetAndJsIntegersEquality<T>(T runner) where T : ICodeRunner, IEvaluator
+        {
+            runner.Register(1, "x");
+            await runner.RunAsync("let y = 1;");
+            var actual = await runner.EvaluateAsync<bool>("x === y");
+
+            Assert.True(actual);
+        }
+
         public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue<T>(T runner) 
             where T : ICodeRunner, IEvaluator
         {

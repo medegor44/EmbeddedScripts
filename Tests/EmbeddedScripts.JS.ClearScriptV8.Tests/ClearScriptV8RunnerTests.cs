@@ -97,7 +97,21 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
         }
 
         [Fact]
-        public async void RunWithGlobalVariables_Succeed()
+        public async Task EvaluateExpressionWithNetAndJsTypes()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.EvaluateExpressionWithNetAndJsTypes(runner);
+        }
+
+        [Fact]
+        public async Task NetAndJsIntegersEquality()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.NetAndJsIntegersEquality(runner);
+        }
+        
+        [Fact]
+        public async void MutateRegisteredVariable_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";
