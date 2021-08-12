@@ -22,10 +22,10 @@ namespace EmbeddedScripts.JS.ClearScriptV8
             catch (ScriptEngineException e)
             {
                 if (e.Message.StartsWith("SyntaxError"))
-                    throw new ScriptSyntaxErrorException(e);
+                    throw new ScriptSyntaxErrorException(e.Message, e);
 
                 var tripleInnerException = e.InnerException?.InnerException?.InnerException;
-                throw tripleInnerException ?? new ScriptRuntimeErrorException(e);
+                throw tripleInnerException ?? new ScriptRuntimeErrorException(e.Message, e);
             }
         }
 

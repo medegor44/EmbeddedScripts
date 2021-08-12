@@ -28,13 +28,14 @@ namespace EmbeddedScripts.JS.ChakraCore
                 {
                     var error = new JsValue(this, e.Error);
                     var errorName = error.GetProperty("name").ToString();
-                    var errorMessage = error.GetProperty("message").ToString();
+
+                    var stringifyError = error.ToString();
 
                     if (errorName == "SyntaxError")
-                        throw new ScriptSyntaxErrorException(errorMessage, e);
+                        throw new ScriptSyntaxErrorException(stringifyError, e);
 
                     if (CallbackException == null)
-                        throw new ScriptRuntimeErrorException(errorMessage, e);
+                        throw new ScriptRuntimeErrorException(stringifyError, e);
 
                     var ex = CallbackException;
                     CallbackException = null;
@@ -45,7 +46,7 @@ namespace EmbeddedScripts.JS.ChakraCore
                     JavaScriptEngineException or
                     JavaScriptFatalException)
                 {
-                    throw new ScriptEngineErrorException(e);
+                    throw new ScriptEngineErrorException(e.Message, e);
                 }
             }
         }
