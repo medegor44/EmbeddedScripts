@@ -4,8 +4,6 @@
     <TargetFramework>net5.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
   </PropertyGroup>
-
-  <Import Project="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems" Label="Shared" />
   
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
     <DefineConstants>_WINDOWS</DefineConstants>
@@ -18,6 +16,10 @@
   <ItemGroup>
     <PackageReference Include="JavaScriptEngineSwitcher.ChakraCore.Native.linux-x64" Version="3.9.1" />
     <PackageReference Include="JavaScriptEngineSwitcher.ChakraCore.Native.win-x64" Version="3.9.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
   </ItemGroup>
 
 </Project>
