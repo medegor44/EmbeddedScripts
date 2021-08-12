@@ -21,7 +21,7 @@ namespace EmbeddedScripts.Lua.Moonsharp.Tests
         }
 
         [Fact]
-        public async void RunWithGlobalVariables_Succeed()
+        public async void MutateRegisteredVariable_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x = t.x + 1;";

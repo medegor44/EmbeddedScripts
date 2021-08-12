@@ -4,6 +4,7 @@ using EmbeddedScripts.Shared;
 using EmbeddedScripts.Shared.Exceptions;
 using Esprima;
 using Jint;
+using Jint.Native;
 using Jint.Runtime;
 
 namespace EmbeddedScripts.JS.Jint
@@ -14,6 +15,16 @@ namespace EmbeddedScripts.JS.Jint
         private Options _jintOptions = new();
         private Engine _engine;
 
+        private object ToNumber(JsValue jsNum)
+        {
+            var num = jsNum.AsNumber();
+            
+            if (Math.Abs(num - (int)num) < double.Epsilon)
+                return (int)num;
+            
+            return num;
+        }
+        
         public JintCodeRunner AddEngineOptions(Func<Options, Options> optionsFunc)
         {
             _jintOptions = optionsFunc(_jintOptions);
@@ -28,17 +39,20 @@ namespace EmbeddedScripts.JS.Jint
             try
             {
                 _engine.SetValuesFromContainer(_container);
-                var val = (T)_engine.Evaluate(expression).ToObject();
+                var val = _engine.Evaluate(expression);
 
-                return Task.FromResult(val);
+                if (val.Type == Types.Number)
+                    return Task.FromResult((T)ToNumber(val));
+                
+                return Task.FromResult((T)val.ToObject());
             }
             catch (JavaScriptException e)
             {
-                throw new ScriptRuntimeErrorException(e);
+                throw new ScriptRuntimeErrorException(e.Error.ToString(), e);
             }
             catch (ParserException e)
             {
-                throw new ScriptSyntaxErrorException(e);
+                throw new ScriptSyntaxErrorException(e.Message, e);
             }
             catch (Exception e) when (e is
                 MemoryLimitExceededException or
@@ -47,13 +61,10 @@ namespace EmbeddedScripts.JS.Jint
                 JintException or
                 StatementsCountOverflowException)
             {
-                throw new ScriptEngineErrorException(e);
+                throw new ScriptEngineErrorException(e.Message, e);
             }
         }
         
-        public Task<object> EvaluateAsync(string expression) =>
-            EvaluateAsync<object>(expression);
-
         public Task<ICodeRunner> RunAsync(string code)
         {
             _engine ??= new Engine(_jintOptions);

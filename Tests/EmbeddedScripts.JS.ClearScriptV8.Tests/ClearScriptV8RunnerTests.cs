@@ -1,25 +1,124 @@
 using System;
 using System.Threading.Tasks;
+using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
-using HelperObjects;
 using Xunit;
+using HelperObject = HelperObjects.HelperObject;
 
 namespace EmbeddedScripts.JS.ClearScriptV8.Tests
 {
     public class ClearScriptV8RunnerTests
     {
+        private JsCommonTests _tests = new();
+
         [Fact]
-        public async void RunValidCode_Succeed()
+        public async Task RunValidCode_Succeed()
         {
-            var code = "let a = 1; let b = 2; let c = a + b;";
-
             using var runner = new ClearScriptV8Runner();
-
-            await runner.RunAsync(code);
+            await _tests.RunValidCode_Succeed(runner);
+        }
+        
+        [Fact]
+        public async Task RunWithTwoGlobalVariables_Succeed()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.RunWithTwoGlobalVariables_Succeed(runner);
         }
 
         [Fact]
-        public async void RunWithGlobalVariables_Succeed()
+        public async Task RunWithGlobalFunc_Succeed()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.RunWithGlobalFunc_Succeed(runner);
+        }
+
+        [Fact]
+        public async Task RunInvalidCode_ThrowsException()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.RunInvalidCode_ThrowsException(runner);
+        }
+        
+        [Fact]
+        public async Task RegisteringNewGlobalVarBetweenRuns_Success()
+        {
+            using var runner = new ClearScriptV8Runner();
+
+            await _tests.RegisteringNewGlobalVarBetweenRuns_Success(runner);
+        }
+        
+        [Fact]
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.RunAsyncWithContinuation_EachRunSharesGlobals_Success(runner);
+        }
+
+        [Fact]
+        public async Task RunAsyncWithContinuation_Success()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.RunAsyncWithContinuation_Success(runner);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsync_Success()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.EvaluateAsync_Success(runner);
+        }
+
+        [Fact]
+        public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue(runner);
+        }
+        
+        [Fact]
+        public async Task ExposedFuncThrowsException_RunnerThrowsSameException()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.ExposedFuncThrowingException_RunnerThrowsException(runner);
+        }
+        
+        [Fact]
+        public async void CodeThrowsAnException_ExceptionWithSameMessageIsThrowingFromRunner()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.CodeThrowsAnException_ExceptionWithSameMessageIsThrowingFromRunner(runner);
+        }
+        
+        [Fact]
+        public async Task RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException(runner);
+        }
+
+        [Fact]
+        public async Task EvaluateExpressionWithNetAndJsTypes()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.EvaluateExpressionWithNetAndJsTypes(runner);
+        }
+
+        [Fact]
+        public async Task NetAndJsIntegersEquality()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.NetAndJsIntegersEquality(runner);
+        }
+
+        [Fact]
+        public async Task EvaluateAsyncString()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.EvaluateAsyncString(runner);
+        }
+
+        [Fact]
+        public async void MutateRegisteredVariable_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";
@@ -47,71 +146,8 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
         [Fact]
         public async Task AddConfigTwice_AddsNewConfig_Succeed()
         {
-            var s = "abc";
-            var t = new HelperObject();
-            var code = "t.x += s.length;";
-
             using var runner = new ClearScriptV8Runner();
-            runner.Register(s, "s");
-
-            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
-                runner.RunAsync(code));
-
-            runner.Register(t, "t");
-
-            await runner.RunAsync(code);
-        }
-
-        [Fact]
-        public async Task RunWithTwoGlobalVariables_Succeed()
-        {
-            using var runner = new ClearScriptV8Runner();
-            runner.Register(1, "a")
-                .Register(2, "b");
-
-            await runner.RunAsync("let c = a + b;");
-        }
-
-        [Fact]
-        public async Task RunWithGlobalFunc_Succeed()
-        {
-            int x = 0;
-            var code = "t();";
-
-            using var runner = new ClearScriptV8Runner();
-            runner
-                .Register<Action>(() => x++, "t");
-
-            await runner.RunAsync(code);
-
-            Assert.Equal(1, x);
-        }
-
-        [Fact]
-        public async Task RunInvalidCode_ThrowsException()
-        {
-            var code = "vat a = 1;";
-
-            using var runner = new ClearScriptV8Runner();
-
-            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
-        }
-
-        [Fact]
-        public async void CodeThrowsAnException_SameExceptionIsThrowingFromRunner()
-        {
-            var exceptionMessage = "Exception from user code";
-            var code = $"throw Error('{exceptionMessage}');";
-
-            var exception = await Assert.ThrowsAsync<ScriptRuntimeErrorException>(async () =>
-            {
-                using var runner = new ClearScriptV8Runner();
-                await runner.RunAsync(code);
-            });
-
-            var expected = $"Error: {exceptionMessage}";
-
-            Assert.Equal(expected, exception.InnerException?.Message);
+            await _tests.AddConfigTwice_AddsNewConfig_Succeed(runner);
         }
 
         public struct A
@@ -132,95 +168,6 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
                 .RunAsync("a.X++; a['X']++; f(a.X);");
 
             Assert.Equal(3, inner);
-        }
-
-        [Fact]
-        public async Task ExposedFuncThrowsException_RunnerThrowsSameException()
-        {
-            var exceptionMessage = "Hello from exception";
-
-            using var runner = new ClearScriptV8Runner();
-            runner
-                .Register<Action>(() => throw new ArgumentException(exceptionMessage), "f");
-
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => runner.RunAsync("f()"));
-            Assert.Equal(exceptionMessage, exception.Message);
-        }
-
-        [Fact]
-        public async Task RegisteringNewGlobalVarBetweenRuns_Success()
-        {
-            var code = "let x = 0;";
-            var runner = new ClearScriptV8Runner();
-
-            runner.Register<Func<int, int>>(x => x + 1, "Inc");
-            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
-
-            await runner.RunAsync(code);
-            await runner.RunAsync("x = Inc(x);");
-            await runner.RunAsync("x = Inc(x);");
-            await runner.RunAsync("Check(x);");
-        }
-
-        
-        [Fact]
-        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
-        {
-            var code = "let x = 0;";
-            using var runner = new ClearScriptV8Runner();
-
-            runner.Register<Func<int, int>>(x => x + 1, "Inc");
-
-            await runner.RunAsync(code);
-            await runner.RunAsync("x = Inc(x);");
-            await runner.RunAsync("x = Inc(x);");
-
-            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
-
-            await runner.RunAsync("Check(x);");
-        }
-
-        [Fact]
-        public async Task RunAsyncWithContinuation_Success()
-        {
-            var code = @"
-var x = 0;
-function incr() { 
-  x++;
-}
-function check() {
-  if (x !== 2)
-    throw new Error('x is not equal to 2');
-}";
-
-            using var runner = new ClearScriptV8Runner();
-            await runner.RunAsync(code);
-            await runner.RunAsync("incr()");
-            await runner.RunAsync("incr()");
-            await runner.RunAsync("check()");
-        }
-        
-        [Fact]
-        public async Task EvaluateAsync_Success()
-        {
-            using var runner = new ClearScriptV8Runner();
-            var result = await runner.EvaluateAsync<int>("1 + 2");
-            
-            Assert.Equal(3, result);
-        }
-        
-        [Fact]
-        public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
-        {
-            var runner = new ClearScriptV8Runner();
-
-            await runner.RunAsync(@"
-function GetHello(name) { 
-    return 'Hello ' + name; 
-}");
-            var result = await runner.EvaluateAsync<string>(@"GetHello(""John"")");
-            
-            Assert.Equal("Hello John", result);
         }
 
         [Fact]
