@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Src\EmbeddedScripts.JS.Jint\EmbeddedScripts.JS.Jint.csproj" />
+    <ProjectReference Include="..\EmbeddedScripts.JS.Common.Tests\EmbeddedScripts.JS.Common.Tests.csproj" />
   </ItemGroup>
 
 </Project>

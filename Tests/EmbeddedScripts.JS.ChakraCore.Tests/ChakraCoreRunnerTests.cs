@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
 using Xunit;
 
@@ -7,14 +8,99 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
 {
     public class ChakraCoreTests
     {
+        private JsCommonTests _tests = new();
+        
         [Fact]
         public async void RunValidCode_Succeed()
         {
-            var code = "let a = 1; let b = 2; let c = a + b;";
+            using var runner = new ChakraCoreRunner();
 
-            var runner = new ChakraCoreRunner();
+            await _tests.RunValidCode_Succeed(runner);
+        }
+        
+        [Fact]
+        public async Task RunWithTwoGlobalVariables_Succeed()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.RunWithTwoGlobalVariables_Succeed(runner);
+        }
 
-            await runner.RunAsync(code);
+        [Fact]
+        public async Task RunWithGlobalFunc_Succeed()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.RunWithGlobalFunc_Succeed(runner);
+        }
+
+        [Fact]
+        public async Task RunInvalidCode_ThrowsException()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.RunInvalidCode_ThrowsException(runner);
+        }
+        
+        [Fact]
+        public async Task RegisteringNewGlobalVarBetweenRuns_Success()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.RegisteringNewGlobalVarBetweenRuns_Success(runner);
+        }
+
+        [Fact]
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
+        {
+            var code = "let x = 0;";
+            using var runner = new ChakraCoreRunner();
+            await _tests.RunAsyncWithContinuation_EachRunSharesGlobals_Success(runner);
+        }
+
+        [Fact]
+        public async Task RunAsyncWithContinuation_Success()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.RunAsyncWithContinuation_Success(runner);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsync_Success()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.EvaluateAsync_Success(runner);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue(runner);
+        }
+        
+        [Fact]
+        public async Task CodeThrowsAnException_ExceptionWithSameMessageIsThrowingFromRunner()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.CodeThrowsAnException_ExceptionWithSameMessageIsThrowingFromRunner(runner);
+        }
+        
+        [Fact]
+        public async Task ExposedActionThrowsException_RunnerThrowsSameException()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.ExposedFuncThrowingException_RunnerThrowsException(runner);
+        }
+        
+        [Fact]
+        public async Task AddConfigTwice_AddsNewConfig_Succeed()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.AddConfigTwice_AddsNewConfig_Succeed(runner);
+        }
+
+        [Fact]
+        public async Task RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException(runner);
         }
 
         [Theory]
@@ -52,20 +138,6 @@ if (c !== 3)
         }
 
         [Fact]
-        public async Task ExposedActionThrowsException_RunnerThrowsSameException()
-        {
-            var exceptionMessage = "hello from exception";
-
-            using var runner = new ChakraCoreRunner();
-            runner
-                .Register<Action>(() => throw new ArgumentException(exceptionMessage), "f");
-
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => runner.RunAsync("f()"));
-
-            Assert.Equal(exceptionMessage, exception.Message);
-        }
-
-        [Fact]
         public async Task CallExposedFuncWithWrongCountOfParameters_ThrowsException()
         {
             using var runner = new ChakraCoreRunner();
@@ -96,163 +168,6 @@ if (c !== 3)
                 .Register(t, "t");
 
             await runner.RunAsync(code);
-        }
-
-        [Fact]
-        public async Task AddConfigOnce_SetsConfig_Succeed()
-        {
-            var t = 1;
-            var code = "t++;";
-
-            using var runner = new ChakraCoreRunner();
-            runner
-                .Register(t, "t");
-
-            await runner.RunAsync(code);
-        }
-
-        [Fact]
-        public async Task AddConfigTwice_AddsNewConfig_Succeed()
-        {
-            var s = "abc";
-            var t = 1;
-            var code = "t += s.length;";
-
-            using var runner = new ChakraCoreRunner();
-            runner
-                .Register(s, "s");
-
-            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
-                runner.RunAsync(code));
-
-            runner.Register(t, "t");
-
-            await runner.RunAsync(code);
-        }
-
-        [Fact]
-        public async Task RunWithTwoGlobalVariables_Succeed()
-        {
-            using var runner = new ChakraCoreRunner();
-            runner
-                .Register(1, "a")
-                .Register(2, "b");
-
-            await runner.RunAsync("let x = a + b;");
-
-            runner.Register(3, "c");
-
-            await runner.RunAsync("let y = a + b + c;");
-        }
-
-        [Fact]
-        public async Task RunWithGlobalFunc_Succeed()
-        {
-            int x = 0;
-            var code = "t();";
-
-            using var runner = new ChakraCoreRunner();
-            runner
-                .Register<Action>(() => x++, "t");
-
-            await runner.RunAsync(code);
-
-            Assert.Equal(1, x);
-        }
-
-        [Fact]
-        public async Task RunInvalidCode_ThrowsException()
-        {
-            var code = "vat a = 1";
-
-            using var runner = new ChakraCoreRunner();
-
-            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
-        }
-
-        [Fact]
-        public async void CodeThrowsAnException_SameExceptionIsThrowingFromRunner()
-        {
-            var exceptionMessage = "Exception from user code";
-            var code = $"throw Error('{exceptionMessage}');";
-
-            using var runner = new ChakraCoreRunner();
-            var exception = await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
-                runner.RunAsync(code));
-
-            Assert.Equal(exceptionMessage, exception.Message);
-        }
-        
-        [Fact]
-        public async Task RegisteringNewGlobalVarBetweenRuns_Success()
-        {
-            var code = "let x = 0;";
-            var runner = new ChakraCoreRunner();
-
-            runner.Register<Func<int, int>>(x => x + 1, "Inc");
-
-            await runner.RunAsync(code);
-            await runner.RunAsync("x = Inc(x);");
-            await runner.RunAsync("x = Inc(x);");
-            
-            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
-            
-            await runner.RunAsync("Check(x);");
-        }
-
-        [Fact]
-        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
-        {
-            var code = "let x = 0;";
-            using var runner = new ChakraCoreRunner();
-
-            runner.Register<Func<int, int>>(x => x + 1, "Inc");
-            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
-
-            await runner.RunAsync(code);
-            await runner.RunAsync("x = Inc(x);");
-            await runner.RunAsync("x = Inc(x);");
-            await runner.RunAsync("Check(x);");
-        }
-
-        [Fact]
-        public async Task RunAsyncWithContinuation_Success()
-        {
-            var code = @"
-var x = 0;
-function incr() { 
-  x++;
-}
-function check() {
-  if (x !== 2)
-    throw new Error('x is not equal to 2');
-}";
-
-            using var runner = new ChakraCoreRunner();
-            await runner.RunAsync(code);
-            await runner.RunAsync("incr()");
-            await runner.RunAsync("incr()");
-            await runner.RunAsync("check()");
-        }
-        
-        [Fact]
-        public async Task EvaluateAsync_Success()
-        {
-            var runner = new ChakraCoreRunner();
-            var result = await runner.EvaluateAsync<int>("1 + 2");
-            
-            Assert.Equal(3, result);
-        }
-        
-        [Fact]
-        public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
-        {
-            var runner = new ChakraCoreRunner();
-
-            await runner.RunAsync(@"function GetHello(name) { return 'Hello ' + name; }");
-            var result = await runner.EvaluateAsync<string>(@"GetHello(""John"")");
-            
-            Assert.Equal("Hello John", result);
         }
     }
 }
