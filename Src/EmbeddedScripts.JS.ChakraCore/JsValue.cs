@@ -4,9 +4,16 @@ namespace EmbeddedScripts.JS.ChakraCore
 {
     public class JsValue
     {
-        private JavaScriptValue _innerValue;
-        private JsContext _context;
+        protected JavaScriptValue _innerValue;
+        protected JsContext _context;
 
+        internal JsValue(JsContext context)
+        {
+            _context = context;
+            using (_context.Scope)
+                _innerValue = JavaScriptValue.CreateObject();
+        }
+        
         internal JsValue(JsContext context, JavaScriptValue value)
         {
             _context = context;

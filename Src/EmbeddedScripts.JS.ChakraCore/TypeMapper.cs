@@ -71,29 +71,29 @@ namespace EmbeddedScripts.JS.ChakraCore
         private JavaScriptValue MapDelegate(Delegate func) => 
             JavaScriptValue.CreateFunction((_, _, args, _, _) =>
                 {
-                    var returnValue = JavaScriptValue.Undefined;
 
                     try
                     {
-                        if (func.Method.GetParameters().Length != args.Length - 1)
-                            throw new ArgumentException("Inappropriate args list");
+                        if (func.Method.GetParameters().Length == args.Length - 1)
+                            return Map(func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray()));
 
-                        returnValue = Map(func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray()));
+                        JavaScriptContext.SetException(
+                            JavaScriptValue.CreateError(JavaScriptValue.FromString("Inappropriate args list")));
+                        return JavaScriptValue.Undefined;
                     }
                     catch (TargetInvocationException e) when (e.InnerException != null)
                     {
                         _context.CallbackException = e.InnerException;
-                        
+
                         JavaScriptContext.SetException(
-                            JavaScriptValue.CreateError(JavaScriptValue.FromString(e.InnerException.Message)));
+                            new JsError(_context, Constants.HostError, e.InnerException.Message));
                     }
                     catch (ArgumentException e)
                     {
                         JavaScriptContext.SetException(
                             JavaScriptValue.CreateError(JavaScriptValue.FromString(e.Message)));
                     }
-
-                    return returnValue;
+                    return JavaScriptValue.Undefined;
                 },
                 IntPtr.Zero);
         
