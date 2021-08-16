@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
 using EmbeddedScripts.Shared.Exceptions;
@@ -75,6 +76,57 @@ namespace EmbeddedScripts.JS.Common.Tests
             var code = "if (true {}";
 
             await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
+        }
+
+        public async Task RunCodeWithExceptionHandling_Success(ICodeRunner runner)
+        {
+            var code = @"
+function f() {
+    throw Error('oops');
+}
+
+try {
+    f();
+}
+catch (err) {}
+";
+            await runner.RunAsync(code);
+        }
+
+        public async Task HandleExceptionFromExposedFunction(ICodeRunner runner)
+        {
+            var message = "oops";
+            var code = @"
+try {
+    f();
+}
+catch(err) {
+    throw Error('aa');
+}
+";
+
+            runner.Register<Action>(() => throw new ArgumentException(message), "f");
+
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync(code));
+        }
+
+        public async Task HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage(ICodeRunner runner)
+        {
+            var message = "oops";
+            var code = @"
+try {
+    f();
+}
+catch(err) {
+    assert(err.message);
+}
+";
+
+            runner
+                .Register<Action>(() => throw new ArgumentException(message), "f")
+                .Register<Action<string>>(actual => Assert.Equal(message, actual), "assert");
+
+            await runner.RunAsync(code);
         }
 
         public async Task AddConfigTwice_AddsNewConfig_Succeed(ICodeRunner runner)

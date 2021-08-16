@@ -50,7 +50,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
         [Fact]
         public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
         {
-            var code = "let x = 0;";
             using var runner = new ChakraCoreRunner();
             await _tests.RunAsyncWithContinuation_EachRunSharesGlobals_Success(runner);
         }
@@ -123,6 +122,27 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
         {
             using var runner = new ChakraCoreRunner();
             await _tests.EvaluateAsyncString(runner);
+        }
+        
+        [Fact]
+        public async Task RunCodeWithExceptionHandling_Success()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.RunCodeWithExceptionHandling_Success(runner);
+        }
+
+        [Fact]
+        public async Task HandleExceptionFromExposedFunction()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.HandleExceptionFromExposedFunction(runner);
+        }
+        
+        [Fact]
+        public async Task HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage(runner);
         }
 
         [Theory]
