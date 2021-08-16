@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using ChakraHost.Hosting;
 
 namespace EmbeddedScripts.JS.ChakraCore
@@ -78,7 +77,7 @@ namespace EmbeddedScripts.JS.ChakraCore
                     {
                         if (func.Method.GetParameters().Length != args.Length - 1)
                             throw new ArgumentException("Inappropriate args list");
-                        
+
                         returnValue = Map(func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray()));
                     }
                     catch (TargetInvocationException e) when (e.InnerException != null)

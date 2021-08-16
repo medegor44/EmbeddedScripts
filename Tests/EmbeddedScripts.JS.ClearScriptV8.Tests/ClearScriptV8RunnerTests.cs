@@ -109,7 +109,14 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
             using var runner = new ClearScriptV8Runner();
             await _tests.NetAndJsIntegersEquality(runner);
         }
-        
+
+        [Fact]
+        public async Task EvaluateAsyncString()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.EvaluateAsyncString(runner);
+        }
+
         [Fact]
         public async void MutateRegisteredVariable_Succeed()
         {

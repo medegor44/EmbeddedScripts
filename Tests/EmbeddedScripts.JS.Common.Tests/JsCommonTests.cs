@@ -154,7 +154,16 @@ function check() {
             
             Assert.Equal(3, actual);
         }
-        
+
+        public async Task EvaluateAsyncString<T>(T runner) where T : ICodeRunner, IEvaluator
+        {
+            var str = "abc";
+            runner.Register(str, "str");
+            var actual = await runner.EvaluateAsync<string>("str");
+            
+            Assert.Equal(str, actual);
+        }
+
         public async Task NetAndJsIntegersEquality<T>(T runner) where T : ICodeRunner, IEvaluator
         {
             runner.Register(1, "x");

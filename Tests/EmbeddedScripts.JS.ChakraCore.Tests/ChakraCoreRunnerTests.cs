@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
+using HelperObjects;
 using Xunit;
 
 namespace EmbeddedScripts.JS.ChakraCore.Tests
@@ -116,6 +117,13 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             using var runner = new ChakraCoreRunner();
             await _tests.NetAndJsIntegersEquality(runner);
         }
+        
+        [Fact]
+        public async Task EvaluateAsyncString()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.EvaluateAsyncString(runner);
+        }
 
         [Theory]
         [InlineData(3)]
@@ -158,7 +166,8 @@ if (c !== 3)
             runner
                 .Register<Func<int, string, int>>((a, b) => a + b.Length, "f");
 
-            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync("f(1)"));
+            var exception = await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync("f(1)"));
+            Assert.Equal("Error: Inappropriate args list", exception?.Message);
         }
 
         [Fact]
@@ -172,7 +181,7 @@ if (c !== 3)
         }
 
         [Fact]
-        public async void RunWithGlobalVariables_Succeed()
+        public async Task RunWithGlobalVariables_Succeed()
         {
             int t = 0;
             var code = "t++;";
@@ -182,6 +191,21 @@ if (c !== 3)
                 .Register(t, "t");
 
             await runner.RunAsync(code);
+        }
+
+        [Fact]
+        public void TryToRegisterUnsupportedType_RunnerThrowsException()
+        {
+            using var runner = new ChakraCoreRunner();
+            Assert.Throws<ArgumentException>(() => runner.Register(new HelperObject(), "x"));
+        }
+
+        [Fact]
+        public async Task TryToCallFunctionWithUnsupportedReturnType_RunnerThrowsException()
+        {
+            using var runner = new ChakraCoreRunner();
+            runner.Register<Func<HelperObject>>(() => new HelperObject(), "f");
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>  runner.RunAsync("f()"));
         }
     }
 }

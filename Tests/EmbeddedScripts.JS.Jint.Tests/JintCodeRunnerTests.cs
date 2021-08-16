@@ -69,6 +69,10 @@ namespace EmbeddedScripts.JS.Jint.Tests
         [Fact]
         public async Task NetAndJsIntegersEquality() =>
             await _tests.NetAndJsIntegersEquality(new JintCodeRunner());
+
+        [Fact]
+        public async Task EvaluateAsyncString() => 
+            await _tests.EvaluateAsyncString(new JintCodeRunner());
         
         [Fact]
         public async void MutateRegisteredVariable_Succeed()
@@ -128,7 +132,13 @@ namespace EmbeddedScripts.JS.Jint.Tests
             
             Assert.Equal("a", result.a);
         }
-        
-        
+
+        [Fact]
+        public async Task EndlessRecursion_ThrowsEngineErrorException()
+        {
+            var runner = new JintCodeRunner();
+            runner.AddEngineOptions(opt => opt.LimitRecursion(10));
+            await Assert.ThrowsAsync<ScriptEngineErrorException>(() => runner.RunAsync("(function f() { f(); })()"));
+        }
     }
 }
