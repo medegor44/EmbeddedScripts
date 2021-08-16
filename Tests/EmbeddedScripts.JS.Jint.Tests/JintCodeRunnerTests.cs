@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Threading.Tasks;
 using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
@@ -71,8 +72,22 @@ namespace EmbeddedScripts.JS.Jint.Tests
             await _tests.NetAndJsIntegersEquality(new JintCodeRunner());
 
         [Fact]
+        public async Task RunCodeWithExceptionHandling_Success() =>
+            await _tests.RunCodeWithExceptionHandling_Success(new JintCodeRunner());
+
+        [Fact]
         public async Task EvaluateAsyncString() => 
             await _tests.EvaluateAsyncString(new JintCodeRunner());
+
+        [Fact]
+        public async Task HandleExceptionFromExposedFunction() =>
+            await _tests.HandleExceptionFromExposedFunction(
+                new JintCodeRunner().AddEngineOptions(options => options.CatchClrExceptions()));
+
+        [Fact]
+        public async Task HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage() =>
+            await _tests.HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage(
+                new JintCodeRunner().AddEngineOptions(options => options.CatchClrExceptions()));
         
         [Fact]
         public async void MutateRegisteredVariable_Succeed()

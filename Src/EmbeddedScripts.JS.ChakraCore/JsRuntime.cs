@@ -7,19 +7,13 @@ namespace EmbeddedScripts.JS.ChakraCore
     {
         private JavaScriptRuntime _runtime;
 
-        public JsRuntime()
-        {
+        public JsRuntime() =>
             _runtime = JavaScriptRuntime.Create();
-        }
 
-        public JsContext CreateContext()
-        {
-            return new(_runtime.CreateContext());
-        }
+        public JsContext CreateContext() =>
+            new(_runtime.CreateContext());
         
-        public void Dispose()
-        {
+        public void Dispose() =>
             _runtime.Dispose();
-        }
     }
 }
