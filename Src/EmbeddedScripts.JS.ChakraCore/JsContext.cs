@@ -11,10 +11,14 @@ namespace EmbeddedScripts.JS.ChakraCore
         public JsContext(JavaScriptContext context)
         {
             _context = context;
+            using (Scope)
+            {
+                GlobalObject = new JsValue(this, JavaScriptValue.GlobalObject);
+            }
         }
 
         public JsScope Scope =>
-            new(new(_context));
+            new (new (_context));
 
         public JsValue Evaluate(string expression)
         {
@@ -31,15 +35,12 @@ namespace EmbeddedScripts.JS.ChakraCore
 
                     var stringifyError = error.ToString();
 
-                    if (errorName == "SyntaxError")
-                        throw new ScriptSyntaxErrorException(stringifyError, e);
-
-                    if (CallbackException == null)
-                        throw new ScriptRuntimeErrorException(stringifyError, e);
-
-                    var ex = CallbackException;
-                    CallbackException = null;
-                    throw ex;
+                    throw errorName switch
+                    {
+                        "SyntaxError" => new ScriptSyntaxErrorException(stringifyError, e),
+                        Constants.HostError => CallbackException,
+                        _ => new ScriptRuntimeErrorException(stringifyError, e)
+                    };
                 }
                 catch (Exception e) when (e is
                     JavaScriptUsageException or
@@ -48,18 +49,14 @@ namespace EmbeddedScripts.JS.ChakraCore
                 {
                     throw new ScriptEngineErrorException(e.Message, e);
                 }
+                finally
+                {
+                    CallbackException = null;
+                }
             }
         }
 
-        public JsValue GlobalObject
-        {
-            get
-            {
-                using (Scope)
-                    return new JsValue(this, JavaScriptValue.GlobalObject);
-            }
-        }
-
+        public JsValue GlobalObject { get; }
         internal Exception CallbackException { get; set; }
     }
 }

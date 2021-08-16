@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
@@ -115,6 +116,27 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
         {
             using var runner = new ClearScriptV8Runner();
             await _tests.EvaluateAsyncString(runner);
+        }
+
+        [Fact]
+        public async Task RunCodeWithExceptionHandling_Success()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.RunCodeWithExceptionHandling_Success(runner);
+        }
+
+        [Fact]
+        public async Task HandleExceptionFromExposedFunction()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.HandleExceptionFromExposedFunction(runner);
+        }
+        
+        [Fact]
+        public async Task HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage(runner);
         }
 
         [Fact]
