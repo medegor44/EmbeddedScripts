@@ -33,11 +33,9 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting
 
         }
         
-        public async Task<ICodeRunner> RunAsync(string code)
+        public async Task RunAsync(string code)
         {
             await EvaluateAsync<object>(code);
-            
-            return this;
         }
         
         public ScriptCodeRunner AddEngineOptions(Func<ScriptOptions, ScriptOptions> optionsFunc)

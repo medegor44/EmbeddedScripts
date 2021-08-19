@@ -224,6 +224,19 @@ void check() {
             await runner.RunAsync("incr();");
             await runner.RunAsync("check();");
         }
+        
+        [Fact]
+        public async Task RunAsyncWithContinuation_AddEngineOptions_Success()
+        {
+            var code = @"Action action = () => {};";
+            var runner = new ScriptCodeRunner();
+            
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() =>  runner.RunAsync(code));
+            
+            runner.AddEngineOptions(options => options.AddImports("System"));
+
+            await runner.RunAsync(code);
+        }
 
         [Fact]
         public async Task EvaluateAsync_Success()

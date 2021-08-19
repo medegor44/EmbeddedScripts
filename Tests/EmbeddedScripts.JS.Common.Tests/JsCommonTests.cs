@@ -129,6 +129,25 @@ catch(err) {
             await runner.RunAsync(code);
         }
 
+        public async Task HandleCustomException(ICodeRunner runner)
+        {
+            string message = "oops";
+            string code = @"
+try {
+    throws();
+}
+catch (err) {
+    assert(err.message);
+}
+";
+
+            runner
+                .Register<Action>(() => throw new DummyException(message), "throws")
+                .Register<Action<string>>(actual => Assert.Equal(message, actual), "assert");
+
+            await runner.RunAsync(code);
+        }
+
         public async Task AddConfigTwice_AddsNewConfig_Succeed(ICodeRunner runner)
         {
             var s = "abc";

@@ -38,7 +38,7 @@ namespace EmbeddedScripts.JS.ChakraCore
                     throw errorName switch
                     {
                         "SyntaxError" => new ScriptSyntaxErrorException(stringifyError, e),
-                        Constants.HostError => CallbackException,
+                        ErrorCodes.HostError => CallbackException,
                         _ => new ScriptRuntimeErrorException(stringifyError, e)
                     };
                 }
