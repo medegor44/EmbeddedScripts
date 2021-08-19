@@ -4,7 +4,7 @@ namespace EmbeddedScripts.Shared
 {
     public interface ICodeRunner
     {
-        Task<ICodeRunner> RunAsync(string code);
+        Task RunAsync(string code);
         
         ICodeRunner Register<T>(T obj, string alias);
     }

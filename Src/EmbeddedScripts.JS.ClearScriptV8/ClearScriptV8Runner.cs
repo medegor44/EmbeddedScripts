@@ -29,11 +29,11 @@ namespace EmbeddedScripts.JS.ClearScriptV8
             }
         }
 
-        public Task<ICodeRunner> RunAsync(string code)
+        public Task RunAsync(string code)
         {
             EvaluateAsync<object>(code);
 
-            return Task.FromResult(this as ICodeRunner);
+            return Task.CompletedTask;
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
