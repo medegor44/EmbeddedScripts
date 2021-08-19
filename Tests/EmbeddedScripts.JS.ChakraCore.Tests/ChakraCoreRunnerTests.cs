@@ -144,6 +144,13 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             using var runner = new ChakraCoreRunner();
             await _tests.HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage(runner);
         }
+        
+        [Fact]
+        public async Task HandleCustomException()
+        {
+            using var runner = new ChakraCoreRunner();
+            await _tests.HandleCustomException(runner);
+        }
 
         [Theory]
         [InlineData(3)]
@@ -226,6 +233,16 @@ if (c !== 3)
             using var runner = new ChakraCoreRunner();
             runner.Register<Func<HelperObject>>(() => new HelperObject(), "f");
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>  runner.RunAsync("f()"));
+        }
+
+        [Fact]
+        public async Task RunnerDispose_DisposesItsGlobalObject()
+        {
+            using (var runner = new ChakraCoreRunner())
+                runner.Register("hello", "s");
+
+            using var newRunner = new ChakraCoreRunner();
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => newRunner.EvaluateAsync<string>("s"));
         }
     }
 }

@@ -88,6 +88,11 @@ namespace EmbeddedScripts.JS.Jint.Tests
         public async Task HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage() =>
             await _tests.HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage(
                 new JintCodeRunner().AddEngineOptions(options => options.CatchClrExceptions()));
+
+        [Fact]
+        public async Task HandleCustomException() =>
+            await _tests.HandleCustomException(
+                new JintCodeRunner().AddEngineOptions(options => options.CatchClrExceptions()));
         
         [Fact]
         public async void MutateRegisteredVariable_Succeed()

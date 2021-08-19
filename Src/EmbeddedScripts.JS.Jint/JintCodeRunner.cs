@@ -65,13 +65,13 @@ namespace EmbeddedScripts.JS.Jint
             }
         }
         
-        public Task<ICodeRunner> RunAsync(string code)
+        public Task RunAsync(string code)
         {
             _engine ??= new Engine(_jintOptions);
 
             EvaluateAsync<object>(code);
 
-            return Task.FromResult(this as ICodeRunner);
+            return Task.CompletedTask;
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
