@@ -86,7 +86,7 @@ namespace EmbeddedScripts.JS.ChakraCore
                         _context.CallbackException = e.InnerException;
 
                         JavaScriptContext.SetException(
-                            new JsError(_context, Constants.HostError, e.InnerException.Message));
+                            new JsError(_context, ErrorCodes.HostError, e.InnerException.Message));
                     }
                     catch (ArgumentException e)
                     {

@@ -140,6 +140,13 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
         }
 
         [Fact]
+        public async Task HandleCustomException()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.HandleCustomException(runner);
+        }
+
+        [Fact]
         public async void MutateRegisteredVariable_Succeed()
         {
             var t = new HelperObject();
@@ -199,6 +206,16 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
             dynamic result = await runner.EvaluateAsync<object>("function t() { return {a : 'a'} }; t()");
             
             Assert.Equal("a", result.a);
+        }
+        
+        [Fact]
+        public async Task RunnerDispose_DisposesItsGlobalObject()
+        {
+            using (var runner = new ClearScriptV8Runner())
+                runner.Register("hello", "s");
+
+            using var newRunner = new ClearScriptV8Runner();
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => newRunner.EvaluateAsync<string>("s"));
         }
     }
 }
