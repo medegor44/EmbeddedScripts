@@ -1,9 +1,8 @@
-using System.Reflection;
 using System.Threading.Tasks;
 using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
 using Xunit;
-using HelperObject = HelperObjects.HelperObject;
+using HelperObjects;
 
 namespace EmbeddedScripts.JS.Jint.Tests
 {
@@ -93,6 +92,14 @@ namespace EmbeddedScripts.JS.Jint.Tests
         public async Task HandleCustomException() =>
             await _tests.HandleCustomException(
                 new JintCodeRunner().AddEngineOptions(options => options.CatchClrExceptions()));
+        
+        [Fact]
+        public async Task EvaluateRegisteredNetType_ShouldBeEqual() =>
+            await _tests.EvaluateRegisteredNetType_ShouldBeEqual(new JintCodeRunner());
+
+        [Fact]
+        public async Task CallIndexerOnRegisteredNetObject_OverridenIndexerCalls() =>
+            await _tests.CallIndexerOnRegisteredNetObject_OverridenIndexerCalls(new JintCodeRunner());
         
         [Fact]
         public async void MutateRegisteredVariable_Succeed()

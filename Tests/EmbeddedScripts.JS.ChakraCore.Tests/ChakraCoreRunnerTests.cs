@@ -9,7 +9,7 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
 {
     public class ChakraCoreTests
     {
-        private JsCommonTests _tests = new();
+        private readonly JsCommonTests _tests = new();
         
         [Fact]
         public async void RunValidCode_Succeed()
