@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
+using MoonSharp.Interpreter;
 using Xunit;
 
 namespace EmbeddedScripts.Lua.Moonsharp.Tests
@@ -20,7 +21,7 @@ namespace EmbeddedScripts.Lua.Moonsharp.Tests
         }
 
         [Fact]
-        public async void RunWithGlobalVariables_Succeed()
+        public async void MutateRegisteredVariable_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x = t.x + 1;";
@@ -179,6 +180,102 @@ assert(d['b'] == 2)
             var runner = new MoonsharpRunner().Register(dict, "d");
 
             await runner.RunAsync(code);
+        }
+        
+        [Fact]
+        public async Task RegisteringNewGlobalVarBetweenRuns_Success()
+        {
+            var code = "x = 0;";
+            var runner = new MoonsharpRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+            
+            await runner.RunAsync("Check(x);");
+        }
+        
+        [Fact]
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
+        {
+            var code = "x = 0";
+            var runner = new MoonsharpRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x)");
+            await runner.RunAsync("x = Inc(x)");
+            await runner.RunAsync("Check(x)");
+        }
+
+        [Fact]
+        public async Task RunAsyncWithContinuation_Success()
+        {
+            var code = @"
+x = 0;
+function incr()  
+  x = x + 1
+end
+function check() 
+  assert(x == 2)
+end";
+
+            var runner = new MoonsharpRunner();
+            await runner.RunAsync(code);
+            await runner.RunAsync("incr()");
+            await runner.RunAsync("incr()");
+            await runner.RunAsync("check()");
+        }
+        
+        [Fact]
+        public async Task EvaluateAsync_Success()
+        {
+            var runner = new MoonsharpRunner();
+            var result = await runner.EvaluateAsync<double>("return 1 + 2");
+
+            Assert.IsType<double>(result);
+            Assert.Equal(3.0, result);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
+        {
+            var runner = new MoonsharpRunner();
+
+            await runner.RunAsync(@"
+function GetHello(name) 
+    return 'Hello ' .. name; 
+end");
+            
+            var result = await runner.EvaluateAsync<string>(@"return GetHello('John')");
+            
+            Assert.IsType<string>(result);
+            Assert.Equal("Hello John", result);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsyncScriptObject()
+        {
+            var runner = new MoonsharpRunner();
+
+            await runner.RunAsync(@"
+function t() 
+    return {X = ""abc"", Y = 1};
+end
+");
+            
+            var result = await runner.EvaluateAsync<object>("return t()");
+
+            var tab = result as Table;
+            
+            Assert.Equal("abc", tab?.Get("X").String);
+            Assert.Equal(1, tab?.Get("Y").Number);
         }
     }
 }

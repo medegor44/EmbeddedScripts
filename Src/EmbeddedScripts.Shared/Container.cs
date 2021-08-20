@@ -25,6 +25,12 @@ namespace EmbeddedScripts.Shared
             return Instances[alias];
         }
 
+        public void Clear()
+        {
+            Types.Clear();
+            Instances.Clear();
+        }
+
         public IEnumerable<string> VariableAliases => Types.Keys;
         public Type GetTypeByAlias(string alias) => Types[alias];
 

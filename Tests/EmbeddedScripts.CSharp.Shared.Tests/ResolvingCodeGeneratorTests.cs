@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using EmbeddedScripts.CSharp.Shared.CodeGeneration;
 using EmbeddedScripts.Shared;
 using Xunit;
@@ -40,6 +41,35 @@ namespace EmbeddedScripts.CSharp.Shared.Tests
                 "y = w.Resolve<System.String>(\"y\");" +
                 Environment.NewLine;
 
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GenerateGenericVariableDeclaration_GeneratesCorrectly()
+        {
+            var container = new Container();
+            container.Register(new List<int>(), "a");
+
+            var actual = new ResolvingCodeGenerator().GenerateVariablesDeclaration(container);
+            var expected = "System.Collections.Generic.List<System.Int32> a;" + Environment.NewLine;
+            
+            Assert.Equal(expected, actual);
+        }
+        
+        [Fact]
+        public void GenerateNestedGenericVariableDeclaration_GeneratesCorrectly()
+        {
+            var container = new Container();
+            container.Register(new List<Dictionary<List<int>, string>>(), "a");
+
+            var actual = new ResolvingCodeGenerator().GenerateVariablesDeclaration(container);
+            var expected = 
+                "System.Collections.Generic.List<" +
+                    "System.Collections.Generic.Dictionary<" + 
+                        "System.Collections.Generic.List<System.Int32>," + 
+                        "System.String>" +
+                "> a;" + Environment.NewLine;
+            
             Assert.Equal(expected, actual);
         }
     }

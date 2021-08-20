@@ -6,38 +6,43 @@ using MoonSharp.Interpreter;
 
 namespace EmbeddedScripts.Lua.Moonsharp
 {
-    public class MoonsharpRunner : ICodeRunner
+    public class MoonsharpRunner : ICodeRunner, IEvaluator
     {
-        private Script _script = new();
-        
-        public Task RunAsync(string code)
+        private readonly Script _script = new();
+
+        public Task<T> EvaluateAsync<T>(string expression)
         {
             try
             {
-                _script.DoString(code);
+                var val = _script.DoString(expression);
+                
+                return Task.FromResult((T)val.ToObject());
             }
             catch (SyntaxErrorException e)
             {
                 throw new ScriptSyntaxErrorException(e);
             }
-            catch (Exception e) when (e is InternalErrorException or DynamicExpressionException)
-            {
-                throw new ScriptEngineErrorException(e);
-            }
             catch (ScriptRuntimeException e)
             {
                 throw new ScriptRuntimeErrorException(e);
             }
-            
+            catch (Exception e) when (e is InternalErrorException or DynamicExpressionException)
+            {
+                throw new ScriptEngineErrorException(e);
+            }
+        }
+        
+        public Task RunAsync(string code)
+        {
+            EvaluateAsync<object>(code);
+
             return Task.CompletedTask;
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            if (obj is not Delegate)
-                UserData.RegisterType<T>();
+            _script.RegisterVariable(obj, alias);
             
-            _script.Globals[alias] = obj;
             return this;
         }
     }

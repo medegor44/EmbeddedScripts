@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
@@ -18,9 +19,9 @@ namespace EmbeddedScripts.CSharp.Roslyn.Scripting.Tests
 
             await runner.RunAsync(code);
         }
-
+        
         [Fact]
-        public async Task RunWithGlobalVariables_Succeed()
+        public async Task MutateRegisteredVariable_Succeed()
         {
             var t = new HelperObject();
             var code = "t.x++;";
@@ -160,6 +161,124 @@ var builder = new StringBuilder();";
                 opts.AddImports("System.Text"));
 
             await runner.RunAsync(code);
+        }
+
+        [Fact]
+        public async Task ExposeFunc_Succeed()
+        {
+            await new ScriptCodeRunner()
+                .Register<Func<int, int, int>>((a, b) => a + b, "Add")
+                .RunAsync("var c = Add(1, 2);");
+        }
+
+        [Fact]
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
+        {
+            var code = "var x = 0;";
+            var runner = new ScriptCodeRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("Check(x);");
+        }
+
+        [Fact]
+        public async Task RegisteringNewGlobalVarBetweenRuns_Succeed()
+        {
+            var code = "var x = 0;";
+            var runner = new ScriptCodeRunner();
+
+            runner.Register<Func<int, int>>(x => x + 1, "Inc");
+
+            await runner.RunAsync(code);
+            await runner.RunAsync("x = Inc(x);");
+            await runner.RunAsync("x = Inc(x);");
+            
+            runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
+
+            await runner.RunAsync("Check(x);");
+        }
+        
+        [Fact]
+        public async Task RunAsyncWithContinuation_Success()
+        {
+            var code = @"
+var x = 0;
+void incr() { 
+  x++;
+}
+void check() {
+  if (x != 2)
+    throw new Exception(""x is not equal to 2"");
+}";
+
+            var runner = new ScriptCodeRunner();
+            runner.AddEngineOptions(options => options.AddImports("System"));
+            
+            await runner.RunAsync(code);
+            await runner.RunAsync("incr();");
+            await runner.RunAsync("incr();");
+            await runner.RunAsync("check();");
+        }
+        
+        [Fact]
+        public async Task RunAsyncWithContinuation_AddEngineOptions_Success()
+        {
+            var code = @"Action action = () => {};";
+            var runner = new ScriptCodeRunner();
+            
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() =>  runner.RunAsync(code));
+            
+            runner.AddEngineOptions(options => options.AddImports("System"));
+
+            await runner.RunAsync(code);
+        }
+
+        [Fact]
+        public async Task EvaluateAsync_Success()
+        {
+            var runner = new ScriptCodeRunner();
+            var result = await runner.EvaluateAsync<int>("1 + 2");
+            
+            Assert.Equal(3, result);
+        }
+
+        [Fact]
+        public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
+        {
+            var runner = new ScriptCodeRunner();
+
+            await runner.RunAsync(@"string GetHello(string name) { return ""Hello "" + name; }");
+            var result = await runner.EvaluateAsync<string>(@"GetHello(""John"")");
+            
+            Assert.Equal("Hello John", result);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsyncScriptObject()
+        {
+            var runner = new ScriptCodeRunner();
+
+            await runner.RunAsync(@"
+class A 
+{
+    public string X;
+}
+
+A t() 
+{ 
+    return new A{X = ""abc""};
+} 
+");
+            
+            var result = await runner.EvaluateAsync<object>("t()");
+            
+            var actual = result.GetType().GetField("X")?.GetValue(result);
+            Assert.Equal("abc", actual);
         }
 
         [Fact(Skip = "test is skipped until security question is resolved")]

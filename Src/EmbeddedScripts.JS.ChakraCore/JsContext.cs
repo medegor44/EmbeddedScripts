@@ -11,54 +11,52 @@ namespace EmbeddedScripts.JS.ChakraCore
         public JsContext(JavaScriptContext context)
         {
             _context = context;
+            using (Scope)
+            {
+                GlobalObject = new JsValue(this, JavaScriptValue.GlobalObject);
+            }
         }
 
-        public JsScope Scope => 
-            new (new(_context));
+        public JsScope Scope =>
+            new (new (_context));
 
-        public void Run(string script)
+        public JsValue Evaluate(string expression)
         {
             using (Scope)
             {
                 try
                 {
-                    JavaScriptContext.RunScript(script);
+                    return new JsValue(this, JavaScriptContext.RunScript(expression));
                 }
                 catch (JavaScriptScriptException e)
                 {
                     var error = new JsValue(this, e.Error);
                     var errorName = error.GetProperty("name").ToString();
-                    var errorMessage = error.GetProperty("message").ToString();
 
-                    if (errorName == "SyntaxError")
-                        throw new ScriptSyntaxErrorException(errorMessage, e);
+                    var stringifyError = error.ToString();
 
-                    if (CallbackException == null) 
-                        throw new ScriptRuntimeErrorException(errorMessage, e);
-                    
-                    var ex = CallbackException;
-                    CallbackException = null;
-                    throw ex;
+                    throw errorName switch
+                    {
+                        "SyntaxError" => new ScriptSyntaxErrorException(stringifyError, e),
+                        ErrorCodes.HostError => CallbackException,
+                        _ => new ScriptRuntimeErrorException(stringifyError, e)
+                    };
                 }
-                catch (Exception e) when (e is 
-                    JavaScriptUsageException or 
-                    JavaScriptEngineException or 
+                catch (Exception e) when (e is
+                    JavaScriptUsageException or
+                    JavaScriptEngineException or
                     JavaScriptFatalException)
                 {
-                    throw new ScriptEngineErrorException(e);
+                    throw new ScriptEngineErrorException(e.Message, e);
+                }
+                finally
+                {
+                    CallbackException = null;
                 }
             }
         }
-        
-        public JsValue GlobalObject
-        {
-            get
-            {
-                using (Scope)
-                    return new JsValue(this, JavaScriptValue.GlobalObject);
-            }
-        }
 
+        public JsValue GlobalObject { get; }
         internal Exception CallbackException { get; set; }
     }
 }

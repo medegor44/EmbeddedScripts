@@ -23,8 +23,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.Jint.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.Jint", "Src\EmbeddedScripts.JS.Jint\EmbeddedScripts.JS.Jint.csproj", "{7874A987-F15E-4CF9-BED5-00657BD052F5}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EmbeddedScripts.Shared", "Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.shproj", "{64EF0BDF-0B08-4837-BD2D-B5AE294C7BFA}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{DF1BF043-0808-4B9A-92E4-1C53A05056E9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JS", "JS", "{D91EE75B-B3FD-4079-9767-1BB6F0659AFD}"
@@ -42,6 +40,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.Lua.Moonsharp", "Src\EmbeddedScripts.Lua.Moonsharp\EmbeddedScripts.Lua.Moonsharp.csproj", "{BB1850EA-C8D7-4B30-8AD1-BF699B9FA658}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.Lua.Moonsharp.Tests", "Tests\EmbeddedScripts.Lua.Moonsharp.Tests\EmbeddedScripts.Lua.Moonsharp.Tests.csproj", "{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.Shared", "Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj", "{3316CF48-5EF4-4F7C-823C-EDB14EC63860}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.JS.Common.Tests", "Tests\EmbeddedScripts.JS.Common.Tests\EmbeddedScripts.JS.Common.Tests.csproj", "{AAFED3B1-E319-45BB-B213-653DC4F6819F}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -119,6 +121,14 @@ Global
 		{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3316CF48-5EF4-4F7C-823C-EDB14EC63860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3316CF48-5EF4-4F7C-823C-EDB14EC63860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3316CF48-5EF4-4F7C-823C-EDB14EC63860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3316CF48-5EF4-4F7C-823C-EDB14EC63860}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAFED3B1-E319-45BB-B213-653DC4F6819F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAFED3B1-E319-45BB-B213-653DC4F6819F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAFED3B1-E319-45BB-B213-653DC4F6819F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAFED3B1-E319-45BB-B213-653DC4F6819F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,6 +149,7 @@ Global
 		{733B6533-861F-4B94-AEE5-5D4F7E419339} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 		{BB1850EA-C8D7-4B30-8AD1-BF699B9FA658} = {15F562A4-676E-4C31-A0C7-02FB8471FE8E}
 		{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
+		{AAFED3B1-E319-45BB-B213-653DC4F6819F} = {DB199BCF-967A-46EE-89E5-BBC0B6D59BE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C12123A-C2E9-46DF-AC21-40D0640056AE}
