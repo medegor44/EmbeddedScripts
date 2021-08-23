@@ -21,7 +21,7 @@ namespace EmbeddedScripts.CSharp.Shared.CodeGeneration
                 .Select(alias => generator(alias, container.GetTypeByAlias(alias)))
                 .Aggregate("", (cur, nxt) => cur + nxt + Environment.NewLine);
 
-        private string GenerateTypeName(Type type)
+        public string GenerateTypeName(Type type)
         {
             if (!type.IsGenericType)
                 return type.FullName;

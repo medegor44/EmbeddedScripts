@@ -4,7 +4,9 @@ EmbeddedScripts library provides unified way to run scripts written on C#, JS or
 
 Supported engines:
 ------------------
-- C#: [Roslyn's](https://github.com/dotnet/roslyn) CSharp.Scripting and CSharpCompilation
+- C#: [Roslyn's](https://github.com/dotnet/roslyn) CSharp.Scripting and CSharpCompilation and [Mono Evaluator](https://github.com/mono/mono/blob/main/mcs/mcs/eval.cs). 
+  Mono Evaluator implements some kind of subset of C# with additional language features and limitations. 
+  For more informaion refer the official [docs](https://www.mono-project.com/docs/tools+libraries/tools/repl/).
 - JS: [Jint](https://github.com/sebastienros/jint), [ChakraCore](https://github.com/chakra-core/ChakraCore), [ClearScriptV8](https://github.com/microsoft/ClearScript)
 - Lua: [Moonsharp](https://github.com/moonsharp-devs/moonsharp)
 
@@ -14,6 +16,7 @@ Script engine      | Windows | Linux  | macOS | Android | iOS
 -------------------|---------|--------|-------|---------|----
 Roslyn (scripting) | ✔       | ✔     | ?     | ?       | ?
 Roslyn (compiler)  | ✔       | ✔     | ?     | ?       | ?
+Mono Evaluator     | ✔       | ✔     | ?     | ?       | ?
 Jint               | ✔       | ✔     | ?     | ?       | ?
 ChakraCore         | ✔       | ✔     | ?     | ?       | ?
 ClearScriptV8      | ✔       | ✔     | ?     | ?       | ?
@@ -62,6 +65,7 @@ Script engine      | Supported types
 -------------------|------------
 Roslyn (scripting) | All
 Roslyn (compiler)  | All
+Mono Evaluator     | All
 Jint               | Check Jint's [readme](https://github.com/sebastienros/jint/blob/main/README.md#net-interoperability)
 ChakraCore         | Only primitives (`string`, `bool`, numeric types) and synchronous `Func`/`Action`
 ClearScriptV8      | Check ClearScript's [docs](https://microsoft.github.io/ClearScript/Reference/html/M_Microsoft_ClearScript_ScriptEngine_AddHostObject.htm)
@@ -73,6 +77,7 @@ Script engine      | Marshaling logic
 -------------------|------------
 Roslyn (scripting) | One-to-one
 Roslyn (compiler)  | One-to-one
+Mono Evaluator     | One-to-one
 Jint               | Check Jint's [readme](https://github.com/sebastienros/jint/blob/main/README.md#net-interoperability)
 ChakraCore         | `string` <-> `string`, `bool` <-> `boolean`, numeric types -> `number` and `number` -> `double` or `int`. You can't marshal JS function to `Action` or `Func` at this moment
 ClearScriptV8      | [From .NET to JS](https://microsoft.github.io/ClearScript/Reference/html/M_Microsoft_ClearScript_ScriptEngine_AddHostObject.htm), [From JS to .NET](https://microsoft.github.io/ClearScript/Reference/html/M_Microsoft_ClearScript_ScriptEngine_Evaluate_2.htm)
