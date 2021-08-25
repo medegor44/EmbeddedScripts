@@ -151,12 +151,31 @@ assert(c == 3)";
         }
 
         [Fact]
-        public async void AddStructAsGlobals_Succeed()
+        public async Task AddStructAsGlobals_Succeed()
         {
             var runner = new PythonNetRunner();
             await runner
                 .Register(new A(), "a")
                 .RunAsync("a.X += 1;");
+        }
+        
+        [Fact]
+        public async Task Evaluate()
+        {
+            var runner = new PythonNetRunner();
+            var actual = await runner.EvaluateAsync<int>("1 + 1");
+            
+            Assert.Equal(2, actual);
+        }
+        
+        [Fact]
+        public async Task Evaluate1()
+        {
+            var runner = new PythonNetRunner();
+            await runner.RunAsync("a = 1");
+            var actual = await runner.EvaluateAsync<int>("a + 1");
+            
+            Assert.Equal(2, actual);
         }
     }
 }

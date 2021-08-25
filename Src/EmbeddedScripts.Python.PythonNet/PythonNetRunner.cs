@@ -4,22 +4,29 @@ using Python.Runtime;
 
 namespace EmbeddedScripts.Python.PythonNet
 {
-    public class PythonNetRunner : ICodeRunner
+    public class PythonNetRunner : ICodeRunner, IEvaluator
     {
         private readonly Container _container = new();
-
+        private PyScope _scope;
+        
         public static string PythonDll 
         {
             get => Runtime.PythonDLL;
             set => Runtime.PythonDLL = value;
+        }
+
+        public PythonNetRunner()
+        {
+            using (new PythonMultithreadingScope())
+            using (Py.GIL())
+                _scope = Py.CreateScope();
         }
         
         public Task RunAsync(string code)
         {
             using (new PythonMultithreadingScope())
             using (Py.GIL())
-            using (var scope = Py.CreateScope())
-                scope
+                _scope
                     .AddHostObjectsFromContainer(_container)
                     .Exec(code);
 
@@ -31,6 +38,15 @@ namespace EmbeddedScripts.Python.PythonNet
             _container.Register(obj, alias);
 
             return this;
+        }
+
+        public Task<T> EvaluateAsync<T>(string expression)
+        {
+            using (new PythonMultithreadingScope())
+            using (Py.GIL())
+                return Task.FromResult(_scope
+                    .AddHostObjectsFromContainer(_container)
+                    .Eval<T>(expression));
         }
     }
 }
