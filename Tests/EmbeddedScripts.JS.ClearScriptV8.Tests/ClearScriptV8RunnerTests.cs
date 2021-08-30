@@ -1,16 +1,15 @@
 using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
 using Xunit;
-using HelperObject = HelperObjects.HelperObject;
+using HelperObjects;
 
 namespace EmbeddedScripts.JS.ClearScriptV8.Tests
 {
     public class ClearScriptV8RunnerTests
     {
-        private JsCommonTests _tests = new();
+        private readonly JsCommonTests _tests = new();
 
         [Fact]
         public async Task RunValidCode_Succeed()
@@ -138,12 +137,26 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
             using var runner = new ClearScriptV8Runner();
             await _tests.HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage(runner);
         }
-
+        
         [Fact]
         public async Task HandleCustomException()
         {
             using var runner = new ClearScriptV8Runner();
             await _tests.HandleCustomException(runner);
+        }
+
+        [Fact]
+        public async Task EvaluateRegisteredNetType_ShouldBeEqual()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.EvaluateRegisteredNetType_ShouldBeEqual(runner);
+        }
+
+        [Fact]
+        public async Task EvaluateRegisteredArray_ShouldBeEqual()
+        {
+            using var runner = new ClearScriptV8Runner();
+            await _tests.EvaluateRegisteredArray_ShouldBeEqual(runner);
         }
 
         [Fact]
