@@ -61,7 +61,7 @@ c = a + b";
         {
             var s = "abc";
             var t = new HelperObject();
-            var code = "t.x += len(s)";
+            var code = "t.x += s.__len__()";
 
             var runner = new PythonNetRunner();
             runner.Register(s, "s");

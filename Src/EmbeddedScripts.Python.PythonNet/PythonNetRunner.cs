@@ -6,7 +6,6 @@ namespace EmbeddedScripts.Python.PythonNet
 {
     public class PythonNetRunner : ICodeRunner, IEvaluator
     {
-        private readonly Container _container = new();
         private PyScope _scope;
         
         public static string PythonDll 
@@ -17,7 +16,6 @@ namespace EmbeddedScripts.Python.PythonNet
 
         public PythonNetRunner()
         {
-            using (new PythonMultithreadingScope())
             using (Py.GIL())
                 _scope = Py.CreateScope();
         }
@@ -26,17 +24,18 @@ namespace EmbeddedScripts.Python.PythonNet
         {
             using (new PythonMultithreadingScope())
             using (Py.GIL())
-                _scope
-                    .AddHostObjectsFromContainer(_container)
-                    .Exec(code);
+            {
+                _scope.Exec(code);
+            }
 
             return Task.CompletedTask;
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            _container.Register(obj, alias);
-
+            using (Py.GIL())
+                _scope.Set(alias, obj);
+            
             return this;
         }
 
@@ -44,9 +43,7 @@ namespace EmbeddedScripts.Python.PythonNet
         {
             using (new PythonMultithreadingScope())
             using (Py.GIL())
-                return Task.FromResult(_scope
-                    .AddHostObjectsFromContainer(_container)
-                    .Eval<T>(expression));
+                return Task.FromResult(_scope.Eval<T>(expression));
         }
     }
 }
