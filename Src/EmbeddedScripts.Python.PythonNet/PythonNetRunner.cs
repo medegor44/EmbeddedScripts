@@ -1,12 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
 using Python.Runtime;
 
 namespace EmbeddedScripts.Python.PythonNet
 {
-    public class PythonNetRunner : ICodeRunner, IEvaluator
+    public class PythonNetRunner : ICodeRunner, IEvaluator, IDisposable
     {
-        private PyScope _scope;
+        private readonly PyScope _scope;
         
         public static string PythonDll 
         {
@@ -44,6 +45,13 @@ namespace EmbeddedScripts.Python.PythonNet
             using (new PythonMultithreadingScope())
             using (Py.GIL())
                 return Task.FromResult(_scope.Eval<T>(expression));
+        }
+        
+        public void Dispose()
+        {
+            using (new PythonMultithreadingScope())
+            using (Py.GIL())
+                _scope?.Dispose();
         }
     }
 }
