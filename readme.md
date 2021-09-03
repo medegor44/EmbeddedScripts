@@ -63,6 +63,7 @@ var sum = await runner.EvaluateAsync<int>(1 + 2);
 ```
 
 Every runner has its own list of supported .NET types
+
 Script engine      | Supported types
 -------------------|------------
 Roslyn (scripting) | All
@@ -75,7 +76,7 @@ Moonsharp          | Check Moonsharp's [docs](https://www.moonsharp.org/objects.
 and marshalling logic.
 
 Script engine      | Marshaling logic
--------------------|------------
+-------------------|----------------------------------------------
 Roslyn (scripting) | One-to-one
 Roslyn (compiler)  | One-to-one
 Jint               | Check Jint's [readme](https://github.com/sebastienros/jint/blob/main/README.md#net-interoperability)
