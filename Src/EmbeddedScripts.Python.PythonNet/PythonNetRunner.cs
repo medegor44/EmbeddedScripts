@@ -23,11 +23,8 @@ namespace EmbeddedScripts.Python.PythonNet
         
         public Task RunAsync(string code)
         {
-            using (new PythonMultithreadingScope())
             using (Py.GIL())
-            {
                 _scope.Exec(code);
-            }
 
             return Task.CompletedTask;
         }
@@ -42,7 +39,6 @@ namespace EmbeddedScripts.Python.PythonNet
 
         public Task<T> EvaluateAsync<T>(string expression)
         {
-            using (new PythonMultithreadingScope())
             using (Py.GIL())
                 return Task.FromResult(_scope.Eval<T>(expression));
         }

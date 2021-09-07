@@ -63,7 +63,7 @@ c = a + b";
         {
             var s = "abc";
             var t = new HelperObject();
-            var code = "t.x += s.__len__()";
+            var code = "t.x += len(s)";
 
             using var runner = new PythonNetRunner();
             runner.Register(s, "s");
@@ -197,16 +197,17 @@ def add(a, b):
         [Fact]
         public async Task RunAsync_MultipleTimesEachRunSharesGlobals_Success()
         {
-            var code = "x = 0;";
+            var code = @"x = 0";
+            
             using var runner = new PythonNetRunner();
 
             runner.Register<Func<int, int>>(x => x + 1, "Inc");
             runner.Register<Action<int>>(x => Assert.Equal(2, x), "Check");
 
             await runner.RunAsync(code);
-            await runner.RunAsync("x = Inc(x);");
-            await runner.RunAsync("x = Inc(x);");
-            await runner.RunAsync("Check(x);");
+            await runner.RunAsync("x = Inc(x)");
+            await runner.RunAsync("x = Inc(x)");
+            await runner.RunAsync("Check(x)");
         }
         
         [Fact]
