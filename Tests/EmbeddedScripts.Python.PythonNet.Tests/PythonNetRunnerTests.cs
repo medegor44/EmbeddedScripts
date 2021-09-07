@@ -1,7 +1,9 @@
  using System;
  using System.Net.Sockets;
  using System.Runtime.InteropServices;
+ using System.Text;
  using System.Threading.Tasks;
+ using EmbeddedScripts.Shared.Exceptions;
  using HelperObjects;
  using Xunit;
  using Python.Runtime;
@@ -49,13 +51,12 @@ c = a + b";
         public async Task Register_TryToAccessUnregisteredVar_ThrowsException()
         {
             var s = "abc";
-            var t = new HelperObject();
-            var code = "t.x += s.__len__()";
+            var code = "t.x += len(s)";
 
             using var runner = new PythonNetRunner();
             runner.Register(s, "s");
 
-            await Assert.ThrowsAsync<PythonException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync(code));
         }
 
         [Fact]
@@ -68,7 +69,7 @@ c = a + b";
             using var runner = new PythonNetRunner();
             runner.Register(s, "s");
 
-            await Assert.ThrowsAsync<PythonException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync(code));
 
             runner.Register(t, "t");
 
@@ -107,7 +108,7 @@ c = a + b";
 
             using var runner = new PythonNetRunner();
 
-            await Assert.ThrowsAsync<PythonException>(() => runner.RunAsync(code));
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
         }
 
         [Fact]
@@ -117,7 +118,7 @@ c = a + b";
             var code = $"raise Exception('{exceptionMessage}');";
 
             using var runner = new PythonNetRunner();
-            var exception = await Assert.ThrowsAsync<PythonException>(() =>
+            var exception = await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>
                 runner.RunAsync(code));
 
             Assert.Equal(exceptionMessage, exception.Message);
@@ -292,6 +293,38 @@ def check():
             var result = await runner.EvaluateAsync<string>(@"GetHello('John')");
             
             Assert.Equal("Hello John", result);
+        }
+
+        [Fact]
+        public async Task RunAsync_CodeWithMixedIndentation_ThrowsSyntaxError()
+        {
+            using var runner = new PythonNetRunner();
+
+            var code = new StringBuilder()
+                .AppendLine("def f():")
+                .AppendLine("  a = 1")
+                .AppendLine("\tb = 2")
+                .AppendLine("  return a + b")
+                .AppendLine("c = f()")
+                .ToString();
+
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
+        }
+        
+        [Fact]
+        public async Task RunAsync_CodeWithInconsistentIndentation_ThrowsSyntaxError()
+        {
+            using var runner = new PythonNetRunner();
+
+            var code = new StringBuilder()
+                .AppendLine("def f():")
+                .AppendLine("  a = 1")
+                .AppendLine("    b = 2")
+                .AppendLine("  return a + b")
+                .AppendLine("c = f()")
+                .ToString();
+
+            await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
         }
     }
 }

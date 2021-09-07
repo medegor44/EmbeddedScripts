@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
+using EmbeddedScripts.Shared.Exceptions;
 using Python.Runtime;
 
 namespace EmbeddedScripts.Python.PythonNet
@@ -24,7 +25,23 @@ namespace EmbeddedScripts.Python.PythonNet
         public Task RunAsync(string code)
         {
             using (Py.GIL())
-                _scope.Exec(code);
+            {
+                try
+                {
+                    _scope.Exec(code);
+                }
+                catch (PythonException e)
+                {
+                    throw e.Type.Name switch
+                    {
+                        ErrorCodes.SyntaxError or ErrorCodes.IndentationError or ErrorCodes.TabError =>
+                            new ScriptSyntaxErrorException(e.Message, e),
+                        ErrorCodes.SystemError or ErrorCodes.OsError or ErrorCodes.SystemExit =>
+                            new ScriptEngineErrorException(e.Message, e),
+                        _ => new ScriptRuntimeErrorException(e.Message, e)
+                    };
+                }
+            }
 
             return Task.CompletedTask;
         }
