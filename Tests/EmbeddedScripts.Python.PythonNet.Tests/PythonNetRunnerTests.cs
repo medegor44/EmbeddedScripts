@@ -272,7 +272,7 @@ def check():
         }
 
         [Fact]
-        public async Task Register_NetAndJsIntegersEquality()
+        public async Task Register_NetAndJsIntegers_AreEqual()
         {
             using var runner = new PythonNetRunner();
 
