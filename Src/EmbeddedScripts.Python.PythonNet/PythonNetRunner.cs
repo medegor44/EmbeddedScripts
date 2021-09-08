@@ -16,6 +16,14 @@ namespace EmbeddedScripts.Python.PythonNet
             set => Runtime.PythonDLL = value;
         }
 
+        static PythonNetRunner()
+        {
+            var pathToPythonDll = Environment.GetEnvironmentVariable("EMBEDDED_SCRIPTS_PYTHON_DLL");
+
+            if (pathToPythonDll != null && string.IsNullOrEmpty(PythonDll))
+                PythonDll = pathToPythonDll;
+        }
+
         public PythonNetRunner()
         {
             using (Py.GIL())
