@@ -62,7 +62,7 @@ namespace EmbeddedScripts.Python.PythonNet
         
         public void Dispose()
         {
-            using (new PythonMultithreadingScope())
+            using (new PythonMultithreadingScope()) // TODO Workaround for System.InvalidOperationException: This property must be set before runtime is initialized at Python.Runtime.Runtime.set_PythonDLL(String value)
             using (Py.GIL())
                 _scope?.Dispose();
         }
