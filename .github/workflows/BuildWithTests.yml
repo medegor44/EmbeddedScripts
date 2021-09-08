@@ -8,7 +8,10 @@ on:
 
 jobs:
   build: 
+    env:
+      EMBEDDED_SCRIPTS_PYTHON_DLL: /usr/lib/python3.8/config-3.8-x86_64-linux-gnu/libpython3.8.so
     runs-on: ubuntu-latest
+    
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET SDK
@@ -17,7 +20,9 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore
       run: dotnet restore
+    
     - name: Build
       run: dotnet build --configuration Release --no-restore
+    
     - name: Test
       run: dotnet test --no-restore
