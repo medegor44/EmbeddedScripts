@@ -14,9 +14,8 @@ namespace EmbeddedScripts.Python.PythonNet.Tests
     {
         public PythonNetRunnerTests()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                PythonNetRunner.PythonDll = "/usr/lib/python3.8/config-3.8-x86_64-linux-gnu/libpython3.8.so";
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            // fallback for local machine tests
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && string.IsNullOrEmpty(PythonNetRunner.PythonDll))
                 PythonNetRunner.PythonDll = "C:/Python38/python38.dll";
         }
 
