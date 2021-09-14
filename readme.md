@@ -8,19 +8,25 @@ Supported engines:
   Mono Evaluator implements some kind of subset of C# with additional language features and limitations. 
   For more informaion refer the official [docs](https://www.mono-project.com/docs/tools+libraries/tools/repl/).
 - JS: [Jint](https://github.com/sebastienros/jint), [ChakraCore](https://github.com/chakra-core/ChakraCore), [ClearScriptV8](https://github.com/microsoft/ClearScript)
+- Python: [pythonnet](https://github.com/pythonnet/pythonnet)
 - Lua: [Moonsharp](https://github.com/moonsharp-devs/moonsharp)
 
 Supported platforms
 -------------------
-Script engine      | Windows | Linux  | macOS | Android | iOS
--------------------|---------|--------|-------|---------|----
-Roslyn (scripting) | ✔       | ✔     | ?     | ?       | ?
-Roslyn (compiler)  | ✔       | ✔     | ?     | ?       | ?
-Mono Evaluator     | ✔       | ✔     | ?     | ?       | ?
-Jint               | ✔       | ✔     | ?     | ?       | ?
-ChakraCore         | ✔       | ✔     | ?     | ?       | ?
-ClearScriptV8      | ✔       | ✔     | ?     | ?       | ?
-Moonsharp          | ✔       | ✔     | ?     | ?       | ?
+
+Script engine      | Windows | Linux  | macOS | Android  | iOS
+-------------------|---------|--------|-------|----------|----
+Roslyn (scripting) | ✔       | ✔     | ?     | ✔¹       | ✔
+Roslyn (compiler)  | ✔       | ✔     | ?     | ✔        | ✔
+Mono Evaluator     | ✔       | ✔     | ?     | ?        | ?
+Jint               | ✔       | ✔     | ?     | ?        | ?
+ChakraCore         | ✔       | ✔     | ?     | ?        | ?
+ClearScriptV8      | ✔       | ✔     | ?     | ?        | ?
+Moonsharp          | ✔       | ✔     | ?     | ?        | ?
+Pythonnet²          | ✔       | ✔     | ?     | ?        | ?
+
+1. Android requires to install additional nuget package `System.Runtime.Loader`.
+2. Pythonnet requres installed python in your environment. To setup runner you have to provide path to python library via `PythonNetRunner.PythonDll` static field wich is synonim to PythonDLL static field of pythonnet library. More on pythonnet specifity you can read in [docs](https://github.com/pythonnet/pythonnet/wiki). 
 
 Basic usage
 -----------
@@ -61,6 +67,7 @@ var sum = await runner.EvaluateAsync<int>(1 + 2);
 ```
 
 Every runner has its own list of supported .NET types
+
 Script engine      | Supported types
 -------------------|------------
 Roslyn (scripting) | All
@@ -74,7 +81,7 @@ Moonsharp          | Check Moonsharp's [docs](https://www.moonsharp.org/objects.
 and marshalling logic.
 
 Script engine      | Marshaling logic
--------------------|------------
+-------------------|----------------------------------------------
 Roslyn (scripting) | One-to-one
 Roslyn (compiler)  | One-to-one
 Mono Evaluator     | One-to-one
@@ -82,4 +89,5 @@ Jint               | Check Jint's [readme](https://github.com/sebastienros/jint/
 ChakraCore         | `string` <-> `string`, `bool` <-> `boolean`, numeric types -> `number` and `number` -> `double` or `int`. You can't marshal JS function to `Action` or `Func` at this moment
 ClearScriptV8      | [From .NET to JS](https://microsoft.github.io/ClearScript/Reference/html/M_Microsoft_ClearScript_ScriptEngine_AddHostObject.htm), [From JS to .NET](https://microsoft.github.io/ClearScript/Reference/html/M_Microsoft_ClearScript_ScriptEngine_Evaluate_2.htm)
 Moonsharp          | Check Moonsharp's [docs](https://www.moonsharp.org/mapping.html)
+Pythonnet          | Check pythonnet [website](http://pythonnet.github.io/)
 
