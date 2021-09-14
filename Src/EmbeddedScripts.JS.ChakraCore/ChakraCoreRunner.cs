@@ -25,7 +25,7 @@ namespace EmbeddedScripts.JS.ChakraCore
         
         public Task RunAsync(string code)
         {
-            EvaluateAsync<object>(code);
+            _context.Evaluate(code);
             
             return Task.CompletedTask;
         }
