@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
 using EmbeddedScripts.Shared.Exceptions;
@@ -9,6 +10,7 @@ namespace EmbeddedScripts.Python.PythonNet
     public class PythonNetRunner : ICodeRunner, IEvaluator, IDisposable
     {
         private readonly PyScope _scope;
+        private readonly InterpreterLockManager _manager;
         
         public static string PythonDll 
         {
@@ -18,6 +20,7 @@ namespace EmbeddedScripts.Python.PythonNet
 
         static PythonNetRunner()
         {
+            PythonEngine.DebugGIL = true;
             var pathToPythonDll = Environment.GetEnvironmentVariable("EMBEDDED_SCRIPTS_PYTHON_DLL");
 
             if (pathToPythonDll != null && string.IsNullOrEmpty(PythonDll))
@@ -26,29 +29,27 @@ namespace EmbeddedScripts.Python.PythonNet
 
         public PythonNetRunner()
         {
-            using (Py.GIL())
+            _manager = new();
+            
+            using (_manager.Lock())
                 _scope = Py.CreateScope();
         }
-        
+
         public Task RunAsync(string code)
         {
-            using (Py.GIL())
+            var scope = _manager.Lock();
+
+            try
             {
-                try
-                {
-                    _scope.Exec(code);
-                }
-                catch (PythonException e)
-                {
-                    throw e.Type.Name switch
-                    {
-                        ErrorCodes.SyntaxError or ErrorCodes.IndentationError or ErrorCodes.TabError =>
-                            new ScriptSyntaxErrorException(e.Message, e),
-                        ErrorCodes.SystemError or ErrorCodes.OsError or ErrorCodes.SystemExit =>
-                            new ScriptEngineErrorException(e.Message, e),
-                        _ => new ScriptRuntimeErrorException(e.Message, e)
-                    };
-                }
+                _scope.Exec(code);
+            }
+            catch (PythonException e)
+            {
+                ThrowRunnerException(e);
+            }
+            finally
+            {
+                scope.Dispose();
             }
 
             return Task.CompletedTask;
@@ -56,23 +57,51 @@ namespace EmbeddedScripts.Python.PythonNet
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            using (Py.GIL())
+            using (_manager.Lock())
                 _scope.Set(alias, obj);
-            
             return this;
         }
 
         public Task<T> EvaluateAsync<T>(string expression)
         {
-            using (Py.GIL())
-                return Task.FromResult(_scope.Eval<T>(expression));
+            var scope = _manager.Lock();
+
+            var val = default(T);
+            
+            try
+            {
+                val = _scope.Eval<T>(expression);
+            }
+            catch (PythonException e)
+            {
+                ThrowRunnerException(e);
+            }
+            finally
+            {
+                scope.Dispose();
+            }
+            
+            return Task.FromResult(val);
         }
-        
+
+        private void ThrowRunnerException(PythonException exception)
+        {
+            throw exception.Type.Name switch
+            {
+                ErrorCodes.SyntaxError or ErrorCodes.IndentationError or ErrorCodes.TabError =>
+                    new ScriptSyntaxErrorException(exception.Message, exception),
+                ErrorCodes.SystemError or ErrorCodes.OsError or ErrorCodes.SystemExit =>
+                    new ScriptEngineErrorException(exception.Message, exception),
+                _ => new ScriptRuntimeErrorException(exception.Message, exception)
+            };
+        }
+
         public void Dispose()
         {
-            using (new PythonMultithreadingScope()) // TODO Workaround for System.InvalidOperationException: This property must be set before runtime is initialized at Python.Runtime.Runtime.set_PythonDLL(String value)
-            using (Py.GIL())
-                _scope?.Dispose();
+            using (_manager.Lock())
+                _scope.Dispose();
+
+            _manager.Dispose();
         }
     }
 }

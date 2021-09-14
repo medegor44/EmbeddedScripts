@@ -2,18 +2,23 @@
  using System.Net.Sockets;
  using System.Runtime.InteropServices;
  using System.Text;
+ using System.Threading;
  using System.Threading.Tasks;
  using EmbeddedScripts.Shared.Exceptions;
  using HelperObjects;
  using Xunit;
  using Python.Runtime;
+ using Xunit.Abstractions;
 
-namespace EmbeddedScripts.Python.PythonNet.Tests
+ namespace EmbeddedScripts.Python.PythonNet.Tests
 {
     public class PythonNetRunnerTests
     {
-        public PythonNetRunnerTests()
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public PythonNetRunnerTests(ITestOutputHelper testOutputHelper)
         {
+            _testOutputHelper = testOutputHelper;
             // fallback for local machine tests
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && string.IsNullOrEmpty(PythonNetRunner.PythonDll))
                 PythonNetRunner.PythonDll = "C:/Python38/python38.dll";
@@ -272,7 +277,7 @@ def check():
         }
 
         [Fact]
-        public async Task Register_NetAndJsIntegers_AreEqual()
+        public async Task Register_NetAndIntegers_AreEqual()
         {
             using var runner = new PythonNetRunner();
 
@@ -324,6 +329,59 @@ def check():
                 .ToString();
 
             await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
+        }
+
+        [Fact]
+        public async Task EvaluateAsync_InDifferentThreads_Success()
+        {
+            var code = @"
+def fib(n):
+  if n == 0 or n == 1:
+    return n
+  return fib(n - 1) + fib(n - 2)
+";
+
+            using var runner = new PythonNetRunner();
+            await runner.RunAsync(code);
+
+            var thread1 = new Thread(() =>
+            {
+                var task = runner.EvaluateAsync<int>("fib(20)");
+                Assert.Equal(6765,task.Result);
+            });
+            var thread2 = new Thread(() =>
+            {
+                var task = runner.EvaluateAsync<int>("fib(20)");
+                Assert.Equal(6765,task.Result);
+            });
+
+            thread1.Start();
+            thread2.Start();
+
+            thread1.Join();
+            thread2.Join();
+        }
+
+        [Fact]
+        public async Task EvaluateAsync_EvaluationInTaskRun_Success()
+        {
+            var code = @"
+def fib(n):
+  if n == 0 or n == 1:
+    return n
+  return fib(n - 1) + fib(n - 2)
+";
+
+            using var runner = new PythonNetRunner();
+            await runner.RunAsync(code);
+
+            var actualFib35 = await Task.Run(() => runner.EvaluateAsync<int>("fib(35)"));
+            var expectedFib35 = 9227465;
+            Assert.Equal(expectedFib35, actualFib35);
+            
+            var actualSum = await runner.EvaluateAsync<int>("1 + 2");
+            var expectedSum = 3;
+            Assert.Equal(expectedSum, actualSum);
         }
     }
 }
