@@ -34,7 +34,7 @@ namespace EmbeddedScripts.Shared
         public IEnumerable<string> VariableAliases => Types.Keys;
         public Type GetTypeByAlias(string alias) => Types[alias];
 
-        private Dictionary<string, Type> Types { get; } = new();
-        private Dictionary<string, object> Instances { get; } = new();
+        private Dictionary<string, Type> Types { get; } = new Dictionary<string, Type>();
+        private Dictionary<string, object> Instances { get; } = new Dictionary<string, object>();
     }
 }
