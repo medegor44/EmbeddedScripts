@@ -378,5 +378,48 @@ def fib(n):
             var expectedSum = 3;
             Assert.Equal(expectedSum, actualSum);
         }
+
+        [Fact]
+        public async Task RunAsync_MutatePythonVariableInOtherThread_VariableMutates()
+        {
+            using var runner = new PythonNetRunner();
+
+            var thread1 = new Thread(() => runner.RunAsync("a = 1"));
+            var thread2 = new Thread(() => runner.RunAsync("a += 1"));
+
+            thread1.Start();
+            thread2.Start();
+
+            var actual = await runner.EvaluateAsync<int>("a");
+            Assert.Equal(2, actual);
+        }
+        
+        [Fact]
+        public async Task RunAsync_MutatePythonVariableSimultaneouslyInDifferentThreads_VariableMutates()
+        {
+            using var runner = new PythonNetRunner();
+
+            await runner.RunAsync("a = 1");
+            
+            var thread1 = new Thread(() => runner.RunAsync("a += 1"));
+            var thread2 = new Thread(() => runner.RunAsync("a += 1"));
+
+            thread1.Start();
+            thread2.Start();
+
+            var actual = await runner.EvaluateAsync<int>("a");
+            Assert.Equal(3, actual);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsync_TryToAccessPythonVarFromOtherRunner_Fail()
+        {
+            using var runner1 = new PythonNetRunner();
+            using var runner2 = new PythonNetRunner();
+
+            await runner1.RunAsync("a = 1");
+
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner2.EvaluateAsync<int>("a"));
+        }
     }
 }
