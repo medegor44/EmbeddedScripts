@@ -1,5 +1,4 @@
  using System;
- using System.Net.Sockets;
  using System.Runtime.InteropServices;
  using System.Text;
  using System.Threading;
@@ -7,18 +6,14 @@
  using EmbeddedScripts.Shared.Exceptions;
  using HelperObjects;
  using Xunit;
- using Python.Runtime;
  using Xunit.Abstractions;
 
  namespace EmbeddedScripts.Python.PythonNet.Tests
 {
     public class PythonNetRunnerTests
     {
-        private readonly ITestOutputHelper _testOutputHelper;
-
         public PythonNetRunnerTests(ITestOutputHelper testOutputHelper)
         {
-            _testOutputHelper = testOutputHelper;
             // fallback for local machine tests
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && string.IsNullOrEmpty(PythonNetRunner.PythonDll))
                 PythonNetRunner.PythonDll = "C:/Python38/python38.dll";
