@@ -12,11 +12,21 @@ namespace EmbeddedScripts.JS.ChakraCore
         {
             _context = context;
             using (Scope)
-            {
                 GlobalObject = new JsValue(this, JavaScriptValue.GlobalObject);
-            }
         }
 
+        public void AddRef()
+        {
+            _context.AddRef();
+        }
+
+        public void Release()
+        {
+            _context.Release();
+        }
+
+        public bool IsValid => _context.IsValid;
+        
         public JsScope Scope =>
             new (new (_context));
 
@@ -26,7 +36,9 @@ namespace EmbeddedScripts.JS.ChakraCore
             {
                 try
                 {
-                    return new JsValue(this, JavaScriptContext.RunScript(expression));
+                    var t = JavaScriptContext.RunScript(expression);
+
+                    return new JsValue(this, t);
                 }
                 catch (JavaScriptScriptException e)
                 {

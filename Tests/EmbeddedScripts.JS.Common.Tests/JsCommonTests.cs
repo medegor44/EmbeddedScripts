@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
 using EmbeddedScripts.Shared.Exceptions;
@@ -134,8 +132,8 @@ catch(err) {
 
         public async Task HandleCustomException(ICodeRunner runner)
         {
-            string message = "oops";
-            string code = @"
+            var message = "oops";
+            var code = @"
 try {
     throws();
 }

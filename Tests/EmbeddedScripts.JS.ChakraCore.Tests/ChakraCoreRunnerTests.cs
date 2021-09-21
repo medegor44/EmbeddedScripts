@@ -4,13 +4,14 @@ using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace EmbeddedScripts.JS.ChakraCore.Tests
 {
     public class ChakraCoreTests
     {
         private readonly JsCommonTests _tests = new();
-        
+
         [Fact]
         public async void RunValidCode_Succeed()
         {
@@ -18,7 +19,7 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
 
             await _tests.RunValidCode_Succeed(runner);
         }
-        
+
         [Fact]
         public async Task RunWithTwoGlobalVariables_Succeed()
         {
@@ -151,7 +152,7 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             using var runner = new ChakraCoreRunner();
             await _tests.HandleCustomException(runner);
         }
-
+        
         [Theory]
         [InlineData(3)]
         [InlineData((byte)3)]
@@ -171,7 +172,7 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
                 .Register<Func<T>>(() => returnValue, "f")
                 .RunAsync("f()");
         }
-
+        
         [Fact]
         public async Task ExposeFunctionWithArguments_Succeed()
         {
@@ -223,8 +224,10 @@ if (c !== 3)
         [Fact]
         public void TryToRegisterUnsupportedType_RunnerThrowsException()
         {
-            using var runner = new ChakraCoreRunner();
+            var runner = new ChakraCoreRunner();
             Assert.Throws<ArgumentException>(() => runner.Register(new HelperObject(), "x"));
+            
+            runner.Dispose();
         }
 
         [Fact]
@@ -234,7 +237,7 @@ if (c !== 3)
             runner.Register<Func<HelperObject>>(() => new HelperObject(), "f");
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>  runner.RunAsync("f()"));
         }
-
+        
         [Fact]
         public async Task RunnerDispose_DisposesItsGlobalObject()
         {
@@ -243,6 +246,32 @@ if (c !== 3)
 
             using var newRunner = new ChakraCoreRunner();
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => newRunner.EvaluateAsync<string>("s"));
+        }
+
+        [Fact]
+        public async Task Register_RegisterFunctionInOneScopeThenCallItInAnother_Success()
+        {
+            using var runner = new ChakraCoreRunner();
+            
+            void FirstScope()
+            {
+                Func<int, int, int> sum = (a, b) => a + b;
+                
+                runner.Register(sum, "sum");
+            }
+
+            async Task SecondScope()
+            {
+                runner.Register<Action<int>>(x => Assert.Equal(3, x), "assert");
+
+                await runner.RunAsync(@"
+let c = sum(1, 2);
+assert(c);
+");
+            }
+            
+            FirstScope();
+            await SecondScope();
         }
     }
 }

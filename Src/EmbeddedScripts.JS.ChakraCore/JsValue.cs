@@ -13,11 +13,23 @@ namespace EmbeddedScripts.JS.ChakraCore
             using (_context.Scope)
                 _innerValue = JavaScriptValue.CreateObject();
         }
-        
+
         internal JsValue(JsContext context, JavaScriptValue value)
         {
             _context = context;
             _innerValue = value;
+        }
+
+        public void AddRef()
+        {
+            using (_context.Scope)
+                _innerValue.AddRef();
+        }
+
+        public void Release()
+        {
+            using (_context.Scope)
+                _innerValue.Release();
         }
 
         public JsValue AddProperty(string name, JsValue value)
@@ -37,7 +49,7 @@ namespace EmbeddedScripts.JS.ChakraCore
         public override string ToString() =>
             _innerValue.ConvertToString().ToString();
 
-        public static implicit operator JavaScriptValue(JsValue value) => 
+        public static implicit operator JavaScriptValue(JsValue value) =>
             value._innerValue;
     }
 }
