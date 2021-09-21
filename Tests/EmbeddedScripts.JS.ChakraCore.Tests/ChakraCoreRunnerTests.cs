@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
@@ -243,6 +244,103 @@ if (c !== 3)
 
             using var newRunner = new ChakraCoreRunner();
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => newRunner.EvaluateAsync<string>("s"));
+        }
+
+        [Fact]
+        public async Task EvaluateAsync_RunParallelTasksWithOneRunner_Success()
+        {
+            var code = @"
+function fib(n) {
+  if (n === 0 || n === 1)
+    return n;
+  return fib(n - 1) + fib(n - 2);
+}
+";
+
+            using var runner = new ChakraCoreRunner();
+            await runner.RunAsync(code);
+
+            var firstTask = Task.Run(async () =>
+                await runner.EvaluateAsync<int>("fib(35)")
+            );
+
+            var secondTask = Task.Run(async () =>
+                await runner.EvaluateAsync<int>("fib(35)")
+            );
+
+            await Task.WhenAll(firstTask, secondTask);
+        }
+        
+        [Fact]
+        public async Task Register_WhileEvaluateIsRunningInSeparateTask_Success() // throws Runtime is active on another thread
+        {
+            var code = @"
+function fib(n) {
+  if (n === 0 || n === 1)
+    return n;
+  return fib(n - 1) + fib(n - 2);
+}
+";
+
+            using var runner = new ChakraCoreRunner();
+            await runner.RunAsync(code);
+
+            var task = Task.Run(async () =>
+                await runner.EvaluateAsync<int>("fib(40)")
+            );
+
+            runner.Register(1, "a");
+
+            await task;
+        }
+
+        [Fact]
+        public async Task EvaluateAsync_RunParallelTasksWithEachOnesRunner_Success()
+        {
+            var code = @"
+function fib(n) {
+  if (n === 0 || n === 1)
+    return n;
+  return fib(n - 1) + fib(n - 2);
+}
+";
+
+            var firstTask = Task.Run(async () =>
+            {
+                using var runner = new ChakraCoreRunner();
+                await runner.RunAsync(code);
+                await runner.EvaluateAsync<int>("fib(35)");
+            });
+
+            var secondTask = Task.Run(async () =>
+            {
+                using var runner = new ChakraCoreRunner();
+                await runner.RunAsync(code);
+                await runner.EvaluateAsync<int>("fib(35)");
+            });
+            
+            await Task.WhenAll(firstTask, secondTask);
+        }
+        
+        [Fact]
+        public async Task EvaluateAsync_MultipleRunnersInOneThread_Success()
+        {
+            var code = @"
+function fib(n) {
+  if (n === 0 || n === 1)
+    return n;
+  return fib(n - 1) + fib(n - 2);
+}
+";
+
+            using var firstRunner = new ChakraCoreRunner();
+            using var secondRunner = new ChakraCoreRunner();
+
+            await firstRunner.RunAsync(code);
+            await secondRunner.RunAsync(code);
+
+            await firstRunner.EvaluateAsync<int>("fib(40)");
+            await secondRunner.EvaluateAsync<int>("fib(35)");
         }
     }
 }
