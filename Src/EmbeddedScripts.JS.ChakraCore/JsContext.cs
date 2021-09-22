@@ -22,10 +22,14 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public JsValue Evaluate(string expression)
         {
+            Console.WriteLine($"-- before scope {expression}");
+
             using (Scope)
             {
                 try
                 {
+                    Console.WriteLine($"-- before RunScript {expression}");
+
                     return new JsValue(this, JavaScriptContext.RunScript(expression));
                 }
                 catch (JavaScriptScriptException e)

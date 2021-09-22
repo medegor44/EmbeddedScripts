@@ -22,8 +22,12 @@ namespace EmbeddedScripts.JS.ChakraCore
         {
             lock (_lockObj)
             {
+                Console.WriteLine($"-- before evaluate {expression}");
+
                 var val = _context.Evaluate(expression);
                 
+                Console.WriteLine($"-- after evaluate {expression}");
+
                 return Task.FromResult( new TypeMapper(_context).Map<T>(val));
             }
         }
