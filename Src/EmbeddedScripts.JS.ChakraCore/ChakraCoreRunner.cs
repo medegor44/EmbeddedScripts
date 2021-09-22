@@ -9,7 +9,8 @@ namespace EmbeddedScripts.JS.ChakraCore
         private readonly JsRuntime _runtime = new();
         private readonly TypeMapper _mapper;
         private readonly JsContext _context;
-        private readonly TaskFactory _factory = new(new SequentialTaskScheduler());
+
+        private readonly object _lockObj = new();
 
         public ChakraCoreRunner()
         {
@@ -19,42 +20,26 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public Task<T> EvaluateAsync<T>(string expression)
         {
-            return _factory.StartNew(() =>
+            lock (_lockObj)
             {
                 var val = _context.Evaluate(expression);
-
-                return new TypeMapper(_context).Map<T>(val);
-            });
+                
+                return Task.FromResult( new TypeMapper(_context).Map<T>(val));
+            }
         }
-        
+
         public Task RunAsync(string code)
         {
-            return _factory.StartNew(() =>
-            {
+            lock (_lockObj)
                 _context.Evaluate(code);
-            });
+            
+            return Task.CompletedTask;
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            var task = _factory.StartNew(() =>
-            {
+            lock (_lockObj)
                 _context.GlobalObject.AddProperty(alias, _mapper.Map(obj));
-            });
-
-            try
-            {
-                // I used task.Wait() to preserve syntax consistency
-                task.Wait();
-            }
-            catch (AggregateException e)
-            {
-                if (e.InnerExceptions is null)
-                    throw;
-                
-                foreach (var ex in e.InnerExceptions)
-                    throw ex;
-            }
 
             return this;
         }

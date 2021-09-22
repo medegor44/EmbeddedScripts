@@ -1,17 +1,23 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace EmbeddedScripts.JS.ChakraCore.Tests
 {
     public class ChakraCoreTests
     {
+        private readonly ITestOutputHelper _testOutputHelper;
         private readonly JsCommonTests _tests = new();
-        
+
+        public ChakraCoreTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public async void RunValidCode_Succeed()
         {
@@ -255,17 +261,31 @@ function fib(n) {
     return n;
   return fib(n - 1) + fib(n - 2);
 }
+
+function start(n, id) {
+  log(`start fib ${id}`);
+  const res = fib(n);
+  log(`end fib ${id}`);
+
+  return res;
+}
 ";
 
             using var runner = new ChakraCoreRunner();
+            runner.Register<Action<string>>(s =>
+            {
+                _testOutputHelper.WriteLine($"At {DateTime.Now}");
+                _testOutputHelper.WriteLine(s);
+            }, "log");
+            
             await runner.RunAsync(code);
 
             var firstTask = Task.Run(async () =>
-                await runner.EvaluateAsync<int>("fib(35)")
+                await runner.EvaluateAsync<int>("start(40, 1)")
             );
 
             var secondTask = Task.Run(async () =>
-                await runner.EvaluateAsync<int>("fib(35)")
+                await runner.EvaluateAsync<int>("start(40, 2)")
             );
 
             await Task.WhenAll(firstTask, secondTask);
@@ -280,16 +300,29 @@ function fib(n) {
     return n;
   return fib(n - 1) + fib(n - 2);
 }
+
+function start(n, id) {
+  log(`start fib ${id}`);
+  const res = fib(n);
+  log(`end fib ${id}`);
+
+  return res;
+}
 ";
 
             using var runner = new ChakraCoreRunner();
             await runner.RunAsync(code);
+            runner.Register<Action<string>>(s =>
+            {
+                _testOutputHelper.WriteLine($"At {DateTime.Now}");
+                _testOutputHelper.WriteLine(s);
+            }, "log");
 
             var task = Task.Run(async () =>
-                await runner.EvaluateAsync<int>("fib(40)")
+                await runner.EvaluateAsync<int>("start(40, 1)")
             );
 
-            runner.Register(1, "a");
+            await runner.EvaluateAsync<int>("start(40, 2)");
 
             await task;
         }
@@ -303,20 +336,38 @@ function fib(n) {
     return n;
   return fib(n - 1) + fib(n - 2);
 }
+
+function start(n, id) {
+  log(`start fib ${id}`);
+  const res = fib(n);
+  log(`end fib ${id}`);
+
+  return res;
+}
 ";
 
             var firstTask = Task.Run(async () =>
             {
                 using var runner = new ChakraCoreRunner();
+                runner.Register<Action<string>>(s =>
+                {
+                    _testOutputHelper.WriteLine($"At {DateTime.Now}");
+                    _testOutputHelper.WriteLine(s);
+                }, "log");
                 await runner.RunAsync(code);
-                await runner.EvaluateAsync<int>("fib(35)");
+                await runner.EvaluateAsync<int>("start(40, 1)");
             });
 
             var secondTask = Task.Run(async () =>
             {
                 using var runner = new ChakraCoreRunner();
+                runner.Register<Action<string>>(s =>
+                {
+                    _testOutputHelper.WriteLine($"At {DateTime.Now}");
+                    _testOutputHelper.WriteLine(s);
+                }, "log");
                 await runner.RunAsync(code);
-                await runner.EvaluateAsync<int>("fib(35)");
+                await runner.EvaluateAsync<int>("start(40, 2)");
             });
             
             await Task.WhenAll(firstTask, secondTask);
@@ -331,16 +382,35 @@ function fib(n) {
     return n;
   return fib(n - 1) + fib(n - 2);
 }
+
+function start(n, id) {
+  log(`start fib ${id}`);
+  const res = fib(n);
+  log(`end fib ${id}`);
+
+  return res;
+}
 ";
 
             using var firstRunner = new ChakraCoreRunner();
+            firstRunner.Register<Action<string>>(s =>
+            {
+                _testOutputHelper.WriteLine($"At {DateTime.Now}");
+                _testOutputHelper.WriteLine(s);
+            }, "log");
+            
             using var secondRunner = new ChakraCoreRunner();
+            secondRunner.Register<Action<string>>(s =>
+            {
+                _testOutputHelper.WriteLine($"At {DateTime.Now}");
+                _testOutputHelper.WriteLine(s);
+            }, "log");
 
             await firstRunner.RunAsync(code);
             await secondRunner.RunAsync(code);
 
-            await firstRunner.EvaluateAsync<int>("fib(40)");
-            await secondRunner.EvaluateAsync<int>("fib(35)");
+            await firstRunner.EvaluateAsync<int>("start(40, 1)");
+            await secondRunner.EvaluateAsync<int>("start(40, 2)");
         }
     }
 }
