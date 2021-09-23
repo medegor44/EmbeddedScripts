@@ -12,9 +12,7 @@ namespace EmbeddedScripts.JS.ChakraCore
         {
             _context = context;
             using (Scope)
-            {
                 GlobalObject = new JsValue(this, JavaScriptValue.GlobalObject);
-            }
         }
 
         public JsScope Scope =>
@@ -22,14 +20,12 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public JsValue Evaluate(string expression)
         {
-            Console.WriteLine($"-- before scope {expression}");
-
             using (Scope)
             {
+                Console.WriteLine("In evaluate/scope");
+
                 try
                 {
-                    Console.WriteLine($"-- before RunScript {expression}");
-
                     return new JsValue(this, JavaScriptContext.RunScript(expression));
                 }
                 catch (JavaScriptScriptException e)

@@ -10,8 +10,6 @@ namespace EmbeddedScripts.JS.ChakraCore
         private readonly TypeMapper _mapper;
         private readonly JsContext _context;
 
-        private readonly object _lockObj = new();
-
         public ChakraCoreRunner()
         {
             _context = _runtime.CreateContext();
@@ -20,30 +18,22 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public Task<T> EvaluateAsync<T>(string expression)
         {
-            lock (_lockObj)
-            {
-                Console.WriteLine($"-- before evaluate {expression}");
+            Console.WriteLine("In evaluate");
+            var val = _context.Evaluate(expression);
 
-                var val = _context.Evaluate(expression);
-                
-                Console.WriteLine($"-- after evaluate {expression}");
-
-                return Task.FromResult( new TypeMapper(_context).Map<T>(val));
-            }
+            return Task.FromResult(new TypeMapper(_context).Map<T>(val));
         }
 
         public Task RunAsync(string code)
         {
-            lock (_lockObj)
-                _context.Evaluate(code);
-            
+            _context.Evaluate(code);
+
             return Task.CompletedTask;
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            lock (_lockObj)
-                _context.GlobalObject.AddProperty(alias, _mapper.Map(obj));
+            _context.GlobalObject.AddProperty(alias, _mapper.Map(obj));
 
             return this;
         }

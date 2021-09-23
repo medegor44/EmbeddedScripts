@@ -14,13 +14,11 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
     {
         public override void Before(MethodInfo methodUnderTest)
         {
-            var nameOfRunningTest = "TODO";
             Console.WriteLine("Setup for test '{0}.'", methodUnderTest.Name);
         }
 
         public override void After(MethodInfo methodUnderTest)
         {
-            var nameOfRunningTest = "TODO";
             Console.WriteLine("TearDown for test '{0}.'", methodUnderTest.Name);
         }
     }
@@ -326,19 +324,30 @@ function start(n, id) {
             await runner.RunAsync(code);
 
             var firstTask = Task.Run(async () =>
-                await runner.EvaluateAsync<int>("start(40, 1)")
+                {
+                    Task t;
+                    lock (runner)
+                        t = runner.EvaluateAsync<int>("start(40, 1)");
+
+                    await t;
+                }
             );
 
             var secondTask = Task.Run(async () =>
-                await runner.EvaluateAsync<int>("start(40, 2)")
-            );
+            {
+                Task t;
+                lock (runner)
+                    t = runner.EvaluateAsync<int>("start(40, 2)");
+
+                await t;
+            });
 
             await Task.WhenAll(firstTask, secondTask);
         }
         
         [DisplayTestMethodNameAttribute]
         [Fact]
-        public async Task Register_WhileEvaluateIsRunningInSeparateTask_Success() // throws Runtime is active on another thread
+        public async Task Evaluate_WhileEvaluateIsRunningInSeparateTask_Success() // throws Runtime is active on another thread
         {
             var code = @"
 function fib(n) {
@@ -364,17 +373,19 @@ function start(n, id) {
                 _testOutputHelper.WriteLine(s);
             }, "log");
 
-            var task = Task.Run(async () =>
+            var task = Task.Run(() =>
             {
-                Console.WriteLine("-- in task.run");
-                await runner.EvaluateAsync<int>("start(40, 1)");
+                lock (runner)
+                    return runner.EvaluateAsync<int>("start(40, 1)");
             });
 
-            await runner.EvaluateAsync<int>("start(40, 2)");
 
-            Console.WriteLine("-- before last await");
+            Console.WriteLine("before evaluate in same thread");
+            lock (runner)
+                runner.EvaluateAsync<int>("start(40, 2)");
+            Console.WriteLine("after evaluate in same thread");
 
-            await task;
+            //await task;
         }
 
         [DisplayTestMethodNameAttribute]
@@ -465,6 +476,4 @@ function start(n, id) {
             await secondRunner.EvaluateAsync<int>("start(40, 2)");
         }
     }
-    
-    
 }

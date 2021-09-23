@@ -14,8 +14,6 @@
         /// <param name="error">The error.</param>
         internal static void ThrowIfError(JavaScriptErrorCode error)
         {
-            Console.WriteLine($"-- in Native.ThrowIfError");
-
             if (error != JavaScriptErrorCode.NoError)
             {
                 switch (error)
