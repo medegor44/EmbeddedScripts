@@ -379,13 +379,13 @@ function start(n, id) {
                     return runner.EvaluateAsync<int>("start(40, 1)");
             });
 
-
             Console.WriteLine("before evaluate in same thread");
+            Task t;
             lock (runner)
-                runner.EvaluateAsync<int>("start(40, 2)");
+                t = runner.EvaluateAsync<int>("start(40, 2)");
             Console.WriteLine("after evaluate in same thread");
 
-            //await task;
+            await Task.WhenAll(t, task);
         }
 
         [DisplayTestMethodNameAttribute]
