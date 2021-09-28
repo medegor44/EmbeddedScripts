@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
 using EmbeddedScripts.Shared.Exceptions;
@@ -9,7 +10,7 @@ namespace EmbeddedScripts.Python.PythonNet
     public class PythonNetRunner : ICodeRunner, IEvaluator, IDisposable
     {
         private readonly PyScope _scope;
-        private readonly InterpreterLockManager _manager;
+        private readonly int _assignedThreadId = Thread.CurrentThread.ManagedThreadId;
         
         public static string PythonDll 
         {
@@ -28,27 +29,32 @@ namespace EmbeddedScripts.Python.PythonNet
 
         public PythonNetRunner()
         {
-            _manager = new();
-            
-            using (_manager.Lock())
+            using (Py.GIL())
                 _scope = Py.CreateScope();
+        }
+
+        private void ValidateCurrentThread()
+        {
+            var currentThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            if (currentThreadId != _assignedThreadId)
+                throw new ScriptEngineErrorException("This runner is assigned to different thread, cannot perform  from other thread");
         }
 
         public Task RunAsync(string code)
         {
-            var scope = _manager.Lock();
-
-            try
+            ValidateCurrentThread();
+            
+            using (Py.GIL())
             {
-                _scope.Exec(code);
-            }
-            catch (PythonException e)
-            {
-                ThrowRunnerException(e);
-            }
-            finally
-            {
-                scope.Dispose();
+                try
+                {
+                    _scope.Exec(code);
+                }
+                catch (PythonException e)
+                {
+                    ThrowRunnerException(e);
+                }
             }
 
             return Task.CompletedTask;
@@ -56,30 +62,32 @@ namespace EmbeddedScripts.Python.PythonNet
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            using (_manager.Lock())
+            ValidateCurrentThread();
+
+            using (Py.GIL())
                 _scope.Set(alias, obj);
+            
             return this;
         }
 
         public Task<T> EvaluateAsync<T>(string expression)
         {
-            var scope = _manager.Lock();
+            ValidateCurrentThread();
 
             var val = default(T);
-            
-            try
+
+            using (Py.GIL())
             {
-                val = _scope.Eval<T>(expression);
+                try
+                {
+                    val = _scope.Eval<T>(expression);
+                }
+                catch (PythonException e)
+                {
+                    ThrowRunnerException(e);
+                }
             }
-            catch (PythonException e)
-            {
-                ThrowRunnerException(e);
-            }
-            finally
-            {
-                scope.Dispose();
-            }
-            
+
             return Task.FromResult(val);
         }
 
@@ -97,10 +105,10 @@ namespace EmbeddedScripts.Python.PythonNet
 
         public void Dispose()
         {
-            using (_manager.Lock())
-                _scope.Dispose();
+            ValidateCurrentThread();
 
-            _manager.Dispose();
+            using (Py.GIL())
+                _scope.Dispose();
         }
     }
 }

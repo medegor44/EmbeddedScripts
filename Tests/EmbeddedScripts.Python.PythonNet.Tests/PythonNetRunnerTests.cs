@@ -12,7 +12,7 @@
 {
     public class PythonNetRunnerTests
     {
-        public PythonNetRunnerTests(ITestOutputHelper testOutputHelper)
+        public PythonNetRunnerTests()
         {
             // fallback for local machine tests
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && string.IsNullOrEmpty(PythonNetRunner.PythonDll))
@@ -339,15 +339,14 @@ def fib(n):
             using var runner = new PythonNetRunner();
             await runner.RunAsync(code);
 
-            var thread1 = new Thread(() =>
+            var thread1 = new Thread( async () =>
             {
-                var task = runner.EvaluateAsync<int>("fib(20)");
-                Assert.Equal(6765,task.Result);
+                await Assert.ThrowsAsync<ScriptEngineErrorException>(() => runner.EvaluateAsync<int>("fib(20)"));
             });
-            var thread2 = new Thread(() =>
+            
+            var thread2 = new Thread(async () =>
             {
-                var task = runner.EvaluateAsync<int>("fib(20)");
-                Assert.Equal(6765,task.Result);
+                await Assert.ThrowsAsync<ScriptEngineErrorException>(() => runner.EvaluateAsync<int>("fib(20)"));
             });
 
             thread1.Start();
@@ -357,7 +356,7 @@ def fib(n):
             thread2.Join();
         }
 
-        [Fact]
+        [Fact] // TODO
         public async Task EvaluateAsync_EvaluationInTaskRun_Success()
         {
             var code = @"
@@ -367,50 +366,13 @@ def fib(n):
   return fib(n - 1) + fib(n - 2)
 ";
 
-            using var runner = new PythonNetRunner();
+            var runner = new PythonNetRunner();
             await runner.RunAsync(code);
 
-            var actualFib35 = await Task.Run(() => runner.EvaluateAsync<int>("fib(35)"));
-            var expectedFib35 = 9227465;
-            Assert.Equal(expectedFib35, actualFib35);
-            
-            var actualSum = await runner.EvaluateAsync<int>("1 + 2");
-            var expectedSum = 3;
-            Assert.Equal(expectedSum, actualSum);
+            await Assert.ThrowsAsync<ScriptEngineErrorException>(() => Task.Run(() => runner.EvaluateAsync<int>("fib(35)")));
+            Assert.Throws<ScriptEngineErrorException>(() => runner.Dispose());
         }
 
-        [Fact]
-        public async Task RunAsync_MutatePythonVariableInOtherThread_VariableMutates()
-        {
-            using var runner = new PythonNetRunner();
-
-            var thread1 = new Thread(() => runner.RunAsync("a = 1"));
-            var thread2 = new Thread(() => runner.RunAsync("a += 1"));
-
-            thread1.Start();
-            thread2.Start();
-
-            var actual = await runner.EvaluateAsync<int>("a");
-            Assert.Equal(2, actual);
-        }
-        
-        [Fact]
-        public async Task RunAsync_MutatePythonVariableSimultaneouslyInDifferentThreads_VariableMutates()
-        {
-            using var runner = new PythonNetRunner();
-
-            await runner.RunAsync("a = 1");
-            
-            var thread1 = new Thread(() => runner.RunAsync("a += 1"));
-            var thread2 = new Thread(() => runner.RunAsync("a += 1"));
-
-            thread1.Start();
-            thread2.Start();
-
-            var actual = await runner.EvaluateAsync<int>("a");
-            Assert.Equal(3, actual);
-        }
-        
         [Fact]
         public async Task EvaluateAsync_TryToAccessPythonVarFromOtherRunner_Fail()
         {
