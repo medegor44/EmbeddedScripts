@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
 using EmbeddedScripts.Shared.Exceptions;
@@ -9,8 +10,8 @@ namespace EmbeddedScripts.Python.PythonNet
     public class PythonNetRunner : ICodeRunner, IEvaluator, IDisposable
     {
         private readonly PyScope _scope;
-        
-        public static string PythonDll 
+
+        public static string PythonDll
         {
             get => Runtime.PythonDLL;
             set => Runtime.PythonDLL = value;
@@ -19,6 +20,7 @@ namespace EmbeddedScripts.Python.PythonNet
         static PythonNetRunner()
         {
             var pathToPythonDll = Environment.GetEnvironmentVariable("EMBEDDED_SCRIPTS_PYTHON_DLL");
+            PythonEngine.DebugGIL = true;
 
             if (pathToPythonDll != null && string.IsNullOrEmpty(PythonDll))
                 PythonDll = pathToPythonDll;
@@ -29,9 +31,29 @@ namespace EmbeddedScripts.Python.PythonNet
             using (Py.GIL())
                 _scope = Py.CreateScope();
         }
-        
+
+        private void ValidateCurrentThread()
+        {
+            if (Runtime.MainManagedThreadId != Thread.CurrentThread.ManagedThreadId)
+                throw new ScriptEngineErrorException("Cannot perform operation from this thread");
+        }
+
+        private void ThrowRunnerException(PythonException exception)
+        {
+            throw exception.Type.Name switch
+            {
+                ErrorCodes.SyntaxError or ErrorCodes.IndentationError or ErrorCodes.TabError =>
+                    new ScriptSyntaxErrorException(exception.Message, exception),
+                ErrorCodes.SystemError or ErrorCodes.OsError or ErrorCodes.SystemExit =>
+                    new ScriptEngineErrorException(exception.Message, exception),
+                _ => new ScriptRuntimeErrorException(exception.Message, exception)
+            };
+        }
+
         public Task RunAsync(string code)
         {
+            ValidateCurrentThread();
+
             using (Py.GIL())
             {
                 try
@@ -40,14 +62,7 @@ namespace EmbeddedScripts.Python.PythonNet
                 }
                 catch (PythonException e)
                 {
-                    throw e.Type.Name switch
-                    {
-                        ErrorCodes.SyntaxError or ErrorCodes.IndentationError or ErrorCodes.TabError =>
-                            new ScriptSyntaxErrorException(e.Message, e),
-                        ErrorCodes.SystemError or ErrorCodes.OsError or ErrorCodes.SystemExit =>
-                            new ScriptEngineErrorException(e.Message, e),
-                        _ => new ScriptRuntimeErrorException(e.Message, e)
-                    };
+                    ThrowRunnerException(e);
                 }
             }
 
@@ -56,23 +71,40 @@ namespace EmbeddedScripts.Python.PythonNet
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
+            ValidateCurrentThread();
+
             using (Py.GIL())
                 _scope.Set(alias, obj);
-            
+
             return this;
         }
 
         public Task<T> EvaluateAsync<T>(string expression)
         {
+            ValidateCurrentThread();
+
+            var result = default(T);
             using (Py.GIL())
-                return Task.FromResult(_scope.Eval<T>(expression));
+            {
+                try
+                {
+                    result = _scope.Eval<T>(expression);
+                }
+                catch (PythonException e)
+                {
+                    ThrowRunnerException(e);
+                }
+            }
+
+            return Task.FromResult(result);
         }
-        
+
         public void Dispose()
         {
-            using (new PythonMultithreadingScope()) // TODO Workaround for System.InvalidOperationException: This property must be set before runtime is initialized at Python.Runtime.Runtime.set_PythonDLL(String value)
             using (Py.GIL())
                 _scope?.Dispose();
+
+            PythonEngine.Shutdown();
         }
     }
 }

@@ -1,12 +1,10 @@
  using System;
- using System.Net.Sockets;
  using System.Runtime.InteropServices;
  using System.Text;
  using System.Threading.Tasks;
  using EmbeddedScripts.Shared.Exceptions;
  using HelperObjects;
  using Xunit;
- using Python.Runtime;
 
 namespace EmbeddedScripts.Python.PythonNet.Tests
 {
@@ -14,9 +12,13 @@ namespace EmbeddedScripts.Python.PythonNet.Tests
     {
         public PythonNetRunnerTests()
         {
+            if (!string.IsNullOrEmpty(PythonNetRunner.PythonDll)) return;
+            
             // fallback for local machine tests
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && string.IsNullOrEmpty(PythonNetRunner.PythonDll))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 PythonNetRunner.PythonDll = "C:/Python38/python38.dll";
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                PythonNetRunner.PythonDll = "/usr/lib/python3.8/config-3.8-x86_64-linux-gnu/libpython3.8.so";
         }
 
         [Fact]
@@ -324,6 +326,36 @@ def check():
                 .ToString();
 
             await Assert.ThrowsAsync<ScriptSyntaxErrorException>(() => runner.RunAsync(code));
+        }
+        
+        [Fact]
+        public async Task EvaluateAsync_EvaluationInTaskRun_Success()
+        {
+            var code = @"
+def fib(n):
+  if n == 0 or n == 1:
+    return n
+  return fib(n - 1) + fib(n - 2)
+";
+
+            using var runner = new PythonNetRunner();
+            await runner.RunAsync(code);
+
+            Task.Run(async () =>
+            {
+                await Assert.ThrowsAsync<ScriptEngineErrorException>(() => runner.EvaluateAsync<int>("fib(20)"));
+            }).Wait();
+        }
+
+        [Fact]
+        public async Task EvaluateAsync_TryToAccessPythonVarFromOtherRunner_Fail()
+        {
+            using var runner1 = new PythonNetRunner();
+            using var runner2 = new PythonNetRunner();
+
+            await runner1.RunAsync("a = 1");
+
+            await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner2.EvaluateAsync<int>("a"));
         }
     }
 }
