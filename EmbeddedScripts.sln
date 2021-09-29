@@ -31,44 +31,37 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.ClearScr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.ClearScriptV8.Tests", "Tests\EmbeddedScripts.JS.ClearScriptV8.Tests\EmbeddedScripts.JS.ClearScriptV8.Tests.csproj", "{67340CB4-69F1-4EE4-A49A-8321EB471A90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.JS.ChakraCore", "Src\EmbeddedScripts.JS.ChakraCore\EmbeddedScripts.JS.ChakraCore.csproj", "{9ECC15D9-8866-4E42-9FAA-A9523FF59BA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.ChakraCore", "Src\EmbeddedScripts.JS.ChakraCore\EmbeddedScripts.JS.ChakraCore.csproj", "{9ECC15D9-8866-4E42-9FAA-A9523FF59BA2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.ChakraCore.Tests", "Tests\EmbeddedScripts.JS.ChakraCore.Tests\EmbeddedScripts.JS.ChakraCore.Tests.csproj", "{733B6533-861F-4B94-AEE5-5D4F7E419339}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lua", "Lua", "{15F562A4-676E-4C31-A0C7-02FB8471FE8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.Lua.Moonsharp", "Src\EmbeddedScripts.Lua.Moonsharp\EmbeddedScripts.Lua.Moonsharp.csproj", "{BB1850EA-C8D7-4B30-8AD1-BF699B9FA658}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.Lua.Moonsharp", "Src\EmbeddedScripts.Lua.Moonsharp\EmbeddedScripts.Lua.Moonsharp.csproj", "{BB1850EA-C8D7-4B30-8AD1-BF699B9FA658}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.Lua.Moonsharp.Tests", "Tests\EmbeddedScripts.Lua.Moonsharp.Tests\EmbeddedScripts.Lua.Moonsharp.Tests.csproj", "{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.Lua.Moonsharp.Tests", "Tests\EmbeddedScripts.Lua.Moonsharp.Tests\EmbeddedScripts.Lua.Moonsharp.Tests.csproj", "{6C138061-CE5E-4EFC-AB6C-6DBB2CC0A752}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.Shared", "Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj", "{3316CF48-5EF4-4F7C-823C-EDB14EC63860}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.Shared", "Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj", "{3316CF48-5EF4-4F7C-823C-EDB14EC63860}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.JS.Common.Tests", "Tests\EmbeddedScripts.JS.Common.Tests\EmbeddedScripts.JS.Common.Tests.csproj", "{AAFED3B1-E319-45BB-B213-653DC4F6819F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.JS.Common.Tests", "Tests\EmbeddedScripts.JS.Common.Tests\EmbeddedScripts.JS.Common.Tests.csproj", "{AAFED3B1-E319-45BB-B213-653DC4F6819F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Python", "Python", "{8EE291DB-ACE3-40EE-8FD9-1A2C918DD5F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.Python.PythonNet", "Src\EmbeddedScripts.Python.PythonNet\EmbeddedScripts.Python.PythonNet.csproj", "{B1F9D200-DE38-4A05-B573-07264709DDFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.Python.PythonNet", "Src\EmbeddedScripts.Python.PythonNet\EmbeddedScripts.Python.PythonNet.csproj", "{B1F9D200-DE38-4A05-B573-07264709DDFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.Python.PythonNet.Tests", "Tests\EmbeddedScripts.Python.PythonNet.Tests\EmbeddedScripts.Python.PythonNet.Tests.csproj", "{02D102CC-1058-431E-BEFB-BEF71E8ACE6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.Python.PythonNet.Tests", "Tests\EmbeddedScripts.Python.PythonNet.Tests\EmbeddedScripts.Python.PythonNet.Tests.csproj", "{02D102CC-1058-431E-BEFB-BEF71E8ACE6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.CSharp.MonoEvaluator", "Src\EmbeddedScripts.CSharp.MonoEvaluator\EmbeddedScripts.CSharp.MonoEvaluator.csproj", "{FD6B10EC-5E5A-4EB5-8AF8-45C1DF21C9CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.MonoEvaluator", "Src\EmbeddedScripts.CSharp.MonoEvaluator\EmbeddedScripts.CSharp.MonoEvaluator.csproj", "{FD6B10EC-5E5A-4EB5-8AF8-45C1DF21C9CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbeddedScripts.CSharp.MonoEvaluator.Tests", "Tests\EmbeddedScripts.CSharp.MonoEvaluator.Tests\EmbeddedScripts.CSharp.MonoEvaluator.Tests.csproj", "{904B2A59-AC9B-4811-AAF0-43EBC9E73E1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedScripts.CSharp.MonoEvaluator.Tests", "Tests\EmbeddedScripts.CSharp.MonoEvaluator.Tests\EmbeddedScripts.CSharp.MonoEvaluator.Tests.csproj", "{904B2A59-AC9B-4811-AAF0-43EBC9E73E1C}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{2e1ca5c1-3fbf-4bec-9db2-8e78b3bc8169}*SharedItemsImports = 13
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{3024ee77-31c5-4152-b2e2-7804f4f52bf1}*SharedItemsImports = 5
-		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{3024ee77-31c5-4152-b2e2-7804f4f52bf1}*SharedItemsImports = 5
-		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{64ef0bdf-0b08-4837-bd2d-b5ae294c7bfa}*SharedItemsImports = 13
-		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{7874a987-f15e-4cf9-bed5-00657bd052f5}*SharedItemsImports = 5
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{8a98bda5-72ce-4a81-9001-9308099e8043}*SharedItemsImports = 5
-		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{8a98bda5-72ce-4a81-9001-9308099e8043}*SharedItemsImports = 5
-		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{8f5f5f05-27e6-403a-bb07-dc4b0b90aedd}*SharedItemsImports = 5
-		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{9ecc15d9-8866-4e42-9faa-a9523ff59ba2}*SharedItemsImports = 5
-		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{a439f01a-9a7c-4336-ac29-c0eeafe1e3da}*SharedItemsImports = 5
+		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{fd6b10ec-5e5a-4eb5-8af8-45c1df21c9cc}*SharedItemsImports = 5
 		Src\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems*{febc4cac-cac4-4867-ac03-957c267a3a38}*SharedItemsImports = 5
-		Src\EmbeddedScripts.Shared\EmbeddedScripts.Shared.projitems*{febc4cac-cac4-4867-ac03-957c267a3a38}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
