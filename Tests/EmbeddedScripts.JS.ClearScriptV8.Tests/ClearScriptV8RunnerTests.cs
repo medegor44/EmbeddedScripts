@@ -4,12 +4,19 @@ using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
 using Xunit;
 using HelperObjects;
+using Xunit.Abstractions;
 
 namespace EmbeddedScripts.JS.ClearScriptV8.Tests
 {
     public class ClearScriptV8RunnerTests
     {
+        private readonly ITestOutputHelper _testOutputHelper;
         private readonly JsCommonTests _tests = new();
+
+        public ClearScriptV8RunnerTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
 
         [Fact]
         public async Task RunValidCode_Succeed()
@@ -230,5 +237,7 @@ namespace EmbeddedScripts.JS.ClearScriptV8.Tests
             using var newRunner = new ClearScriptV8Runner();
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => newRunner.EvaluateAsync<string>("s"));
         }
+        
+        
     }
 }

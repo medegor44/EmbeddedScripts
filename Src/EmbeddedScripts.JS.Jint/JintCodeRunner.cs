@@ -15,22 +15,21 @@ namespace EmbeddedScripts.JS.Jint
         private readonly Container _container = new();
         private Options _jintOptions = new();
         private Engine _engine;
-        private readonly object _engineSynchronizer = new();
 
         private object ToNumber(JsValue jsNum)
         {
             var num = jsNum.AsNumber();
-            
+
             if (Math.Abs(num - (int)num) < double.Epsilon)
                 return (int)num;
-            
+
             return num;
         }
-        
+
         public JintCodeRunner AddEngineOptions(Func<Options, Options> optionsFunc)
         {
             _jintOptions = optionsFunc(_jintOptions);
-            
+
             return this;
         }
 
@@ -40,17 +39,12 @@ namespace EmbeddedScripts.JS.Jint
 
             try
             {
-                JsValue val;
-                
-                lock (_engineSynchronizer)
-                {
-                    _engine.SetValuesFromContainer(_container);
-                    val = _engine.Evaluate(expression);
-                }
+                _engine.SetValuesFromContainer(_container);
+                var val = _engine.Evaluate(expression);
 
                 if (val.Type == Types.Number)
                     return Task.FromResult((T)ToNumber(val));
-                
+
                 return Task.FromResult((T)val.ToObject());
             }
             catch (JavaScriptException e)
@@ -71,7 +65,7 @@ namespace EmbeddedScripts.JS.Jint
                 throw new ScriptEngineErrorException(e.Message, e);
             }
         }
-        
+
         public Task RunAsync(string code)
         {
             EvaluateAsync<object>(code);
@@ -82,7 +76,7 @@ namespace EmbeddedScripts.JS.Jint
         public ICodeRunner Register<T>(T obj, string alias)
         {
             _container.Register(obj, alias);
-            
+
             return this;
         }
     }

@@ -75,7 +75,7 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         private JavaScriptValue MapDelegate(Delegate func)
         {
-            var cb = new JavaScriptNativeFunction((_, _, args, _, _) =>
+            var callback = new JavaScriptNativeFunction((_, _, args, _, _) =>
             {
                 try
                 {
@@ -107,9 +107,9 @@ namespace EmbeddedScripts.JS.ChakraCore
             });
 
             lock (_listSynchronizer)
-                _jsNativeFunctions.Add(cb);
+                _jsNativeFunctions.Add(callback);
 
-            var f = JavaScriptValue.CreateFunction(cb, IntPtr.Zero);
+            var f = JavaScriptValue.CreateFunction(callback, IntPtr.Zero);
 
             return f;
         }
@@ -139,7 +139,8 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public void Dispose()
         {
-            _jsNativeFunctions.Clear();
+            lock (_listSynchronizer)
+                _jsNativeFunctions.Clear();
         }
     }
 }

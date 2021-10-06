@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace EmbeddedScripts.JS.ChakraCore.Tests
+namespace EmbeddedScripts.JS.ClearScriptV8.Tests
 {
-    public class ChakraCoreRunnerMultithreadingTests
+    public class ClearScriptV8RunnerMultithreadingTests
     {
         private readonly ITestOutputHelper _testOutputHelper;
-
         private string _code = @"
 function fib(n) {
   if (n === 0 || n === 1)
@@ -27,7 +24,7 @@ function start(n, id) {
 }
 ";
 
-        public ChakraCoreRunnerMultithreadingTests(ITestOutputHelper testOutputHelper)
+        public ClearScriptV8RunnerMultithreadingTests(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
         }
@@ -35,7 +32,7 @@ function start(n, id) {
         [Fact]
         public async Task EvaluateAsync_RunParallelTasksWithOneRunner_Success()
         {
-            using var runner = new ChakraCoreRunner();
+            using var runner = new ClearScriptV8Runner();
             runner.Register<Action<string>>(s =>
             {
                 _testOutputHelper.WriteLine($"At {DateTime.Now}");
@@ -62,9 +59,9 @@ function start(n, id) {
         }
 
         [Fact]
-        public async Task Evaluate_WhileEvaluateIsRunningInSeparateTask_Success() 
+        public async Task Evaluate_WhileEvaluateIsRunningInSeparateTask_Success() // throws Runtime is active on another thread
         {
-            using var runner = new ChakraCoreRunner();
+            using var runner = new ClearScriptV8Runner();
             await runner.RunAsync(_code);
             runner.Register<Action<string>>(s =>
             {
@@ -72,9 +69,14 @@ function start(n, id) {
                 _testOutputHelper.WriteLine(s);
             }, "log");
 
-            var task = Task.Run(() => runner.EvaluateAsync<int>("start(40, 1)"));
+            var task = Task.Run(() =>
+            {
+                return runner.EvaluateAsync<int>("start(40, 1)");
+            });
 
+            _testOutputHelper.WriteLine("before evaluate in same thread");
             Task t = runner.EvaluateAsync<int>("start(40, 2)");
+            _testOutputHelper.WriteLine("after evaluate in same thread");
 
             await Task.WhenAll(t, task);
         }
@@ -84,7 +86,7 @@ function start(n, id) {
         {
             var firstTask = Task.Run(async () =>
             {
-                using var runner = new ChakraCoreRunner();
+                using var runner = new ClearScriptV8Runner();
 
                 runner.Register<Action<string>>(s =>
                 {
@@ -97,30 +99,30 @@ function start(n, id) {
 
             var secondTask = Task.Run(async () =>
             {
-                using var runner = new ChakraCoreRunner();
+                using var runner = new ClearScriptV8Runner();
                 runner.Register<Action<string>>(s =>
                 {
                     _testOutputHelper.WriteLine($"At {DateTime.Now}");
                     _testOutputHelper.WriteLine(s);
                 }, "log");
                 await runner.RunAsync(_code);
-                await runner.EvaluateAsync<int>("start(39, 2)");
+                await runner.EvaluateAsync<int>("start(40, 2)");
             });
-
+            
             await Task.WhenAll(firstTask, secondTask);
         }
-
+        
         [Fact]
         public async Task EvaluateAsync_MultipleRunnersInOneThread_Success()
         {
-            using var firstRunner = new ChakraCoreRunner();
+            using var firstRunner = new ClearScriptV8Runner();
             firstRunner.Register<Action<string>>(s =>
             {
                 _testOutputHelper.WriteLine($"At {DateTime.Now}");
                 _testOutputHelper.WriteLine(s);
             }, "log");
-
-            using var secondRunner = new ChakraCoreRunner();
+            
+            using var secondRunner = new ClearScriptV8Runner();
             secondRunner.Register<Action<string>>(s =>
             {
                 _testOutputHelper.WriteLine($"At {DateTime.Now}");

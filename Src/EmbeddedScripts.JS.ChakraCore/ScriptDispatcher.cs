@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 
+// Taken from https://github.com/Taritsyn/JavaScriptEngineSwitcher/blob/master/src/JavaScriptEngineSwitcher.ChakraCore/ScriptDispatcher.cs
 namespace EmbeddedScripts.JS.ChakraCore
 {
     public struct InterlockedStatedFlag
     {
         private int _counter;
-
 
         public bool IsSet()
         {

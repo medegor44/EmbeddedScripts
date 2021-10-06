@@ -2,6 +2,7 @@
 using System.Data;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using EmbeddedScripts.CSharp.MonoEvaluator.CodeGeneration;
 using EmbeddedScripts.CSharp.MonoEvaluator.Hosting;
@@ -13,10 +14,11 @@ namespace EmbeddedScripts.CSharp.MonoEvaluator
 {
     public class MonoCSharpRunner : ICodeRunner, IEvaluator
     {
-        private readonly StringBuilder _errorLogBuilder = new StringBuilder();
+        private static int _nextRunnerId;
+        private readonly StringBuilder _errorLogBuilder = new();
         private readonly Evaluator _evaluator;
-        private readonly MonoSpecificCodeGenerator _codeGenerator = new MonoSpecificCodeGenerator();
-        private readonly int _runnerId = new Random().Next(0, int.MaxValue);
+        private readonly MonoSpecificCodeGenerator _codeGenerator = new();
+        private readonly int _runnerId;
 
         /// <summary>
         /// Evaluator doesn't throw any syntax exceptions. Instead, it just logged errors into StreamReportPrinter. So we using
@@ -42,6 +44,8 @@ namespace EmbeddedScripts.CSharp.MonoEvaluator
             _evaluator = new Evaluator(new CompilerContext(
                 defaultSettings, new StreamReportPrinter(new StringWriter(_errorLogBuilder))));
 
+            _runnerId = Interlocked.Increment(ref _nextRunnerId);
+
             HostFields.CreateNewEntry(_runnerId);
             var hostFieldsType = typeof(HostFields);
             _evaluator.ReferenceAssembly(hostFieldsType.Assembly);
@@ -61,9 +65,11 @@ namespace EmbeddedScripts.CSharp.MonoEvaluator
         public ICodeRunner Register<T>(T instance, string alias)
         {
             var instanceType = typeof(T);
+            
             HostFields.Get(_runnerId).Add(alias, instance);
 
             _evaluator.TryReferenceAssembly(instanceType.Assembly);
+            
             var resolveLine =_codeGenerator.GenerateResolveLine(alias, instanceType, _runnerId);
             RunAsync(resolveLine);
 
