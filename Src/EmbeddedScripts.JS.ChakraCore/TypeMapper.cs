@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using ChakraHost.Hosting;
@@ -9,16 +9,15 @@ namespace EmbeddedScripts.JS.ChakraCore
     public class TypeMapper : IDisposable
     {
         private readonly JsContext _context;
-        
+
         // stores registered delegates to prevent their garbage collection
-        private readonly List<JavaScriptNativeFunction> _jsNativeFunctions = new();
-        private readonly object _listSynchronizer = new();
+        private readonly ConcurrentBag<JavaScriptNativeFunction> _jsNativeFunctions = new();
 
         public TypeMapper(JsContext context)
         {
             _context = context;
         }
-        
+
         private JavaScriptValue MapClrPrimitivesToJs(object value)
         {
             if (value is null)
@@ -32,7 +31,7 @@ namespace EmbeddedScripts.JS.ChakraCore
                 case TypeCode.Int16:
                 case TypeCode.Int32:
                     return JavaScriptValue.FromInt32(Convert.ToInt32(value));
-                
+
                 case TypeCode.UInt32:
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
@@ -46,19 +45,19 @@ namespace EmbeddedScripts.JS.ChakraCore
 
                 case TypeCode.String:
                     return JavaScriptValue.FromString((string) value);
-                
+
                 default:
                     throw new ArgumentException("Type is not supported");
             }
         }
-        
+
         private object ToNumber(JavaScriptValue value)
         {
             var num = value.ToDouble();
 
             if (Math.Abs(num - Math.Round(num)) < double.Epsilon)
                 return (int) num;
-            
+
             return num;
         }
 
@@ -75,7 +74,7 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         private JavaScriptValue MapDelegate(Delegate func)
         {
-            var cb = new JavaScriptNativeFunction((_, _, args, _, _) =>
+            var callback = new JavaScriptNativeFunction((_, _, args, _, _) =>
             {
                 try
                 {
@@ -106,26 +105,22 @@ namespace EmbeddedScripts.JS.ChakraCore
                 return JavaScriptValue.Undefined;
             });
 
-            lock (_listSynchronizer)
-                _jsNativeFunctions.Add(cb);
+            _jsNativeFunctions.Add(callback);
 
-            var f = JavaScriptValue.CreateFunction(cb, IntPtr.Zero);
+            var f = JavaScriptValue.CreateFunction(callback, IntPtr.Zero);
 
             return f;
         }
 
         private object Map(JsValue value)
-        {           
-            object t;
+        {
             using (_context.Scope)
-                t = MapJsPrimitivesToClr(value);
-
-            return t;
+                return MapJsPrimitivesToClr(value);
         }
-        
-        public T Map<T>(JsValue value) => 
-            (T)Map(value);
-        
+
+        public T Map<T>(JsValue value) =>
+            (T) Map(value);
+
         public JsValue Map(object value)
         {
             using (_context.Scope)

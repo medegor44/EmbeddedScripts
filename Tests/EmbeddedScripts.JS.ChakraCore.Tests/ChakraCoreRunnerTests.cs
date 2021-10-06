@@ -4,7 +4,6 @@ using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace EmbeddedScripts.JS.ChakraCore.Tests
 {
@@ -224,10 +223,8 @@ if (c !== 3)
         [Fact]
         public void TryToRegisterUnsupportedType_RunnerThrowsException()
         {
-            var runner = new ChakraCoreRunner();
+            using var runner = new ChakraCoreRunner();
             Assert.Throws<ArgumentException>(() => runner.Register(new HelperObject(), "x"));
-            
-            runner.Dispose();
         }
 
         [Fact]

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
 
@@ -13,14 +11,6 @@ namespace EmbeddedScripts.JS.ChakraCore
         private JsContext _context;
         private readonly ScriptDispatcher _dispatcher = new();
 
-        private InterlockedStatedFlag _disposed;
-
-        private void VerifyNotDisposed()
-        {
-            if (_disposed.IsSet())
-                throw new ObjectDisposedException(ToString());
-        }
-        
         public ChakraCoreRunner()
         {
             _dispatcher.Invoke(() =>
@@ -35,8 +25,6 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public Task<T> EvaluateAsync<T>(string expression)
         { 
-            VerifyNotDisposed();
-            
             return Task.FromResult(_dispatcher.Invoke(() =>
             {
                 var val = _context.Evaluate(expression);
@@ -47,8 +35,6 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public Task RunAsync(string code)
         {
-            VerifyNotDisposed();
-            
             _dispatcher.Invoke(() =>
             {
                 _context.Evaluate(code);
@@ -59,8 +45,6 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            VerifyNotDisposed();
-
             _dispatcher.Invoke(() =>
             {
                 var val = _mapper.Map(obj);
@@ -75,8 +59,6 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public void Dispose()
         {
-            if (!_disposed.Set()) return;
-            
             _dispatcher.Invoke(() =>
             {
                 if (_context.IsValid)
