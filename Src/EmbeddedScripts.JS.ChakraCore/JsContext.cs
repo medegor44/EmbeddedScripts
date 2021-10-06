@@ -15,6 +15,18 @@ namespace EmbeddedScripts.JS.ChakraCore
                 GlobalObject = new JsValue(this, JavaScriptValue.GlobalObject);
         }
 
+        public void AddRef()
+        {
+            _context.AddRef();
+        }
+
+        public void Release()
+        {
+            _context.Release();
+        }
+
+        public bool IsValid => _context.IsValid;
+        
         public JsScope Scope =>
             new (new (_context));
 
@@ -22,11 +34,15 @@ namespace EmbeddedScripts.JS.ChakraCore
         {
             using (Scope)
             {
-                Console.WriteLine("In evaluate/scope");
+                //Console.WriteLine($"In evaluate/scope {expression}");
 
                 try
                 {
-                    return new JsValue(this, JavaScriptContext.RunScript(expression));
+                    var t = JavaScriptContext.RunScript(expression);
+
+                    //Console.WriteLine($"In evaluate/scope done {expression}");
+
+                    return new JsValue(this, t);
                 }
                 catch (JavaScriptScriptException e)
                 {

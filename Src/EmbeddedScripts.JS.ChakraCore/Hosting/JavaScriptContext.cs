@@ -217,11 +217,14 @@
         /// <returns>The result of the script, if any.</returns>
         public static JavaScriptValue RunScript(string script, JavaScriptSourceContext sourceContext, string sourceName)
         {
-            Console.WriteLine("In run script");
+           // Console.WriteLine("In run script");
 
             JavaScriptValue result;
             Native.ThrowIfError(Native.JsRunScript(JavaScriptValue.FromString(script), 
                 sourceContext, JavaScriptValue.FromString(sourceName), Native.JsParseScriptAttributes.None, out result));
+            
+            //Console.WriteLine("In run script done");
+
             return result;
         }
 

@@ -7,38 +7,70 @@ namespace EmbeddedScripts.JS.ChakraCore
     public class ChakraCoreRunner : ICodeRunner, IEvaluator, IDisposable
     {
         private readonly JsRuntime _runtime = new();
-        private readonly TypeMapper _mapper;
-        private readonly JsContext _context;
+        private TypeMapper _mapper;
+        private JsContext _context;
+        private readonly ScriptDispatcher _dispatcher = new();
 
         public ChakraCoreRunner()
         {
-            _context = _runtime.CreateContext();
-            _mapper = new(_context);
+            _dispatcher.Invoke(() =>
+            {
+                _context = _runtime.CreateContext();
+                _context.AddRef();
+                _mapper = new(_context);
+            });
         }
 
         public Task<T> EvaluateAsync<T>(string expression)
         {
-            Console.WriteLine("In evaluate");
-            var val = _context.Evaluate(expression);
+            return Task.FromResult(_dispatcher.Invoke(() =>
+            {
+                //Console.WriteLine($"start evaluate {expression}");
+                var val = _context.Evaluate(expression);
+                //Console.WriteLine($"end evaluate {expression}");
 
-            return Task.FromResult(new TypeMapper(_context).Map<T>(val));
+                return _mapper.Map<T>(val);
+            }));
         }
 
         public Task RunAsync(string code)
         {
-            _context.Evaluate(code);
-
+            _dispatcher.Invoke(() =>
+            {
+                _context.Evaluate(code);
+            });
+            
             return Task.CompletedTask;
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            _context.GlobalObject.AddProperty(alias, _mapper.Map(obj));
-
+            _dispatcher.Invoke(() =>
+            {
+                _context.GlobalObject.AddProperty(alias, _mapper.Map(obj));
+            });
+            
             return this;
         }
 
-        public void Dispose() =>
+        public void Dispose()
+        {
+            //Console.WriteLine("in dispose");
+            _dispatcher.Dispose();
+            //Console.WriteLine("_dispatcher disposed");
+
+
+            if (_context.IsValid)
+                _context.Release();
+            
+            //Console.WriteLine("context released");
+            
             _runtime?.Dispose();
+            //Console.WriteLine("_runtime disposed");
+
+
+            GC.SuppressFinalize(true);
+            //Console.WriteLine("in dispose done");
+        }
     }
 }

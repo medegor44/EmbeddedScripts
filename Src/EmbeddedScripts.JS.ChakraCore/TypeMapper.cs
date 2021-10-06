@@ -8,10 +8,17 @@ namespace EmbeddedScripts.JS.ChakraCore
     public class TypeMapper
     {
         private readonly JsContext _context;
+        private readonly ScriptDispatcher _dispatcher;
 
         public TypeMapper(JsContext context)
         {
             _context = context;
+        }
+        
+        public TypeMapper(JsContext context, ScriptDispatcher dispatcher)
+        {
+            _context = context;
+            _dispatcher = dispatcher;
         }
         
         private JavaScriptValue MapClrPrimitivesToJs(object value)
@@ -68,14 +75,20 @@ namespace EmbeddedScripts.JS.ChakraCore
                 _ => throw new ArgumentException("Type is not supported")
             };
 
-        private JavaScriptValue MapDelegate(Delegate func) => 
-            JavaScriptValue.CreateFunction((_, _, args, _, _) =>
+        private JavaScriptValue MapDelegate(Delegate func)
+        {
+            var f = JavaScriptValue.CreateFunction((_, _, args, _, _) =>
                 {
-
                     try
                     {
                         if (func.Method.GetParameters().Length == args.Length - 1)
-                            return Map(func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray()));
+                        {
+                            // Console.WriteLine("Before invocation");
+                            var res = func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray());
+                            // Console.WriteLine("After invocation");
+
+                            return Map(res);
+                        }
 
                         JavaScriptContext.SetException(
                             JavaScriptValue.CreateError(JavaScriptValue.FromString("Inappropriate args list")));
@@ -93,14 +106,23 @@ namespace EmbeddedScripts.JS.ChakraCore
                         JavaScriptContext.SetException(
                             JavaScriptValue.CreateError(JavaScriptValue.FromString(e.Message)));
                     }
+
                     return JavaScriptValue.Undefined;
                 },
                 IntPtr.Zero);
-        
+
+            return f;
+        }
+
         private object Map(JsValue value)
-        {
+        {           
+            //Console.WriteLine("In typemapper map");
+            object t;
             using (_context.Scope)
-                return MapJsPrimitivesToClr(value);
+                t = MapJsPrimitivesToClr(value);
+
+            //Console.WriteLine($"In typemapper map done {t}");
+            return t;
         }
         
         public T Map<T>(JsValue value) => 
