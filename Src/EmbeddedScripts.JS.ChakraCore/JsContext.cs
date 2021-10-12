@@ -34,13 +34,9 @@ namespace EmbeddedScripts.JS.ChakraCore
         {
             using (Scope)
             {
-                //Console.WriteLine($"In evaluate/scope {expression}");
-
                 try
                 {
                     var t = JavaScriptContext.RunScript(expression);
-
-                    //Console.WriteLine($"In evaluate/scope done {expression}");
 
                     return new JsValue(this, t);
                 }
