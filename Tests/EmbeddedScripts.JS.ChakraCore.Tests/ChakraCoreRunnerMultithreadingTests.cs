@@ -14,7 +14,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             _testOutputHelper = testOutputHelper;
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task EvaluateAsync_RunParallelTasksWithOneRunner_Success()
         {
@@ -57,12 +56,11 @@ function start(n, id) {
                 await t;
             });
 
-            Task.WaitAll(firstTask, secondTask);
+            await Task.WhenAll(firstTask, secondTask);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
-        public async Task Evaluate_WhileEvaluateIsRunningInSeparateTask_Success() // throws Runtime is active on another thread
+        public async Task Evaluate_WhileEvaluateIsRunningInSeparateTask_Success() 
         {
             var code = @"
 function fib(n) {
@@ -88,21 +86,15 @@ function start(n, id) {
                 _testOutputHelper.WriteLine(s);
             }, "log");
 
-            var task = Task.Run(() =>
-            {
-                return runner.EvaluateAsync<int>("start(40, 1)");
-            });
+            var task = Task.Run(() => runner.EvaluateAsync<int>("start(40, 1)"));
 
-            Console.WriteLine("before evaluate in same thread");
             Task t = runner.EvaluateAsync<int>("start(40, 2)");
-            Console.WriteLine("after evaluate in same thread");
 
-            Task.WaitAll(t, task);
+            await Task.WhenAll(t, task);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
-        public void EvaluateAsync_RunParallelTasksWithEachOnesRunner_Success()
+        public async Task EvaluateAsync_RunParallelTasksWithEachOnesRunner_Success()
         {
             var code = @"
 function fib(n) {
@@ -126,8 +118,8 @@ function start(n, id) {
 
                 runner.Register<Action<string>>(s =>
                 {
-                    Console.WriteLine($"At {DateTime.Now}");
-                    Console.WriteLine(s);
+                    _testOutputHelper.WriteLine($"At {DateTime.Now}");
+                    _testOutputHelper.WriteLine(s);
                 }, "log");
                 await runner.RunAsync(code);
                 await runner.EvaluateAsync<int>("start(40, 1)");
@@ -138,17 +130,16 @@ function start(n, id) {
                 using var runner = new ChakraCoreRunner();
                 runner.Register<Action<string>>(s =>
                 {
-                    Console.WriteLine($"At {DateTime.Now}");
-                    Console.WriteLine(s);
+                    _testOutputHelper.WriteLine($"At {DateTime.Now}");
+                    _testOutputHelper.WriteLine(s);
                 }, "log");
                 await runner.RunAsync(code);
                 await runner.EvaluateAsync<int>("start(39, 2)");
             });
-            
-            Task.WaitAll(firstTask, secondTask);
+
+            await Task.WhenAll(firstTask, secondTask);
         }
-        
-        [DisplayTestMethodNameAttribute]
+
         [Fact]
         public async Task EvaluateAsync_MultipleRunnersInOneThread_Success()
         {
@@ -174,7 +165,7 @@ function start(n, id) {
                 _testOutputHelper.WriteLine($"At {DateTime.Now}");
                 _testOutputHelper.WriteLine(s);
             }, "log");
-            
+
             using var secondRunner = new ChakraCoreRunner();
             secondRunner.Register<Action<string>>(s =>
             {

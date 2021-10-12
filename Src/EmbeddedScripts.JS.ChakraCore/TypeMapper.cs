@@ -1,24 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ChakraHost.Hosting;
 
 namespace EmbeddedScripts.JS.ChakraCore
 {
-    public class TypeMapper
+    public class TypeMapper : IDisposable
     {
         private readonly JsContext _context;
-        private readonly ScriptDispatcher _dispatcher;
+        
+        // stores registered delegates to prevent their garbage collection
+        private readonly List<JavaScriptNativeFunction> _jsNativeFunctions = new();
+        private readonly object _listSynchronizer = new();
 
         public TypeMapper(JsContext context)
         {
             _context = context;
-        }
-        
-        public TypeMapper(JsContext context, ScriptDispatcher dispatcher)
-        {
-            _context = context;
-            _dispatcher = dispatcher;
         }
         
         private JavaScriptValue MapClrPrimitivesToJs(object value)
@@ -77,51 +75,51 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         private JavaScriptValue MapDelegate(Delegate func)
         {
-            var f = JavaScriptValue.CreateFunction((_, _, args, _, _) =>
+            var cb = new JavaScriptNativeFunction((_, _, args, _, _) =>
+            {
+                try
                 {
-                    try
+                    if (func.Method.GetParameters().Length == args.Length - 1)
                     {
-                        if (func.Method.GetParameters().Length == args.Length - 1)
-                        {
-                            // Console.WriteLine("Before invocation");
-                            var res = func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray());
-                            // Console.WriteLine("After invocation");
+                        var res = func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray());
 
-                            return Map(res);
-                        }
-
-                        JavaScriptContext.SetException(
-                            JavaScriptValue.CreateError(JavaScriptValue.FromString("Inappropriate args list")));
-                        return JavaScriptValue.Undefined;
-                    }
-                    catch (TargetInvocationException e) when (e.InnerException != null)
-                    {
-                        _context.CallbackException = e.InnerException;
-
-                        JavaScriptContext.SetException(
-                            new JsError(_context, ErrorCodes.HostError, e.InnerException.Message));
-                    }
-                    catch (ArgumentException e)
-                    {
-                        JavaScriptContext.SetException(
-                            JavaScriptValue.CreateError(JavaScriptValue.FromString(e.Message)));
+                        return Map(res);
                     }
 
+                    JavaScriptContext.SetException(
+                        JavaScriptValue.CreateError(JavaScriptValue.FromString("Inappropriate args list")));
                     return JavaScriptValue.Undefined;
-                },
-                IntPtr.Zero);
+                }
+                catch (TargetInvocationException e) when (e.InnerException != null)
+                {
+                    _context.CallbackException = e.InnerException;
+
+                    JavaScriptContext.SetException(
+                        new JsError(_context, ErrorCodes.HostError, e.InnerException.Message));
+                }
+                catch (ArgumentException e)
+                {
+                    JavaScriptContext.SetException(
+                        JavaScriptValue.CreateError(JavaScriptValue.FromString(e.Message)));
+                }
+
+                return JavaScriptValue.Undefined;
+            });
+
+            lock (_listSynchronizer)
+                _jsNativeFunctions.Add(cb);
+
+            var f = JavaScriptValue.CreateFunction(cb, IntPtr.Zero);
 
             return f;
         }
 
         private object Map(JsValue value)
         {           
-            //Console.WriteLine("In typemapper map");
             object t;
             using (_context.Scope)
                 t = MapJsPrimitivesToClr(value);
 
-            //Console.WriteLine($"In typemapper map done {t}");
             return t;
         }
         
@@ -137,6 +135,11 @@ namespace EmbeddedScripts.JS.ChakraCore
 
                 return new(_context, MapClrPrimitivesToJs(value));
             }
+        }
+
+        public void Dispose()
+        {
+            _jsNativeFunctions.Clear();
         }
     }
 }

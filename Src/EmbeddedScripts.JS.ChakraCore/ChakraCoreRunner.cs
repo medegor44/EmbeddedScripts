@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
 
@@ -6,28 +8,38 @@ namespace EmbeddedScripts.JS.ChakraCore
 {
     public class ChakraCoreRunner : ICodeRunner, IEvaluator, IDisposable
     {
-        private readonly JsRuntime _runtime = new();
+        private JsRuntime _runtime;
         private TypeMapper _mapper;
         private JsContext _context;
         private readonly ScriptDispatcher _dispatcher = new();
 
+        private InterlockedStatedFlag _disposed;
+
+        private void VerifyNotDisposed()
+        {
+            if (_disposed.IsSet())
+                throw new ObjectDisposedException(ToString());
+        }
+        
         public ChakraCoreRunner()
         {
             _dispatcher.Invoke(() =>
             {
+                _runtime = new();
                 _context = _runtime.CreateContext();
-                _context.AddRef();
+                if (_context.IsValid)
+                    _context.AddRef();
                 _mapper = new(_context);
             });
         }
 
         public Task<T> EvaluateAsync<T>(string expression)
-        {
+        { 
+            VerifyNotDisposed();
+            
             return Task.FromResult(_dispatcher.Invoke(() =>
             {
-                //Console.WriteLine($"start evaluate {expression}");
                 var val = _context.Evaluate(expression);
-                //Console.WriteLine($"end evaluate {expression}");
 
                 return _mapper.Map<T>(val);
             }));
@@ -35,6 +47,8 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public Task RunAsync(string code)
         {
+            VerifyNotDisposed();
+            
             _dispatcher.Invoke(() =>
             {
                 _context.Evaluate(code);
@@ -45,9 +59,15 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
+            VerifyNotDisposed();
+
             _dispatcher.Invoke(() =>
             {
-                _context.GlobalObject.AddProperty(alias, _mapper.Map(obj));
+                var val = _mapper.Map(obj);
+                
+                val.AddRef();
+                
+                _context.GlobalObject.AddProperty(alias, val);
             });
             
             return this;
@@ -55,22 +75,18 @@ namespace EmbeddedScripts.JS.ChakraCore
 
         public void Dispose()
         {
-            //Console.WriteLine("in dispose");
+            if (!_disposed.Set()) return;
+            
+            _dispatcher.Invoke(() =>
+            {
+                if (_context.IsValid)
+                    _context.Release();
+
+                _runtime?.Dispose();
+            });
+            
             _dispatcher.Dispose();
-            //Console.WriteLine("_dispatcher disposed");
-
-
-            if (_context.IsValid)
-                _context.Release();
-            
-            //Console.WriteLine("context released");
-            
-            _runtime?.Dispose();
-            //Console.WriteLine("_runtime disposed");
-
-
-            GC.SuppressFinalize(true);
-            //Console.WriteLine("in dispose done");
+            _mapper.Dispose();
         }
     }
 }

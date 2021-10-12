@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
 using EmbeddedScripts.Shared.Exceptions;
@@ -14,6 +15,7 @@ namespace EmbeddedScripts.JS.Jint
         private readonly Container _container = new();
         private Options _jintOptions = new();
         private Engine _engine;
+        private readonly object _engineSynchronizer = new();
 
         private object ToNumber(JsValue jsNum)
         {
@@ -38,8 +40,13 @@ namespace EmbeddedScripts.JS.Jint
 
             try
             {
-                _engine.SetValuesFromContainer(_container);
-                var val = _engine.Evaluate(expression);
+                JsValue val;
+                
+                lock (_engineSynchronizer)
+                {
+                    _engine.SetValuesFromContainer(_container);
+                    val = _engine.Evaluate(expression);
+                }
 
                 if (val.Type == Types.Number)
                     return Task.FromResult((T)ToNumber(val));
@@ -67,8 +74,6 @@ namespace EmbeddedScripts.JS.Jint
         
         public Task RunAsync(string code)
         {
-            _engine ??= new Engine(_jintOptions);
-
             EvaluateAsync<object>(code);
 
             return Task.CompletedTask;

@@ -1,38 +1,17 @@
 using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
 using HelperObjects;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace EmbeddedScripts.JS.ChakraCore.Tests
 {
-    class DisplayTestMethodNameAttribute : BeforeAfterTestAttribute
-    {
-        public override void Before(MethodInfo methodUnderTest)
-        {
-           // Console.WriteLine("Setup for test '{0}.'", methodUnderTest.Name);
-        }
-
-        public override void After(MethodInfo methodUnderTest)
-        {
-            //Console.WriteLine("TearDown for test '{0}.'", methodUnderTest.Name);
-        }
-    }
     public class ChakraCoreTests
     {
-        private readonly ITestOutputHelper _testOutputHelper;
         private readonly JsCommonTests _tests = new();
 
-        public ChakraCoreTests(ITestOutputHelper testOutputHelper)
-        {
-            _testOutputHelper = testOutputHelper;
-        }
-
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async void RunValidCode_Succeed()
         {
@@ -41,7 +20,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.RunValidCode_Succeed(runner);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task RunWithTwoGlobalVariables_Succeed()
         {
@@ -49,7 +27,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.RunWithTwoGlobalVariables_Succeed(runner);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task RunWithGlobalFunc_Succeed()
         {
@@ -57,7 +34,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.RunWithGlobalFunc_Succeed(runner);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task RunInvalidCode_ThrowsException()
         {
@@ -65,7 +41,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.RunInvalidCode_ThrowsException(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task RegisteringNewGlobalVarBetweenRuns_Success()
         {
@@ -73,7 +48,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.RegisteringNewGlobalVarBetweenRuns_Success(runner);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success()
         {
@@ -81,7 +55,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.RunAsyncWithContinuation_EachRunSharesGlobals_Success(runner);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task RunAsyncWithContinuation_Success()
         {
@@ -89,7 +62,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.RunAsyncWithContinuation_Success(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task EvaluateAsync_Success()
         {
@@ -97,7 +69,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.EvaluateAsync_Success(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue()
         {
@@ -105,7 +76,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task CodeThrowsAnException_ExceptionWithSameMessageIsThrowingFromRunner()
         {
@@ -113,7 +83,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.CodeThrowsAnException_ExceptionWithSameMessageIsThrowingFromRunner(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task ExposedActionThrowsException_RunnerThrowsSameException()
         {
@@ -121,7 +90,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.ExposedFuncThrowingException_RunnerThrowsException(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task AddConfigTwice_AddsNewConfig_Succeed()
         {
@@ -129,7 +97,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.AddConfigTwice_AddsNewConfig_Succeed(runner);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException()
         {
@@ -137,7 +104,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task EvaluateExpressionWithNetAndJsTypes()
         {
@@ -145,7 +111,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.EvaluateExpressionWithNetAndJsTypes(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task NetAndJsIntegersEquality()
         {
@@ -153,7 +118,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.NetAndJsIntegersEquality(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task EvaluateAsyncString()
         {
@@ -161,7 +125,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.EvaluateAsyncString(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task RunCodeWithExceptionHandling_Success()
         {
@@ -169,7 +132,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.RunCodeWithExceptionHandling_Success(runner);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task HandleExceptionFromExposedFunction()
         {
@@ -177,7 +139,6 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.HandleExceptionFromExposedFunction(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage()
         {
@@ -185,15 +146,13 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
             await _tests.HandleExceptionFromExposedFunc_ErrorMessageIsEqualToExceptionMessage(runner);
         }
         
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task HandleCustomException()
         {
             using var runner = new ChakraCoreRunner();
             await _tests.HandleCustomException(runner);
         }
-
-        [DisplayTestMethodNameAttribute]
+        
         [Theory]
         [InlineData(3)]
         [InlineData((byte)3)]
@@ -213,8 +172,7 @@ namespace EmbeddedScripts.JS.ChakraCore.Tests
                 .Register<Func<T>>(() => returnValue, "f")
                 .RunAsync("f()");
         }
-
-        [DisplayTestMethodNameAttribute]
+        
         [Fact]
         public async Task ExposeFunctionWithArguments_Succeed()
         {
@@ -229,7 +187,6 @@ if (c !== 3)
     throw new Error();");
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task CallExposedFuncWithWrongCountOfParameters_ThrowsException()
         {
@@ -241,7 +198,6 @@ if (c !== 3)
             Assert.Equal("Error: Inappropriate args list", exception?.Message);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task CallExposedFuncWithParameterTypesMismatch_ThrowsException()
         {
@@ -252,7 +208,6 @@ if (c !== 3)
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => runner.RunAsync("f('1', 1)"));
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task RunWithGlobalVariables_Succeed()
         {
@@ -266,15 +221,15 @@ if (c !== 3)
             await runner.RunAsync(code);
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public void TryToRegisterUnsupportedType_RunnerThrowsException()
         {
-            using var runner = new ChakraCoreRunner();
+            var runner = new ChakraCoreRunner();
             Assert.Throws<ArgumentException>(() => runner.Register(new HelperObject(), "x"));
+            
+            runner.Dispose();
         }
 
-        [DisplayTestMethodNameAttribute]
         [Fact]
         public async Task TryToCallFunctionWithUnsupportedReturnType_RunnerThrowsException()
         {
@@ -282,8 +237,7 @@ if (c !== 3)
             runner.Register<Func<HelperObject>>(() => new HelperObject(), "f");
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() =>  runner.RunAsync("f()"));
         }
-
-        [DisplayTestMethodNameAttribute]
+        
         [Fact]
         public async Task RunnerDispose_DisposesItsGlobalObject()
         {
@@ -292,6 +246,32 @@ if (c !== 3)
 
             using var newRunner = new ChakraCoreRunner();
             await Assert.ThrowsAsync<ScriptRuntimeErrorException>(() => newRunner.EvaluateAsync<string>("s"));
+        }
+
+        [Fact]
+        public async Task Register_RegisterFunctionInOneScopeThenCallItInAnother_Success()
+        {
+            using var runner = new ChakraCoreRunner();
+            
+            void FirstScope()
+            {
+                Func<int, int, int> sum = (a, b) => a + b;
+                
+                runner.Register(sum, "sum");
+            }
+
+            async Task SecondScope()
+            {
+                runner.Register<Action<int>>(x => Assert.Equal(3, x), "assert");
+
+                await runner.RunAsync(@"
+let c = sum(1, 2);
+assert(c);
+");
+            }
+            
+            FirstScope();
+            await SecondScope();
         }
     }
 }
