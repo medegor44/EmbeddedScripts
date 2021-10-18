@@ -1,19 +1,27 @@
+using System;
 using System.Threading.Tasks;
 using EmbeddedScripts.JS.Common.Tests;
 using EmbeddedScripts.Shared.Exceptions;
 using Xunit;
 using HelperObjects;
+using Xunit.Abstractions;
 
 namespace EmbeddedScripts.JS.Jint.Tests
 {
     public class JintCodeRunnerTests
     {
+        private readonly ITestOutputHelper _testOutputHelper;
         private JsCommonTests _tests = new();
 
+        public JintCodeRunnerTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
-        public async void RunValidCode_Succeed() => 
-            await _tests.RunValidCode_Succeed(new JintCodeRunner()); 
-        
+        public async void RunValidCode_Succeed() =>
+            await _tests.RunValidCode_Succeed(new JintCodeRunner());
+
         [Fact]
         public async Task RunWithTwoGlobalVariables_Succeed() =>
             await _tests.RunWithTwoGlobalVariables_Succeed(new JintCodeRunner());
@@ -25,13 +33,13 @@ namespace EmbeddedScripts.JS.Jint.Tests
         [Fact]
         public async Task RunInvalidCode_ThrowsException() =>
             await _tests.RunInvalidCode_ThrowsException(new JintCodeRunner());
-        
+
         [Fact]
-        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success() => 
+        public async Task RunAsyncWithContinuation_EachRunSharesGlobals_Success() =>
             await _tests.RunAsyncWithContinuation_EachRunSharesGlobals_Success(new JintCodeRunner());
 
         [Fact]
-        public async Task RegisteringNewGlobalVarBetweenRuns_Success() => 
+        public async Task RegisteringNewGlobalVarBetweenRuns_Success() =>
             await _tests.RegisteringNewGlobalVarBetweenRuns_Success(new JintCodeRunner());
 
         [Fact]
@@ -45,11 +53,11 @@ namespace EmbeddedScripts.JS.Jint.Tests
         [Fact]
         public async Task EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue() =>
             await _tests.EvaluateAsyncFunctionCall_ReturnsFunctionReturnValue(new JintCodeRunner());
-        
+
         [Fact]
         public async Task ExposedFuncThrowingException_RunnerThrowsException() =>
             await _tests.ExposedFuncThrowingException_RunnerThrowsException(new JintCodeRunner());
-        
+
         [Fact]
         public async Task AddConfigTwice_AddsNewConfig_Succeed() =>
             await _tests.AddConfigTwice_AddsNewConfig_Succeed(new JintCodeRunner());
@@ -57,7 +65,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
         [Fact]
         public async Task CodeThrowsAnException_ExceptionWithSameMessageIsThrowingFromRunner() =>
             await _tests.CodeThrowsAnException_ExceptionWithSameMessageIsThrowingFromRunner(new JintCodeRunner());
-        
+
         [Fact]
         public async Task RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException() =>
             await _tests.RunCodeWithSyntaxError_ThrowsScriptSyntaxErrorException(new JintCodeRunner());
@@ -75,7 +83,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
             await _tests.RunCodeWithExceptionHandling_Success(new JintCodeRunner());
 
         [Fact]
-        public async Task EvaluateAsyncString() => 
+        public async Task EvaluateAsyncString() =>
             await _tests.EvaluateAsyncString(new JintCodeRunner());
 
         [Fact]
@@ -92,7 +100,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
         public async Task HandleCustomException() =>
             await _tests.HandleCustomException(
                 new JintCodeRunner().AddEngineOptions(options => options.CatchClrExceptions()));
-        
+
         [Fact]
         public async Task EvaluateRegisteredNetType_ShouldBeEqual() =>
             await _tests.EvaluateRegisteredNetType_ShouldBeEqual(new JintCodeRunner());
@@ -100,7 +108,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
         [Fact]
         public async Task CallIndexerOnRegisteredNetObject_OverridenIndexerCalls() =>
             await _tests.CallIndexerOnRegisteredNetObject_OverridenIndexerCalls(new JintCodeRunner());
-        
+
         [Fact]
         public async void MutateRegisteredVariable_Succeed()
         {
@@ -143,6 +151,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
         {
             public int X { get; set; }
         }
+
         [Fact]
         public async void AddStructAsGlobals_Succeed()
         {
@@ -156,7 +165,7 @@ namespace EmbeddedScripts.JS.Jint.Tests
         {
             var runner = new JintCodeRunner();
             dynamic result = await runner.EvaluateAsync<object>("function t() { return {a : 'a'} }; t()");
-            
+
             Assert.Equal("a", result.a);
         }
 

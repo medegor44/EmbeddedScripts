@@ -220,6 +220,7 @@
             JavaScriptValue result;
             Native.ThrowIfError(Native.JsRunScript(JavaScriptValue.FromString(script), 
                 sourceContext, JavaScriptValue.FromString(sourceName), Native.JsParseScriptAttributes.None, out result));
+
             return result;
         }
 

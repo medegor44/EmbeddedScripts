@@ -23,7 +23,7 @@ Jint               | ✔       | ✔     | ?     | ?        | ?
 ChakraCore         | ✔       | ✔     | ?     | ?        | ?
 ClearScriptV8      | ✔       | ✔     | ?     | ?        | ?
 Moonsharp          | ✔       | ✔     | ?     | ?        | ?
-Pythonnet²          | ✔       | ✔     | ?     | ?        | ?
+Pythonnet²          | ✔       | ✔     | ?     | ❌         | ❌
 
 1. Android requires to install additional nuget package `System.Runtime.Loader`.
 2. Pythonnet requres installed python in your environment. To setup runner you have to provide path to python library via `PythonNetRunner.PythonDll` static field wich is synonim to PythonDLL static field of pythonnet library. More on pythonnet specifity you can read in [docs](https://github.com/pythonnet/pythonnet/wiki). 
@@ -91,3 +91,14 @@ ClearScriptV8      | [From .NET to JS](https://microsoft.github.io/ClearScript/R
 Moonsharp          | Check Moonsharp's [docs](https://www.moonsharp.org/mapping.html)
 Pythonnet          | Check pythonnet [website](http://pythonnet.github.io/)
 
+Not all runners are thread safe, to use some of them with multithreading you have to deal with thread synchronization.
+
+Engine             | Thread safety
+-------------------|--------------
+Roslyn (scripting) | ✔
+Roslyn (compiler)  | ✔
+Mono Evaluator     | ✔
+Jint               | ❌
+ChakraCore         | ✔
+ClearScriptV8      | ✔
+Moonsharp          | ❌

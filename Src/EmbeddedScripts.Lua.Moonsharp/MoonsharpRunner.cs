@@ -15,7 +15,7 @@ namespace EmbeddedScripts.Lua.Moonsharp
             try
             {
                 var val = _script.DoString(expression);
-                
+
                 return Task.FromResult((T)val.ToObject());
             }
             catch (SyntaxErrorException e)

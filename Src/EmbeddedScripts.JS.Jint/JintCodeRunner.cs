@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using EmbeddedScripts.Shared;
 using EmbeddedScripts.Shared.Exceptions;
@@ -18,17 +19,17 @@ namespace EmbeddedScripts.JS.Jint
         private object ToNumber(JsValue jsNum)
         {
             var num = jsNum.AsNumber();
-            
+
             if (Math.Abs(num - (int)num) < double.Epsilon)
                 return (int)num;
-            
+
             return num;
         }
-        
+
         public JintCodeRunner AddEngineOptions(Func<Options, Options> optionsFunc)
         {
             _jintOptions = optionsFunc(_jintOptions);
-            
+
             return this;
         }
 
@@ -43,7 +44,7 @@ namespace EmbeddedScripts.JS.Jint
 
                 if (val.Type == Types.Number)
                     return Task.FromResult((T)ToNumber(val));
-                
+
                 return Task.FromResult((T)val.ToObject());
             }
             catch (JavaScriptException e)
@@ -64,11 +65,9 @@ namespace EmbeddedScripts.JS.Jint
                 throw new ScriptEngineErrorException(e.Message, e);
             }
         }
-        
+
         public Task RunAsync(string code)
         {
-            _engine ??= new Engine(_jintOptions);
-
             EvaluateAsync<object>(code);
 
             return Task.CompletedTask;
@@ -77,7 +76,7 @@ namespace EmbeddedScripts.JS.Jint
         public ICodeRunner Register<T>(T obj, string alias)
         {
             _container.Register(obj, alias);
-            
+
             return this;
         }
     }

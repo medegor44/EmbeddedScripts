@@ -6,38 +6,69 @@ namespace EmbeddedScripts.JS.ChakraCore
 {
     public class ChakraCoreRunner : ICodeRunner, IEvaluator, IDisposable
     {
-        private readonly JsRuntime _runtime = new();
-        private readonly TypeMapper _mapper;
-        private readonly JsContext _context;
+        private JsRuntime _runtime;
+        private TypeMapper _mapper;
+        private JsContext _context;
+        private readonly ScriptDispatcher _dispatcher = new();
 
         public ChakraCoreRunner()
         {
-            _context = _runtime.CreateContext();
-            _mapper = new(_context);
+            _dispatcher.Invoke(() =>
+            {
+                _runtime = new();
+                _context = _runtime.CreateContext();
+                if (_context.IsValid)
+                    _context.AddRef();
+                _mapper = new(_context);
+            });
         }
 
         public Task<T> EvaluateAsync<T>(string expression)
-        {
-            var val = _context.Evaluate(expression);
+        { 
+            return Task.FromResult(_dispatcher.Invoke(() =>
+            {
+                var val = _context.Evaluate(expression);
 
-            return Task.FromResult(new TypeMapper(_context).Map<T>(val));
+                return _mapper.Map<T>(val);
+            }));
         }
-        
+
         public Task RunAsync(string code)
         {
-            _context.Evaluate(code);
+            _dispatcher.Invoke(() =>
+            {
+                _context.Evaluate(code);
+            });
             
             return Task.CompletedTask;
         }
 
         public ICodeRunner Register<T>(T obj, string alias)
         {
-            _context.GlobalObject.AddProperty(alias, _mapper.Map(obj));
-
+            _dispatcher.Invoke(() =>
+            {
+                var val = _mapper.Map(obj);
+                
+                val.AddRef();
+                
+                _context.GlobalObject.AddProperty(alias, val);
+            });
+            
             return this;
         }
 
-        public void Dispose() =>
-            _runtime?.Dispose();
+        public void Dispose()
+        {
+            _dispatcher.Invoke(() =>
+            {
+                if (_context.IsValid)
+                    _context.Release();
+
+                _runtime?.Dispose();
+            });
+            
+            _dispatcher.Dispose();
+            _mapper.Dispose();
+        }
     }
 }

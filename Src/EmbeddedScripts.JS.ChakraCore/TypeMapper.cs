@@ -1,19 +1,23 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using ChakraHost.Hosting;
 
 namespace EmbeddedScripts.JS.ChakraCore
 {
-    public class TypeMapper
+    public class TypeMapper : IDisposable
     {
         private readonly JsContext _context;
+
+        // stores registered delegates to prevent their garbage collection
+        private readonly ConcurrentBag<JavaScriptNativeFunction> _jsNativeFunctions = new();
 
         public TypeMapper(JsContext context)
         {
             _context = context;
         }
-        
+
         private JavaScriptValue MapClrPrimitivesToJs(object value)
         {
             if (value is null)
@@ -27,7 +31,7 @@ namespace EmbeddedScripts.JS.ChakraCore
                 case TypeCode.Int16:
                 case TypeCode.Int32:
                     return JavaScriptValue.FromInt32(Convert.ToInt32(value));
-                
+
                 case TypeCode.UInt32:
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
@@ -41,19 +45,19 @@ namespace EmbeddedScripts.JS.ChakraCore
 
                 case TypeCode.String:
                     return JavaScriptValue.FromString((string) value);
-                
+
                 default:
                     throw new ArgumentException("Type is not supported");
             }
         }
-        
+
         private object ToNumber(JavaScriptValue value)
         {
             var num = value.ToDouble();
 
             if (Math.Abs(num - Math.Round(num)) < double.Epsilon)
                 return (int) num;
-            
+
             return num;
         }
 
@@ -68,44 +72,55 @@ namespace EmbeddedScripts.JS.ChakraCore
                 _ => throw new ArgumentException("Type is not supported")
             };
 
-        private JavaScriptValue MapDelegate(Delegate func) => 
-            JavaScriptValue.CreateFunction((_, _, args, _, _) =>
+        private JavaScriptValue MapDelegate(Delegate func)
+        {
+            var callback = new JavaScriptNativeFunction((_, _, args, _, _) =>
+            {
+                try
                 {
-
-                    try
+                    if (func.Method.GetParameters().Length == args.Length - 1)
                     {
-                        if (func.Method.GetParameters().Length == args.Length - 1)
-                            return Map(func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray()));
+                        var res = func.DynamicInvoke(args.Skip(1).Select(MapJsPrimitivesToClr).ToArray());
 
-                        JavaScriptContext.SetException(
-                            JavaScriptValue.CreateError(JavaScriptValue.FromString("Inappropriate args list")));
-                        return JavaScriptValue.Undefined;
+                        return Map(res);
                     }
-                    catch (TargetInvocationException e) when (e.InnerException != null)
-                    {
-                        _context.CallbackException = e.InnerException;
 
-                        JavaScriptContext.SetException(
-                            new JsError(_context, ErrorCodes.HostError, e.InnerException.Message));
-                    }
-                    catch (ArgumentException e)
-                    {
-                        JavaScriptContext.SetException(
-                            JavaScriptValue.CreateError(JavaScriptValue.FromString(e.Message)));
-                    }
+                    JavaScriptContext.SetException(
+                        JavaScriptValue.CreateError(JavaScriptValue.FromString("Inappropriate args list")));
                     return JavaScriptValue.Undefined;
-                },
-                IntPtr.Zero);
-        
+                }
+                catch (TargetInvocationException e) when (e.InnerException != null)
+                {
+                    _context.CallbackException = e.InnerException;
+
+                    JavaScriptContext.SetException(
+                        new JsError(_context, ErrorCodes.HostError, e.InnerException.Message));
+                }
+                catch (ArgumentException e)
+                {
+                    JavaScriptContext.SetException(
+                        JavaScriptValue.CreateError(JavaScriptValue.FromString(e.Message)));
+                }
+
+                return JavaScriptValue.Undefined;
+            });
+
+            _jsNativeFunctions.Add(callback);
+
+            var f = JavaScriptValue.CreateFunction(callback, IntPtr.Zero);
+
+            return f;
+        }
+
         private object Map(JsValue value)
         {
             using (_context.Scope)
                 return MapJsPrimitivesToClr(value);
         }
-        
-        public T Map<T>(JsValue value) => 
-            (T)Map(value);
-        
+
+        public T Map<T>(JsValue value) =>
+            (T) Map(value);
+
         public JsValue Map(object value)
         {
             using (_context.Scope)
@@ -115,6 +130,11 @@ namespace EmbeddedScripts.JS.ChakraCore
 
                 return new(_context, MapClrPrimitivesToJs(value));
             }
+        }
+
+        public void Dispose()
+        {
+            _jsNativeFunctions.Clear();
         }
     }
 }
