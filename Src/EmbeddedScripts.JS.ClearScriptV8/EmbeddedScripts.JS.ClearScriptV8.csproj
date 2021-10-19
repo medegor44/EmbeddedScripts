@@ -4,10 +4,25 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>EmbeddedScripts.JS.ChakraCore</PackageId>
+    <Version>1.0.0</Version>
+    <PackageTags>Scripting;Embedding;V8;ClearScript;JS;JavaScript</PackageTags>
+    <Description>
+      This is the part of EmbeddedScripts library. This package introduces runner of JS code using ClearScriptV8.
+    </Description>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.ClearScript" Version="7.1.4" />
     <PackageReference Include="Microsoft.ClearScript.V8" Version="7.1.4" />
-    <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-x64" Version="7.1.4" />
+    
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-x64" Version="7.1.4" 
+                      Condition=" $([MSBuild]::IsOSPlatform('Linux')) "/>
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.1.4"
+                      Condition=" $([MSBuild]::IsOSPlatform('Windows')) "/>
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.osx-x64" Version="7.1.4"
+                      Condition=" $([MSBuild]::IsOSPlatform('OSX')) "/>
   </ItemGroup>
 
   <ItemGroup>
