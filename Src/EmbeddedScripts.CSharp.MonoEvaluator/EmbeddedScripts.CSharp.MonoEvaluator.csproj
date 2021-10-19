@@ -5,6 +5,15 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <PackageId>EmbeddedScripts.CSharp.MonoEvaluator</PackageId>
+        <Version>1.0.0</Version>
+        <PackageTags>Mono;Scripting;Embedding;C#</PackageTags>
+        <Description>
+            This is the part of EmbeddedScripts library. This package introduces runner of C# code using Mono.Evaluator.
+        </Description>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
     </ItemGroup>
