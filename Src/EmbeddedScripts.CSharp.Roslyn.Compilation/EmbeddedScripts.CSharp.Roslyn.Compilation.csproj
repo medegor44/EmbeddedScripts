@@ -14,6 +14,16 @@
     <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <PackageId>EmbeddedScripts.CSharp.Roslyn.Compilation</PackageId>
+    <Version>1.0.1</Version>
+    <PackageTags>Compilation;Embedding;Roslyn;C#</PackageTags>
+    <Description>
+This is the part of EmbeddedScripts library. This package introduces runner of C# code using Roslyn compilation. 
+    </Description>
+    <RepositoryUrl>https://github.com/medegor44/EmbeddedScripts</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  
   <Import Project="..\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems" Label="Shared" />
-
 </Project>

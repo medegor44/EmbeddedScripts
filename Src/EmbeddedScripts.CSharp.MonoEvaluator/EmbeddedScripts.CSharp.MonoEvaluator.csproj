@@ -5,12 +5,23 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
-    </ItemGroup>
-
+    <PropertyGroup>
+        <PackageId>EmbeddedScripts.CSharp.MonoEvaluator</PackageId>
+        <Version>1.0.1</Version>
+        <PackageTags>Mono;Scripting;Embedding;C#</PackageTags>
+        <Description>
+This is the part of EmbeddedScripts library. This package introduces runner of C# code using Mono.Evaluator.
+        </Description>
+        <RepositoryUrl>https://github.com/medegor44/EmbeddedScripts</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+    
     <ItemGroup>
       <PackageReference Include="Mono.CSharp" Version="4.0.0.143" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
     </ItemGroup>
 
     <Import Project="..\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems" Label="Shared" />

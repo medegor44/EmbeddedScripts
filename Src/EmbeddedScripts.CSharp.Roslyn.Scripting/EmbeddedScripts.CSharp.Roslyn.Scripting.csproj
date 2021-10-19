@@ -5,15 +5,24 @@
 	<LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>EmbeddedScripts.CSharp.Roslyn.Scripting</PackageId>
+    <Version>1.0.1</Version>
+    <PackageTags>Scripting;Embedding;Roslyn;C#</PackageTags>
+    <Description>
+This is the part of EmbeddedScripts library. This package introduces runner of C# code using Roslyn scripting.
+    </Description>
+    <RepositoryUrl>https://github.com/medegor44/EmbeddedScripts</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.10.0" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
   </ItemGroup>
 
   <Import Project="..\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems" Label="Shared" />
-
-  
 </Project>

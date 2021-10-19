@@ -4,4 +4,16 @@
         <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <PackageId>EmbeddedScripts.Shared</PackageId>
+        <Version>1.0.0</Version>
+        <PackageTags>Scripting;Embedding</PackageTags>
+        <Description>
+This is the part of EmbeddedScripts library. This package introduces shared classes and interfaces between all
+library runners.
+        </Description>
+        <RepositoryUrl>https://github.com/medegor44/EmbeddedScripts</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
 </Project>
