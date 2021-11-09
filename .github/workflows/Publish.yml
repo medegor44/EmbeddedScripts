@@ -5,7 +5,17 @@ on:
     branches: [ master ]
 
 jobs:
-  publish: 
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: 5.0.x
+
     - name: Publish Mono on version change
       id: publish_mono
       uses: rohith/publish-nuget@v2
