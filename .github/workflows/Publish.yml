@@ -1,0 +1,70 @@
+name: Publish packages to nuget
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  publish: 
+    - name: Publish Mono on version change
+      id: publish_mono
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Src/EmbeddedScripts.CSharp.MonoEvaluator/EmbeddedScripts.CSharp.MonoEvaluator.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Roslyn scripting on version change
+      id: publish_roslyn_scripts
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Src/EmbeddedScripts.CSharp.Roslyn.Scripting/EmbeddedScripts.CSharp.Roslyn.Scripting.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Roslyn compilation on version change
+      id: publish_roslyn_compilation
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Src/EmbeddedScripts.CSharp.Roslyn.Compilation/EmbeddedScripts.CSharp.Roslyn.Compilation.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Chakra on version change
+      id: publish_chakra
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Src/EmbeddedScripts.JS.ChakraCore/EmbeddedScripts.JS.ChakraCore.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish ClearScriptV8 on version change
+      id: publish_clearscriptv8
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Src/EmbeddedScripts.JS.ClearScriptV8/EmbeddedScripts.JS.ClearScriptV8.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Jint on version change
+      id: publish_jint
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Src/EmbeddedScripts.JS.Jint/EmbeddedScripts.JS.Jint.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Moonsharp on version change
+      id: publish_moonsharp
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Src/EmbeddedScripts.Lua.Moonsharp/EmbeddedScripts.Lua.Moonsharp.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Pythonnet on version change
+      id: publish_pythonnet
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Src/EmbeddedScripts.Python.PythonNet/EmbeddedScripts.Python.PythonNet.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Shared on version change
+      id: publish_shared
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Src/EmbeddedScripts.Shared/EmbeddedScripts.Shared.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
