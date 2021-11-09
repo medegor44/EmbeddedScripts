@@ -15,7 +15,11 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="EmbeddedScripts.Shared" Version="1.0.0" />
     <PackageReference Include="Jint" Version="3.0.0-beta-2032" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\EmbeddedScripts.CSharp.Roslyn.Scripting\EmbeddedScripts.CSharp.Roslyn.Scripting.csproj" />
+    <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
   </ItemGroup>
 </Project>

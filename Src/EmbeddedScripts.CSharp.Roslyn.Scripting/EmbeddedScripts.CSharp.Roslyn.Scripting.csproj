@@ -15,8 +15,11 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="EmbeddedScripts.Shared" Version="1.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.10.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
   </ItemGroup>
 
   <Import Project="..\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems" Label="Shared" />
