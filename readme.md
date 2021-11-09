@@ -1,10 +1,12 @@
 EmbeddedScripts
 ===============
+
 EmbeddedScripts library provides unified way to run scripts written on C#, JS or Lua using different scripting engines in your .NET 5 application.
 
 Supported engines:
 ------------------
-- C#: [Roslyn's](https://github.com/dotnet/roslyn) CSharp.Scripting and CSharpCompilation and [Mono Evaluator](https://github.com/mono/mono/blob/main/mcs/mcs/eval.cs). 
+
+- C#: [Roslyn's](https://github.com/dotnet/roslyn) CSharp.Scripting and CSharpCompilation and [Mono Evaluator](https://github.com/mono/mono/blob/main/mcs/mcs/eval.cs).
   Mono Evaluator implements some kind of subset of C# with additional language features and limitations. 
   For more informaion refer the official [docs](https://www.mono-project.com/docs/tools+libraries/tools/repl/).
 - JS: [Jint](https://github.com/sebastienros/jint), [ChakraCore](https://github.com/chakra-core/ChakraCore), [ClearScriptV8](https://github.com/microsoft/ClearScript)
@@ -20,17 +22,20 @@ Roslyn (scripting) | ✔       | ✔     | ?     | ✔¹       | ✔
 Roslyn (compiler)  | ✔       | ✔     | ?     | ✔        | ✔
 Mono Evaluator     | ✔       | ✔     | ?     | ?        | ?
 Jint               | ✔       | ✔     | ?     | ?        | ?
-ChakraCore         | ✔       | ✔     | ?     | ?        | ?
-ClearScriptV8      | ✔       | ✔     | ?     | ?        | ?
+ChakraCore³        | ✔       | ✔     | ?     | ?        | ?
+ClearScriptV8³     | ✔       | ✔     | ?     | ?        | ?
 Moonsharp          | ✔       | ✔     | ?     | ?        | ?
-Pythonnet²          | ✔       | ✔     | ?     | ❌         | ❌
+Pythonnet²         | ✔       | ✔     | ?     | ❌         | ❌
 
 1. Android requires to install additional nuget package `System.Runtime.Loader`.
-2. Pythonnet requres installed python in your environment. To setup runner you have to provide path to python library via `PythonNetRunner.PythonDll` static field wich is synonim to PythonDLL static field of pythonnet library. More on pythonnet specifity you can read in [docs](https://github.com/pythonnet/pythonnet/wiki). 
+2. Pythonnet requres installed python in your environment. To setup runner you have to provide path to python library via `PythonNetRunner.PythonDll` static field wich is synonim to PythonDLL static field of pythonnet library. More on pythonnet specifity you can read in [docs](https://github.com/pythonnet/pythonnet/wiki).
+3. You have to install native binaries for you operating system. We recommend these binaries for [ChakraCore](https://www.nuget.org/packages?q=JavaScriptEngineSwitcher.ChakraCore.Native) and these for [ClearScriptV8](https://www.nuget.org/packages?q=Microsoft.ClearScript.V8.Native).
 
 Basic usage
 -----------
+
 Just create one of runners and call `RunCodeAsync` method:
+
 ```c#
 var code = @"
 let a = 1;
@@ -40,10 +45,12 @@ let c = a + b;
 var runner = new JintCodeRunner();
 await runner.RunCodeAsync(code);
 ```
-`ChakraCoreRunner` and `ClearScriptV8Runner` implement `IDisposable` interface, so you need to call `Dispose` method 
+
+`ChakraCoreRunner` and `ClearScriptV8Runner` implement `IDisposable` interface, so you need to call `Dispose` method
 after usage of them or use them inside `using` scope.
 
 Besides simple script running you can expose some object from .NET to script using `Register` method
+
 ```c#
 var countOfCalls = 0;
 Action func = () => countOfCalls++;
@@ -54,6 +61,7 @@ await runner.RunAsync("func()");
 ```
 
 You can chain registration calls
+
 ```c#
 runner
     .Register<Func<int, int, int>>((a, b) => a + b, "add")
@@ -61,6 +69,7 @@ runner
 ```
 
 All runners, except `CompiledCodeRunner`, supports expression evaluation using `Evaluate` method.
+
 ```c#
 var sum = await runner.EvaluateAsync<int>(1 + 2);
 // sum will be equal to 3
