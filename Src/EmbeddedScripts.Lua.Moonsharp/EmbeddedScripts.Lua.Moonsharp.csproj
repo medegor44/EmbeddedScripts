@@ -5,6 +5,15 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <PackageId>EmbeddedScripts.Lua.Moonsharp</PackageId>
+        <Version>1.0.1</Version>
+        <PackageTags>Scripting;Embedding;Moonsharp;Lua</PackageTags>
+        <Description>
+            This is the part of EmbeddedScripts library. This package introduces runner of Lua code using Moonsharp.
+        </Description>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="MoonSharp" Version="2.0.0" />
     </ItemGroup>
@@ -12,5 +21,4 @@
     <ItemGroup>
       <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
     </ItemGroup>
-
 </Project>

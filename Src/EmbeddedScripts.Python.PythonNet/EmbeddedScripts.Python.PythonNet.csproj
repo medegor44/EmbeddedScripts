@@ -6,6 +6,16 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <PackageId>EmbeddedScripts.Python.PythonNet</PackageId>
+        <Version>1.0.1</Version>
+        <PackageTags>Scripting;Embedding;Pythonnet;Python</PackageTags>
+        <Description>
+            This is the part of EmbeddedScripts library. This package introduces runner of Python code using Pythonnet.
+            To use this runner you should have installed Python.
+        </Description>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="pythonnet" Version="3.0.0-preview2021-08-03" />
     </ItemGroup>

@@ -2,11 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-	<LangVersion>latest</LangVersion>
+	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
-  
-  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <DefineConstants>_WINDOWS</DefineConstants>
+
+  <PropertyGroup>
+    <PackageId>EmbeddedScripts.JS.ChakraCore</PackageId>
+    <Version>1.0.1</Version>
+    <PackageTags>Chakra;ChakraCore;Scripting;Embedding;JS;JavaScript;EmbeddedScripts</PackageTags>
+    <Description>
+      This is the part of EmbeddedScripts library. This package introduces runner of JS code using Microsoft ChakraCore JS engine.
+      Please note, to make this runner work, you have to manually reference native binaries of Chakra compiled for your operating system.
+      We recommend these binaries https://www.nuget.org/packages?q=JavaScriptEngineSwitcher.ChakraCore.Native
+    </Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,12 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="JavaScriptEngineSwitcher.ChakraCore.Native.linux-x64" Version="3.9.1" />
-    <PackageReference Include="JavaScriptEngineSwitcher.ChakraCore.Native.win-x64" Version="3.9.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
   </ItemGroup>
-
 </Project>
