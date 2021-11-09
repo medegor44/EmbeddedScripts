@@ -26,3 +26,12 @@ jobs:
     
     - name: Test
       run: dotnet test --no-restore
+    - name: publish on version change
+      id: publish_nuget
+      uses: rohith/publish-nuget@v2
+      with:
+        # Filepath of the project to be packaged, relative to root of repository
+        PROJECT_FILE_PATH: Src/EmbeddedScripts.CSharp.MonoEvaluator/EmbeddedScripts.CSharp.MonoEvaluator.csproj
+        
+        # API key to authenticate with NuGet server
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
