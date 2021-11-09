@@ -6,23 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EmbeddedScripts.Shared" Version="1.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.10.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.10.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>EmbeddedScripts.CSharp.Roslyn.Compilation</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <PackageTags>Compilation;Embedding;Roslyn;C#</PackageTags>
     <Description>
       This is the part of EmbeddedScripts library. This package introduces runner of C# code using Roslyn compilation. 
     </Description>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
-  </ItemGroup>
-
+  
   <Import Project="..\EmbeddedScripts.CSharp.Shared\EmbeddedScripts.CSharp.Shared.projitems" Label="Shared" />
-
 </Project>
