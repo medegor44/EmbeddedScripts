@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Src\EmbeddedScripts.JS.ChakraCore\EmbeddedScripts.JS.ChakraCore.csproj" />
+      <ProjectReference Include="..\..\Src\EmbeddedScripts.JS.ClearScriptV8\EmbeddedScripts.JS.ClearScriptV8.csproj" />
+      <ProjectReference Include="..\..\Src\EmbeddedScripts.JS.Jint\EmbeddedScripts.JS.Jint.csproj" />
+      <ProjectReference Include="..\..\Src\EmbeddedScripts.Lua.Moonsharp\EmbeddedScripts.Lua.Moonsharp.csproj" />
+      <ProjectReference Include="..\..\Src\EmbeddedScripts.Python.PythonNet\EmbeddedScripts.Python.PythonNet.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+      <PackageReference Include="JavaScriptEngineSwitcher.ChakraCore.Native.win-x64" Version="3.12.6" />
+      <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.2.0" />
+    </ItemGroup>
+
+</Project>
