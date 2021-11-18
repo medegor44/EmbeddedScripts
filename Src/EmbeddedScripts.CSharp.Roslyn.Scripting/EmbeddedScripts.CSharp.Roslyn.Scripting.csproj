@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <PackageId>EmbeddedScripts.CSharp.Roslyn.Scripting</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <PackageTags>Scripting;Embedding;Roslyn;C#</PackageTags>
     <Description>
 This is the part of EmbeddedScripts library. This package introduces runner of C# code using Roslyn scripting.

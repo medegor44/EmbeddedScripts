@@ -7,7 +7,7 @@
 
     <PropertyGroup>
         <PackageId>EmbeddedScripts.Lua.Moonsharp</PackageId>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <PackageTags>Scripting;Embedding;Moonsharp;Lua</PackageTags>
         <Description>
 This is the part of EmbeddedScripts library. This package introduces runner of Lua code using Moonsharp.

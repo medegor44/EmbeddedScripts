@@ -5,7 +5,7 @@
 
   <PropertyGroup>
     <PackageId>EmbeddedScripts.JS.ClearScriptV8</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <PackageTags>V8;Scripting;Embedding;JS;JavaScript;EmbeddedScripts;ClearScript</PackageTags>
     <Description>
 This is the part of EmbeddedScripts library. This package introduces runner of JS code using Microsoft ClearScript library with V8 JS engine.
