@@ -5,12 +5,23 @@
 	<LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>EmbeddedScripts.JS.Jint</PackageId>
+    <Version>1.0.2</Version>
+    <PackageTags>Scripting;Embedding;Jint;JS;JavaScript</PackageTags>
+    <Description>
+This is the part of EmbeddedScripts library. This package introduces runner of JS code using Jint.
+    </Description>
+    <RepositoryUrl>https://github.com/medegor44/EmbeddedScripts</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Jint" Version="3.0.0-beta-2032" />
   </ItemGroup>
-
+  
   <ItemGroup>
+    <ProjectReference Include="..\EmbeddedScripts.CSharp.Roslyn.Scripting\EmbeddedScripts.CSharp.Roslyn.Scripting.csproj" />
     <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
   </ItemGroup>
-
 </Project>

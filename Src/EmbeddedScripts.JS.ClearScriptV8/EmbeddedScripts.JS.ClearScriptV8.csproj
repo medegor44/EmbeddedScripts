@@ -1,17 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>EmbeddedScripts.JS.ClearScriptV8</PackageId>
+    <Version>1.0.2</Version>
+    <PackageTags>V8;Scripting;Embedding;JS;JavaScript;EmbeddedScripts;ClearScript</PackageTags>
+    <Description>
+This is the part of EmbeddedScripts library. This package introduces runner of JS code using Microsoft ClearScript library with V8 JS engine.
+Please note, to make this runner work, you have to manually reference native binaries of V8 compiled for your operating system.
+We recommend these binaries https://www.nuget.org/packages?q=Microsoft.ClearScript.V8.Native
+    </Description>
+    <RepositoryUrl>https://github.com/medegor44/EmbeddedScripts</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ClearScript" Version="7.1.4" />
     <PackageReference Include="Microsoft.ClearScript.V8" Version="7.1.4" />
-    <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-x64" Version="7.1.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EmbeddedScripts.Shared\EmbeddedScripts.Shared.csproj" />
   </ItemGroup>
-
 </Project>

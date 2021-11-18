@@ -1,8 +1,6 @@
 name: .NET Build with Tests
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
