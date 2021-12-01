@@ -1,3 +1,14 @@
+Benchmark tests
+===============
+
+How to run
+----------
+
+Benchmark test contains CharkaCore and ClearScriptV8 runners, which requres installed native binaries for your
+operating system. If you run tests under Windows x64, you don't need to install anything. If you run
+test under other OS, you have to install native binaries via nuget. We recommend these binaries for [ChakraCore](https://www.nuget.org/packages?q=JavaScriptEngineSwitcher.ChakraCore.Native) and these for [ClearScriptV8](https://www.nuget.org/packages?q=Microsoft.ClearScript.V8.Native).
+
+
 Interop benchmarks
 ------------------
 

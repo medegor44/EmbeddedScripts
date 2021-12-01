@@ -112,3 +112,8 @@ Jint               | ❌
 ChakraCore         | ✔
 ClearScriptV8      | ✔
 Moonsharp          | ❌
+
+Performance
+-----------
+
+We have written benchmark tests to investigate how fast runners works in some situations such as interoperating calls between .NET and scripting engine, integer and floating point computations. Results of benchmark test you can see [here](Benchmarks/readme.md).
